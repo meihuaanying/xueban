@@ -14,7 +14,7 @@ name: 练习 → 错题 → 重练
 # 冷启动（尤其 CI 模拟器）可能超过 Maestro 默认等待，放宽到 120s
 - extendedWaitUntil:
     visible: "注册"
-    timeout: 120000
+    timeout: 180000
 - runFlow:
     when:
       visible: "Wait"

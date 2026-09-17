@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+
 from app.services import judge_service
 
 CORRECT_CODE = """
@@ -55,8 +57,11 @@ def test_infinite_loop_times_out() -> None:
 
 
 def test_file_read_outside_sandbox_blocked() -> None:
-    code = """
-with open(r"C:\\Windows\\win.ini", "r") as handle:
+    # 跨平台 CI：POSIX 用真实存在的系统文件，Windows 用 win.ini
+    # （POSIX 下 Windows 风格路径会被 realpath 解析为沙箱内相对路径，无法触发越权拦截）
+    outside = r"C:\Windows\win.ini" if os.name == "nt" else "/etc/passwd"
+    code = f"""
+with open(r"{outside}", "r") as handle:
     print(handle.read())
 """
     outcome = judge_service.run_python(
