@@ -1,0 +1,15 @@
+Unable to find image 'ghcr.io/trufflesecurity/trufflehog:latest' locally
+latest: Pulling from trufflesecurity/trufflehog
+4f4fb700ef54: Pulling fs layer
+522f82ad2d8c: Pulling fs layer
+db125bcc63ad: Pulling fs layer
+4f4fb700ef54: Already exists
+db125bcc63ad: Already exists
+4f4fb700ef54: Pull complete
+522f82ad2d8c: Download complete
+db125bcc63ad: Pull complete
+522f82ad2d8c: Pull complete
+Digest: sha256:1cec88f18ca39e26e04e61fe9d886c9c4e5f2fc0ba4f2ed185cac0722bd8a076
+Status: Downloaded newer image for ghcr.io/trufflesecurity/trufflehog:latest
+{"level":"info-0","ts":"2026-09-17T05:19:28Z","logger":"trufflehog","msg":"running source","source_manager_worker_id":"33xSR","with_units":true}
+{"level":"info-0","ts":"2026-09-17T05:19:32Z","logger":"trufflehog","msg":"finished scanning","chunks":9713,"bytes":96339293,"verified_secrets":0,"unverified_secrets":0,"scan_duration":"3.853364187s","trufflehog_version":"3.97.5","verification_caching":{"Hits":0,"Misses":1,"HitsWasted":0,"AttemptsSaved":0,"VerificationTimeSpentMS":1504}}

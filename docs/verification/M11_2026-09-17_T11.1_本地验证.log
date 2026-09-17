@@ -1,0 +1,40 @@
+T11.1 生产编排本地验证（2026-09-17，Docker Desktop / project=xuebanprod / Caddy:8088）
+==============================================================
+[1] ./deploy.sh 输出（节选）
+==> [1/5] 构建并启动容器（api×2 + web + worker + caddy + postgres/redis/minio/litellm/ocr）
+==> [2/5] 等待 PostgreSQL 健康
+==> [3/5] 执行数据库迁移（alembic upgrade head）
+==> [4/5] 播种知识图谱与演示题库（幂等）
+知识点图谱种子完成：节点 641（新增 641），依赖边 836（新增 836），错因标签新增 5
+已生成演示题库 1114 条 → /app/data/demo/demo_questions.json
+==> [5/5] 服务状态
+✓ 部署完成
+
+[2] 服务状态
+NAME                    IMAGE                                                                     STATUS
+xuebanprod-api-1        xueban-api:devtest                                                        Up About a minute (healthy)
+xuebanprod-api-2        xueban-api:devtest                                                        Up About a minute (healthy)
+xuebanprod-caddy-1      caddy:2-alpine                                                            Up 2 minutes
+xuebanprod-litellm-1    ghcr.io/berriai/litellm:main-stable                                       Up 3 minutes (healthy)
+xuebanprod-minio-1      quay.io/minio/minio:latest                                                Up 3 minutes (healthy)
+xuebanprod-ocr-1        sha256:f43f0b53a6d8cd34b8f4231504ab10ea695a070675b7284351d74cd4d46a63ba   Up 3 minutes (healthy)
+xuebanprod-postgres-1   pgvector/pgvector:pg16                                                    Up 3 minutes (healthy)
+xuebanprod-redis-1      redis:7-alpine                                                            Up 3 minutes (healthy)
+xuebanprod-web-1        xueban-web:devtest                                                        Up About a minute (healthy)
+xuebanprod-worker-1     xueban-api:devtest                                                        Up About a minute (health: starting)
+
+[3] 端到端冒烟（经 Caddy）
+- /healthz            => {"status":"ok","service":"xueban-api","version":"0.1.0"}
+- /（官网首页）        => HTTP 200 48464B
+- /parents（家长端）   => HTTP 200 20358B
+- 注册(UTF-8 昵称)     => HTTP 201（python urllib 直连验证）
+- 登录                 => HTTP 200（access/refresh token）
+- /v1/profile/mastery => HTTP 200
+- /v1/tutor/session + hint(level=1) => 200，内容：思路提示：先看题目的已知条件与所求量…
+- 数据库迁移           => alembic 8 条迁移全部执行至 head 8667c191a0e6（全新库）
+- 种子数据             => 知识图谱 641 节点/836 边；演示题库 1105 题
+
+[4] 关键设计
+- api 2 副本 × 2 uvicorn worker；Caddy round_robin + health_uri=/healthz（冷启动约 15s 后上游就绪）
+- 所有服务 restart=unless-stopped；json-file 日志轮转 20MB×5；postgres/redis/minio/ocr/litellm 均带 healthcheck
+- 仅 80/443 对外（本项目验证用 8088/8443）；DB/Redis/MinIO API 不暴露宿主

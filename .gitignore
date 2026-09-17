@@ -44,7 +44,8 @@ ios/
 *.aab
 
 # MinIO / 数据卷
-data/
+# 种子脚本导出的运行期数据（保留目录占位，内容不入库）
+services/api/data/demo/*.json
 volumes/
 
 # 编辑器与系统
@@ -62,3 +63,6 @@ logs/
 backups/
 .coverage
 .coverage.*
+
+# 验证证据中的原始日志需入库（覆盖通用 *.log 忽略）
+!docs/verification/*.log
