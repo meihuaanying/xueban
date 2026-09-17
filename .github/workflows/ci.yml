@@ -238,6 +238,11 @@ jobs:
           api-level: 33
           arch: x86_64
           profile: pixel_5
+          # 低配模拟器易触发 System UI ANR；提高内存/核数并关闭动画
+          ram-size: 4096
+          cores: 4
+          disable-animations: true
+          emulator-options: -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect -camera-back none -camera-front none
           # 注意：runner 按行执行，必须用单行 bash -c 串联（PATH 与 PHONE 变量才不会丢失）
           script: |
             bash -c 'curl -Ls https://get.maestro.mobile.dev | bash && export PATH="$PATH:$HOME/.maestro/bin" && adb install -r apps/mobile/android/app/build/outputs/apk/release/app-release.apk && PHONE="139$(date +%N | head -c 8)" && maestro test apps/mobile/maestro/01-register-diagnosis-plan.yaml -e PHONE=$PHONE && maestro test apps/mobile/maestro/02-practice-mistake-loop.yaml -e PHONE=$PHONE'

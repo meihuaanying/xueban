@@ -5,10 +5,21 @@ name: 注册 → 诊断 → 计划 → 打卡
 ---
 - launchApp:
     clearState: true
+# CI 低配模拟器可能出现 "System UI isn't responding" 弹窗，自动等待/跳过
+- runFlow:
+    when:
+      visible: "Wait"
+    commands:
+      - tapOn: "Wait"
 # 冷启动（尤其 CI 模拟器）可能超过 Maestro 默认等待，放宽到 120s
 - extendedWaitUntil:
     visible: "登录"
     timeout: 120000
+- runFlow:
+    when:
+      visible: "Wait"
+    commands:
+      - tapOn: "Wait"
 - tapOn: "注册"
 - tapOn:
     id: "phone-input"
