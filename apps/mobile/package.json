@@ -5,11 +5,12 @@
   "main": "index.ts",
   "scripts": {
     "dev": "expo start",
-    "android": "expo start --android",
+    "android": "expo run:android",
     "build": "expo export --platform android --output-dir dist",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "jest --runInBand --coverage"
+    "test": "jest --runInBand --coverage",
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.1.2",
