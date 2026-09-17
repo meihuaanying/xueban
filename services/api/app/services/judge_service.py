@@ -128,12 +128,21 @@ class JudgeOutcome:
 
 
 def _limit_resources() -> None:  # pragma: no cover - 仅在 POSIX 子进程中执行
-    """子进程资源限制（POSIX）。"""
+    """子进程资源限制（POSIX；Windows 无 resource 模块，统一 getattr 探测）。"""
     import resource
 
-    resource.setrlimit(resource.RLIMIT_AS, (MAX_MEMORY_BYTES, MAX_MEMORY_BYTES))  # type: ignore[attr-defined]
-    resource.setrlimit(resource.RLIMIT_CPU, (2, 2))  # type: ignore[attr-defined]
-    resource.setrlimit(resource.RLIMIT_NPROC, (0, 0))  # type: ignore[attr-defined]
+    setrlimit = getattr(resource, "setrlimit", None)
+    if setrlimit is None:
+        return
+    rlimit_as = getattr(resource, "RLIMIT_AS", None)
+    rlimit_cpu = getattr(resource, "RLIMIT_CPU", None)
+    rlimit_nproc = getattr(resource, "RLIMIT_NPROC", None)
+    if rlimit_as is not None:
+        setrlimit(rlimit_as, (MAX_MEMORY_BYTES, MAX_MEMORY_BYTES))
+    if rlimit_cpu is not None:
+        setrlimit(rlimit_cpu, (2, 2))
+    if rlimit_nproc is not None:
+        setrlimit(rlimit_nproc, (0, 0))
 
 
 def _static_scan(code: str) -> str | None:

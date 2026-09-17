@@ -37,6 +37,8 @@ test.describe("T9.3 暗色模式与无障碍收口", () => {
       await page.getByTestId("theme-toggle").click();
       await expect(page.locator("html")).toHaveClass(/dark/, { timeout: 1000 });
     }).toPass({ timeout: 15_000 });
+    // 等待主题变量与 transition-colors（150ms）过渡结束，避免 axe 采样到中间态
+    await page.waitForTimeout(300);
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
       .analyze();
@@ -50,6 +52,8 @@ test.describe("T9.3 暗色模式与无障碍收口", () => {
         await page.getByTestId("theme-toggle").click();
         await expect(page.locator("html")).toHaveClass(/dark/, { timeout: 1000 });
       }).toPass({ timeout: 15_000 });
+      // 等待主题变量与 transition-colors（150ms）过渡结束，避免 axe 采样到中间态
+      await page.waitForTimeout(300);
       const results = await new AxeBuilder({ page })
         .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
         .analyze();

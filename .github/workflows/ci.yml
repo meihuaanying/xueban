@@ -79,7 +79,7 @@ jobs:
           if-no-files-found: ignore
 
   desktop:
-    name: Desktop（lint / typecheck / test / build / bundle / e2e）
+    name: Desktop（lint / typecheck / test / build / bundle）
     strategy:
       fail-fast: false
       matrix:
@@ -91,6 +91,42 @@ jobs:
           - os: windows-latest
             bundles: nsis
     runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @xueban/desktop lint
+      - run: pnpm --filter @xueban/desktop typecheck
+      - run: pnpm --filter @xueban/desktop test
+      - run: pnpm --filter @xueban/desktop build
+      - name: Rust 工具链
+        uses: dtolnay/rust-toolchain@stable
+      - name: Linux 系统依赖（WebKitGTK + AppImage FUSE）
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libgtk-3-dev libfuse2
+      - name: 构建安装包
+        env:
+          # 无 FUSE 的容器环境：linuxdeploy 以解包方式运行
+          APPIMAGE_EXTRACT_AND_RUN: "1"
+        run: pnpm --filter @xueban/desktop exec tauri build --bundles ${{ matrix.bundles }}
+      - name: 上传三平台安装包
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-${{ matrix.os }}
+          path: |
+            apps/desktop/src-tauri/target/release/bundle/**
+            apps/desktop/src-tauri/target/release/xueban-desktop*
+          if-no-files-found: error
+
+  desktop-e2e:
+    name: Desktop E2E（Playwright + 本机 API）
+    runs-on: ubuntu-latest
     services:
       postgres:
         image: pgvector/pgvector:pg16
@@ -117,46 +153,21 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @xueban/desktop lint
-      - run: pnpm --filter @xueban/desktop typecheck
-      - run: pnpm --filter @xueban/desktop test
       - run: pnpm --filter @xueban/desktop build
-      - name: Rust 工具链
-        uses: dtolnay/rust-toolchain@stable
-      - name: Linux 系统依赖（WebKitGTK）
-        if: matrix.os == 'ubuntu-22.04'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libgtk-3-dev
-      - name: 构建安装包
-        run: pnpm --filter @xueban/desktop exec tauri build --bundles ${{ matrix.bundles }}
-      - name: 上传三平台安装包
-        uses: actions/upload-artifact@v4
-        with:
-          name: desktop-${{ matrix.os }}
-          path: |
-            apps/desktop/src-tauri/target/release/bundle/**
-            apps/desktop/src-tauri/target/release/xueban-desktop*
-          if-no-files-found: error
-      # 桌面端 E2E（仅 Linux 跑一次，浏览器为 chromium）
-      - if: matrix.os == 'ubuntu-22.04'
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
-      - if: matrix.os == 'ubuntu-22.04'
-        name: 安装 API 依赖并迁移
+      - name: 安装 API 依赖并迁移
         working-directory: services/api
         run: |
           pip install -e ".[dev]"
           alembic upgrade head
-      - if: matrix.os == 'ubuntu-22.04'
-        name: 安装 Playwright 浏览器
+      - name: 安装 Playwright 浏览器
         run: pnpm --filter @xueban/desktop exec playwright install --with-deps chromium
-      - if: matrix.os == 'ubuntu-22.04'
-        name: 桌面端 E2E（14 条）
+      - name: 桌面端 E2E（24 条，含同步/引导/三态/暗色/陪练/判题）
         run: pnpm test:e2e:desktop
-      - if: matrix.os == 'ubuntu-22.04' && failure()
+      - if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: desktop-e2e-report
@@ -220,13 +231,9 @@ jobs:
           api-level: 33
           arch: x86_64
           profile: pixel_5
+          # 注意：runner 按行执行，必须用单行 bash -c 串联（PATH 与 PHONE 变量才不会丢失）
           script: |
-            curl -Ls "https://get.maestro.mobile.dev" | bash
-            export PATH="$PATH:$HOME/.maestro/bin"
-            adb install apps/mobile/android/app/build/outputs/apk/release/app-release.apk
-            PHONE=1390000000$((RANDOM % 10))
-            maestro test apps/mobile/maestro/01-register-diagnosis-plan.yaml -e PHONE=${PHONE}
-            maestro test apps/mobile/maestro/02-practice-mistake-loop.yaml -e PHONE=${PHONE}
+            bash -c 'curl -Ls https://get.maestro.mobile.dev | bash && export PATH="$PATH:$HOME/.maestro/bin" && adb install -r apps/mobile/android/app/build/outputs/apk/release/app-release.apk && PHONE="139$(date +%N | head -c 8)" && maestro test apps/mobile/maestro/01-register-diagnosis-plan.yaml -e PHONE=$PHONE && maestro test apps/mobile/maestro/02-practice-mistake-loop.yaml -e PHONE=$PHONE'
 
   api:
     name: API（ruff / mypy / pytest）
