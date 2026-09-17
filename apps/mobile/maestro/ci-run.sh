@@ -39,9 +39,6 @@ adb shell settings put secure anr_show_background 0
 adb shell settings put secure show_ime_with_hard_keyboard 0
 adb install -r apps/mobile/android/app/build/outputs/apk/release/app-release.apk
 
-PHONE="139$(date +%N | head -c 8)"
-echo "测试手机号: $PHONE"
-
 capture() {
   local tag="$1"
   adb exec-out screencap -p > "$ARTIFACTS/fail-$tag.png" 2>/dev/null || true
@@ -49,15 +46,33 @@ capture() {
   tail -200 /tmp/api.log > "$ARTIFACTS/api-$tag.log" 2>/dev/null || true
 }
 
+run_flow() {
+  # 每次尝试使用新手机号（模拟器抖动时允许重试）
+  local flow="$1"
+  local tag="$2"
+  local phone="139$(date +%N | head -c 8)"
+  echo "== 运行 $flow（phone=$phone） =="
+  timeout 1500 maestro test "$flow" -e PHONE="$phone"
+}
+
 status=0
-timeout 1500 maestro test apps/mobile/maestro/01-register-diagnosis-plan.yaml -e PHONE="$PHONE" || status=$?
+run_flow apps/mobile/maestro/01-register-diagnosis-plan.yaml 01 || status=$?
+if [ "$status" -ne 0 ]; then
+  echo "流程 01 首次失败（exit=$status），重启应用后重试一次"
+  capture 01-first
+  adb shell am force-stop com.xueban.mobile || true
+  sleep 5
+  status=0
+  run_flow apps/mobile/maestro/01-register-diagnosis-plan.yaml 01 || status=$?
+fi
 if [ "$status" -ne 0 ]; then
   echo "流程 01 失败（exit=$status），抓取诊断产物"
   capture 01
   exit "$status"
 fi
 
-timeout 1200 maestro test apps/mobile/maestro/02-practice-mistake-loop.yaml -e PHONE="$PHONE" || status=$?
+status=0
+run_flow apps/mobile/maestro/02-practice-mistake-loop.yaml 02 || status=$?
 if [ "$status" -ne 0 ]; then
   echo "流程 02 失败（exit=$status），抓取诊断产物"
   capture 02

@@ -201,8 +201,8 @@ jobs:
     name: Mobile APK + Maestro（Android 模拟器）
     runs-on: ubuntu-latest
     needs: mobile
-    # 护栏：模拟器无硬件加速，命令执行慢（每步数十秒）；90 分钟强制失败，避免挂起
-    timeout-minutes: 90
+    # 护栏：模拟器无硬件加速，命令执行慢（每步数十秒）；120 分钟强制失败，避免挂起
+    timeout-minutes: 120
     services:
       postgres:
         image: pgvector/pgvector:pg16
@@ -271,11 +271,11 @@ jobs:
           # 无硬件加速的模拟器启动 Maestro driver 较慢，默认超时不够
           MAESTRO_DRIVER_STARTUP_TIMEOUT: "600000"
         with:
-          api-level: 33
-          arch: x86_64
-          profile: pixel_5
-          # 低配模拟器易触发 System UI ANR；提高内存/核数并关闭动画
+          # 低配模拟器易触发 System UI/驱动 ANR；选更轻的镜像（API 30 + pixel_2）
           # 注意：不要覆盖 emulator-options（默认含无头模式 -no-window）
+          api-level: 30
+          arch: x86_64
+          profile: pixel_2
           ram-size: 4096
           cores: 4
           disable-animations: true
