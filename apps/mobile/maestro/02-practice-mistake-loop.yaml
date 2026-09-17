@@ -49,7 +49,15 @@ name: 练习 → 错题 → 重练
           id: "option-B"
       - tapOn:
           id: "submit-practice"
-- assertVisible: "错题本"
+# 答错后：错题本自动收录（文本为「错题本（N）」，用 testID 断言）
+- assertVisible:
+    id: "mistake-list"
 - tapOn: "错题重练"
+# 重练面板在列表下方，必要时向下滚动
+- scrollUntilVisible:
+    element:
+      id: "repractice-panel"
+    direction: DOWN
+    timeout: 30000
 - assertVisible:
     id: "repractice-panel"
