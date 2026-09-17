@@ -73,6 +73,8 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# 显式把 services/api 加入 sys.path：确保 `pytest` 控制台脚本与 `python -m pytest` 均可导入 tests.*
+pythonpath = ["."]
 addopts = "-q"
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "session"

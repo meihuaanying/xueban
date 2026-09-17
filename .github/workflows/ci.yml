@@ -163,6 +163,11 @@ jobs:
         run: |
           pip install -e ".[dev]"
           alembic upgrade head
+      - name: 播种演示数据（诊断/练习用例依赖题库与知识图谱）
+        working-directory: services/api
+        run: |
+          python -m scripts.seed_knowledge_graph
+          python -m scripts.seed_demo_questions
       - name: 安装 Playwright 浏览器
         run: pnpm --filter @xueban/desktop exec playwright install --with-deps chromium
       - name: 桌面端 E2E（24 条，含同步/引导/三态/暗色/陪练/判题）
@@ -227,6 +232,8 @@ jobs:
           if-no-files-found: error
       - name: 启动模拟器并跑 Maestro 核心旅程
         uses: reactivecircus/android-emulator-runner@v2
+        env:
+          MAESTRO_CLI_NO_ANALYTICS: "1"
         with:
           api-level: 33
           arch: x86_64
@@ -234,6 +241,13 @@ jobs:
           # 注意：runner 按行执行，必须用单行 bash -c 串联（PATH 与 PHONE 变量才不会丢失）
           script: |
             bash -c 'curl -Ls https://get.maestro.mobile.dev | bash && export PATH="$PATH:$HOME/.maestro/bin" && adb install -r apps/mobile/android/app/build/outputs/apk/release/app-release.apk && PHONE="139$(date +%N | head -c 8)" && maestro test apps/mobile/maestro/01-register-diagnosis-plan.yaml -e PHONE=$PHONE && maestro test apps/mobile/maestro/02-practice-mistake-loop.yaml -e PHONE=$PHONE'
+      - name: 上传 Maestro 调试产物（失败时）
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-debug
+          path: ~/.maestro/tests/**
+          if-no-files-found: ignore
 
   api:
     name: API（ruff / mypy / pytest）

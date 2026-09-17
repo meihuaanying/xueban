@@ -21,6 +21,7 @@ from PIL import Image, ImageDraw, ImageFont
 REPO_ROOT = Path(__file__).resolve().parents[3]
 MOBILE_ASSETS = REPO_ROOT / "apps" / "mobile" / "assets"
 STORE_ICONS = REPO_ROOT / "release-assets" / "icons"
+DESKTOP_ASSETS = REPO_ROOT / "apps" / "desktop" / "src-tauri" / "icons"
 
 PRIMARY_TOP = (51, 134, 255)  # #3386ff
 PRIMARY_BOTTOM = (31, 102, 245)  # #1f66f5
@@ -87,11 +88,14 @@ def make_adaptive_foreground(size: int = 1024) -> Image.Image:
 def main() -> int:
     MOBILE_ASSETS.mkdir(parents=True, exist_ok=True)
     STORE_ICONS.mkdir(parents=True, exist_ok=True)
+    DESKTOP_ASSETS.mkdir(parents=True, exist_ok=True)
 
     icon = make_icon()
     icon.save(MOBILE_ASSETS / "icon.png")
     icon.resize((512, 512), Image.LANCZOS).save(STORE_ICONS / "icon-512.png")
     icon.resize((192, 192), Image.LANCZOS).save(STORE_ICONS / "icon-192.png")
+    # 桌面端 Tauri 图标源（正方形 1024，供 `tauri icon` 生成各平台尺寸）
+    icon.save(DESKTOP_ASSETS / "icon-source.png")
 
     make_adaptive_foreground().save(MOBILE_ASSETS / "adaptive-icon.png")
 

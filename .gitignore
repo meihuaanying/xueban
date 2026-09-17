@@ -60,3 +60,5 @@ logs/
 
 # 数据库备份产物（T10.5）
 backups/
+.coverage
+.coverage.*
