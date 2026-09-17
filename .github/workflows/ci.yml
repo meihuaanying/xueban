@@ -220,8 +220,8 @@ jobs:
     env:
       DATABASE_URL: postgresql+asyncpg://xueban:change-me@localhost:5432/xueban
       ENVIRONMENT: development
-      # 模拟器访问宿主：10.0.2.2 映射宿主 127.0.0.1
-      EXPO_PUBLIC_API_BASE_URL: http://10.0.2.2:8000
+      # 模拟器经 adb reverse 访问宿主（127.0.0.1:8000 → 宿主 8000），避免 10.0.2.2 路由差异
+      EXPO_PUBLIC_API_BASE_URL: http://127.0.0.1:8000
       # 仅 CI 联调允许明文 HTTP（生产构建不开启，见 apps/mobile/plugins/with-cleartext.js）
       EXPO_PUBLIC_ALLOW_CLEARTEXT: "true"
     steps:
@@ -279,22 +279,22 @@ jobs:
           ram-size: 4096
           cores: 4
           disable-animations: true
-          # 注意：runner 按行执行，必须用单行 bash -c 串联（PATH 与 PHONE 变量才不会丢失）
-          # 无硬件加速的模拟器易产生 ANR 弹窗：系统级隐藏错误弹窗 + 流程内自动跳过
-          # API 在本步骤内启动（跨步骤后台进程会被 runner 回收）
+          # 注意：runner 按行执行，因此整段逻辑收敛到脚本文件（见 apps/mobile/maestro/ci-run.sh）
           script: |
-            bash -c 'curl -Ls https://get.maestro.mobile.dev | bash && export PATH="$PATH:$HOME/.maestro/bin" && (cd services/api && LLM_PROVIDER=mock setsid nohup python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/api.log 2>&1 &) && for i in $(seq 1 30); do curl -sf http://127.0.0.1:8000/healthz && break || sleep 2; done && adb wait-for-device && adb shell settings put global hide_error_dialogs 1 && adb shell settings put secure anr_show_background 0 && adb install -r apps/mobile/android/app/build/outputs/apk/release/app-release.apk && PHONE="139$(date +%N | head -c 8)" && timeout 900 maestro test apps/mobile/maestro/01-register-diagnosis-plan.yaml -e PHONE=$PHONE && timeout 900 maestro test apps/mobile/maestro/02-practice-mistake-loop.yaml -e PHONE=$PHONE'
+            bash apps/mobile/maestro/ci-run.sh
       - name: API 日志（诊断）
         if: always()
         run: |
           echo "--- uvicorn ---"; pgrep -af uvicorn || true
           echo "--- /tmp/api.log ---"; tail -80 /tmp/api.log || true
       - name: 上传 Maestro 调试产物（失败时）
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: maestro-debug
-          path: ~/.maestro/tests/**
+          path: |
+            ~/.maestro/tests/**
+            /tmp/maestro-artifacts/**
           if-no-files-found: ignore
 
   api:
