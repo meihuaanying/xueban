@@ -279,6 +279,8 @@ jobs:
           ram-size: 4096
           cores: 4
           disable-animations: true
+          # 启用硬件键盘并禁用软键盘，避免软键盘遮挡表单（hideKeyboard 会触发 BACK 退出应用）
+          enable-hw-keyboard: true
           # 注意：runner 按行执行，因此整段逻辑收敛到脚本文件（见 apps/mobile/maestro/ci-run.sh）
           script: |
             bash apps/mobile/maestro/ci-run.sh

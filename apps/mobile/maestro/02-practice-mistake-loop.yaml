@@ -26,12 +26,9 @@ name: 练习 → 错题 → 重练
 - tapOn:
     id: "phone-input"
 - inputText: "${PHONE}"
-# 收起键盘：避免软键盘遮挡密码框与提交按钮（低配模拟器尤甚）
-- hideKeyboard
 - tapOn:
     id: "password-input"
 - inputText: "E2e-pass-1234"
-- hideKeyboard
 - tapOn:
     id: "submit-auth"
 - extendedWaitUntil:

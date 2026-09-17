@@ -26,12 +26,9 @@ name: 注册 → 诊断 → 计划 → 打卡
 - tapOn:
     id: "phone-input"
 - inputText: "${PHONE}"
-# 收起键盘：避免软键盘遮挡密码框与提交按钮（低配模拟器尤甚）
-- hideKeyboard
 - tapOn:
     id: "password-input"
 - inputText: "E2e-pass-1234"
-- hideKeyboard
 - tapOn:
     id: "submit-auth"
 - assertVisible: "今日任务"

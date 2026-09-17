@@ -7,6 +7,13 @@ set -uo pipefail
 ARTIFACTS="/tmp/maestro-artifacts"
 mkdir -p "$ARTIFACTS"
 
+# 退出时清理后台进程，避免 detach 的 API/工具进程阻止 job 结束
+cleanup() {
+  pkill -f "uvicorn app.main:app" 2>/dev/null || true
+  pkill -f "maestro" 2>/dev/null || true
+}
+trap cleanup EXIT
+
 echo "== 安装 Maestro =="
 curl -Ls https://get.maestro.mobile.dev | bash
 export PATH="$PATH:$HOME/.maestro/bin"
@@ -28,6 +35,8 @@ adb wait-for-device
 adb reverse tcp:8000 tcp:8000
 adb shell settings put global hide_error_dialogs 1
 adb shell settings put secure anr_show_background 0
+# 已连接硬件键盘时不弹出软键盘，避免遮挡表单（Maestro 用 adb 输入文本）
+adb shell settings put secure show_ime_with_hard_keyboard 0
 adb install -r apps/mobile/android/app/build/outputs/apk/release/app-release.apk
 
 PHONE="139$(date +%N | head -c 8)"
