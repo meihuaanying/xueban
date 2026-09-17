@@ -201,8 +201,8 @@ jobs:
     name: Mobile APK + Maestro（Android 模拟器）
     runs-on: ubuntu-latest
     needs: mobile
-    # 护栏：模拟器无硬件加速，全程可能较慢；超过 60 分钟强制失败，避免挂起
-    timeout-minutes: 60
+    # 护栏：模拟器无硬件加速，命令执行慢（每步数十秒）；90 分钟强制失败，避免挂起
+    timeout-minutes: 90
     services:
       postgres:
         image: pgvector/pgvector:pg16

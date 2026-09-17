@@ -21,12 +21,17 @@ name: 注册 → 诊断 → 计划 → 打卡
     commands:
       - tapOn: "Wait"
 - tapOn: "注册"
+# 确认已切换到注册模式（按钮文案变化），避免键盘/渲染时序导致未切换
+- assertVisible: "注册并登录"
 - tapOn:
     id: "phone-input"
 - inputText: "${PHONE}"
+# 收起键盘：避免软键盘遮挡密码框与提交按钮（低配模拟器尤甚）
+- hideKeyboard
 - tapOn:
     id: "password-input"
 - inputText: "E2e-pass-1234"
+- hideKeyboard
 - tapOn:
     id: "submit-auth"
 - assertVisible: "今日任务"
