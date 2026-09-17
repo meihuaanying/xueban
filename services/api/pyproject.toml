@@ -59,6 +59,8 @@ known-first-party = ["app"]
 [tool.ruff.lint.per-file-ignores]
 # 自动生成的迁移脚本不做行宽等风格约束
 "migrations/versions/*" = ["E501"]
+# 题库/词表数据按行存放（长中文题干与词典例句），不做行宽约束
+"app/data/demo_questions.py" = ["E501"]
 
 [tool.mypy]
 python_version = "3.12"

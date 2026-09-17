@@ -328,7 +328,7 @@ def _vocab_records(entry: WordEntry, node_code: str, rng: random.Random) -> list
     option_keys = ["A", "B", "C", "D"]
 
     def build(stem: str, correct: str, wrong: list[str], analysis: str, difficulty: int) -> dict[str, Any]:
-        values = [correct] + wrong[:3]
+        values = [correct, *wrong[:3]]
         shuffled = values[:]
         rng.shuffle(shuffled)
         options = dict(zip(option_keys, shuffled, strict=True))

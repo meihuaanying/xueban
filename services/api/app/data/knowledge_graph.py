@@ -33,7 +33,10 @@ STAGE_CHAPTERS: dict[str, list[tuple[str, str]]] = {
         ("三角形", "三角形的边角关系|全等三角形判定|等腰三角形|直角三角形|勾股定理"),
         ("轴对称", "轴对称的性质|线段的垂直平分线|等腰三角形的性质"),
         ("二次根式", "二次根式的概念|二次根式的运算"),
-        ("一元二次方程", "一元二次方程的概念|配方法|公式法|因式分解法|根与系数的关系|一元二次方程的应用"),
+        (
+            "一元二次方程",
+            "一元二次方程的概念|配方法|公式法|因式分解法|根与系数的关系|一元二次方程的应用",
+        ),
         ("二次函数", "二次函数的图像与性质|顶点式|二次函数的最值|二次函数与方程"),
         ("旋转与圆", "旋转的性质|圆心角与弧|垂径定理|切线的性质|圆内接多边形"),
         ("概率与统计", "数据的集中趋势|方差|随机事件|概率计算"),
@@ -127,7 +130,9 @@ def build_graph() -> tuple[list[GraphNode], list[GraphEdge]]:
                 applied_code = f"{base_code}.apply"
                 nodes.append(GraphNode(base_code, topic, subject, stage, chapter_code))
                 nodes.append(GraphNode(basic_code, f"{topic}·基础巩固", subject, stage, base_code))
-                nodes.append(GraphNode(applied_code, f"{topic}·综合应用", subject, stage, base_code))
+                nodes.append(
+                    GraphNode(applied_code, f"{topic}·综合应用", subject, stage, base_code)
+                )
                 edges.append(GraphEdge(chapter_code, base_code))
                 edges.append(GraphEdge(base_code, basic_code))
                 edges.append(GraphEdge(base_code, applied_code))
