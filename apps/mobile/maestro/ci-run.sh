@@ -7,10 +7,10 @@ set -uo pipefail
 ARTIFACTS="/tmp/maestro-artifacts"
 mkdir -p "$ARTIFACTS"
 
-# 退出时清理后台进程，避免 detach 的 API/工具进程阻止 job 结束
+# 退出时清理后台进程，避免 detach 的 API 进程阻止 job 结束
+# 注意：不能 pkill -f maestro —— 会误杀本脚本自身（命令行含 maestro 路径）
 cleanup() {
   pkill -f "uvicorn app.main:app" 2>/dev/null || true
-  pkill -f "maestro" 2>/dev/null || true
 }
 trap cleanup EXIT
 
