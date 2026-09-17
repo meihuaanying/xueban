@@ -1,0 +1,36 @@
+# Maestro：练习作答 → 错题本 → 重练（T6.4 验收流程）
+# 运行：maestro test maestro/02-practice-mistake-loop.yaml -e PHONE=13900000002
+appId: com.xueban.mobile
+name: 练习 → 错题 → 重练
+---
+- launchApp:
+    clearState: true
+- tapOn: "注册"
+- tapOn:
+    id: "phone-input"
+- inputText: "${PHONE}"
+- tapOn:
+    id: "password-input"
+- inputText: "E2e-pass-1234"
+- tapOn:
+    id: "submit-auth"
+- assertVisible: "今日任务"
+- tapOn: "练习"
+- tapOn:
+    id: "generate-practice"
+- assertVisible:
+    id: "practice-question"
+# 故意选 B（多数题目正确答案为 A），产生错题
+- runFlow:
+    when:
+      visible:
+        id: "option-B"
+    commands:
+      - tapOn:
+          id: "option-B"
+      - tapOn:
+          id: "submit-practice"
+- assertVisible: "错题本"
+- tapOn: "错题重练"
+- assertVisible:
+    id: "repractice-panel"

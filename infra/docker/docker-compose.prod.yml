@@ -1,0 +1,231 @@
+# 学伴（XueBan）生产编排（T11.1）
+#
+# 目标拓扑：
+#   caddy(80/443, 自动 HTTPS) → web(Next.js standalone) + api×2(uvicorn×2 worker) + minio
+#   api → postgres / redis / litellm / ocr；worker(arq) 跑定时任务
+#
+# 部署（干净 VPS，详见 docs/DEPLOY.md）：
+#   git clone <repo> && cd xueban
+#   cp .env.example .env && vi .env
+#   ./deploy.sh
+#
+# 所有容器：restart=unless-stopped、json-file 日志轮转 20MB×5、healthcheck。
+name: xueban
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "20m"
+    max-file: "5"
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    command: ["postgres", "-c", "max_connections=${DB_MAX_CONNECTIONS:-200}"]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-xueban}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?请在 .env 设置 POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-xueban}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-xueban} -d ${POSTGRES_DB:-xueban}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    logging: *default-logging
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    logging: *default-logging
+
+  minio:
+    image: quay.io/minio/minio:latest
+    restart: unless-stopped
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-xueban-minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?请在 .env 设置 MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    logging: *default-logging
+
+  # 存储桶初始化（幂等）
+  minio-init:
+    image: quay.io/minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD} &&
+      mc mb --ignore-existing local/$${MINIO_BUCKET:-xueban} &&
+      echo 'minio bucket ready'
+      "
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-xueban-minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?请在 .env 设置 MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: ${MINIO_BUCKET:-xueban}
+    restart: "no"
+    logging: *default-logging
+
+  litellm:
+    image: ghcr.io/berriai/litellm:main-stable
+    restart: unless-stopped
+    command: ["--config", "/app/config.yaml", "--port", "4000", "--num_workers", "1"]
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?请在 .env 设置 LITELLM_MASTER_KEY}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY:-}
+      ZHIPU_API_KEY: ${ZHIPU_API_KEY:-}
+      SILICONFLOW_API_KEY: ${SILICONFLOW_API_KEY:-}
+    volumes:
+      - ./litellm/config.yaml:/app/config.yaml:ro
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:4000/health/liveliness', timeout=5)\"",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    logging: *default-logging
+
+  ocr:
+    build:
+      context: ../../services/ocr
+    image: xueban-ocr:${XUEBAN_VERSION:-latest}
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8100/healthz', timeout=3)",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging: *default-logging
+
+  api:
+    build:
+      context: ../../services/api
+    image: xueban-api:${XUEBAN_VERSION:-latest}
+    restart: unless-stopped
+    command:
+      [
+        "uvicorn",
+        "app.main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--workers",
+        "${API_WORKERS:-2}",
+      ]
+    env_file:
+      - ../../.env
+    environment:
+      ENVIRONMENT: production
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-xueban}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-xueban}
+      REDIS_URL: redis://redis:6379/0
+      S3_ENDPOINT_URL: http://minio:9000
+      OCR_BASE_URL: http://ocr:8100
+      LITELLM_BASE_URL: http://litellm:4000
+      # 单副本 API 的连接池；×副本数须小于 DB_MAX_CONNECTIONS
+      DB_POOL_SIZE: ${DB_POOL_SIZE:-10}
+      DB_MAX_OVERFLOW: ${DB_MAX_OVERFLOW:-20}
+      DB_POOL_PRE_PING: "false"
+    deploy:
+      replicas: 2
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    logging: *default-logging
+
+  worker:
+    build:
+      context: ../../services/api
+    image: xueban-api:${XUEBAN_VERSION:-latest}
+    restart: unless-stopped
+    command: ["arq", "app.worker.WorkerSettings"]
+    env_file:
+      - ../../.env
+    environment:
+      ENVIRONMENT: production
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-xueban}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-xueban}
+      REDIS_URL: redis://redis:6379/0
+      S3_ENDPOINT_URL: http://minio:9000
+      OCR_BASE_URL: http://ocr:8100
+      LITELLM_BASE_URL: http://litellm:4000
+      DB_POOL_SIZE: "5"
+      DB_MAX_OVERFLOW: "5"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    logging: *default-logging
+
+  web:
+    build:
+      context: ../..
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL}
+        NEXT_PUBLIC_RELEASE_BASE_URL: ${NEXT_PUBLIC_RELEASE_BASE_URL}
+    image: xueban-web:${XUEBAN_VERSION:-latest}
+    restart: unless-stopped
+    logging: *default-logging
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "${CADDY_HTTP_PORT:-80}:80"
+      - "${CADDY_HTTPS_PORT:-443}:443"
+      - "${CADDY_HTTPS_PORT:-443}:443/udp"
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?请在 .env 设置站点域名}
+      ACME_EMAIL: ${ACME_EMAIL:-admin@example.com}
+      MINIO_HOST: ${MINIO_HOST:-minio.localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - web
+      - api
+    logging: *default-logging
+
+volumes:
+  postgres-data:
+  redis-data:
+  minio-data:
+  caddy-data:
+  caddy-config:

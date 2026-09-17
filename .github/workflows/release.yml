@@ -1,0 +1,121 @@
+name: Release
+
+# 桌面端三平台发布（T11.3）：推送 v* 标签触发；产物命名与官网下载页一一对应。
+# 官网下载页链接基准：NEXT_PUBLIC_RELEASE_BASE_URL
+#   使用 GitHub Release：https://github.com/<OWNER>/<REPO>/releases/latest/download
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  desktop:
+    name: 构建桌面安装包（${{ matrix.os }}）
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            bundles: appimage,deb
+            target: ""
+          - os: macos-14
+            bundles: dmg
+            target: universal-apple-darwin
+          - os: windows-latest
+            bundles: nsis
+            target: ""
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Rust 工具链
+        uses: dtolnay/rust-toolchain@stable
+      - name: macOS 通用架构目标（Intel + Apple Silicon）
+        if: matrix.os == 'macos-14'
+        run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
+      - name: Linux 系统依赖（WebKitGTK）
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libgtk-3-dev
+      - name: 构建前端产物
+        run: pnpm --filter @xueban/desktop build
+      - name: 构建安装包
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="${{ matrix.target }}"
+          if [ -n "$target" ]; then
+            pnpm --filter @xueban/desktop exec tauri build --target "$target" --bundles ${{ matrix.bundles }}
+          else
+            pnpm --filter @xueban/desktop exec tauri build --bundles ${{ matrix.bundles }}
+          fi
+      - name: 规范产物名（与官网下载页稳定文件名一致）
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist-assets
+          case "${{ matrix.os }}" in
+            windows-latest)
+              cp "$(find apps/desktop/src-tauri/target -path '*nsis*' -name '*.exe' | head -1)" dist-assets/XueBan-Setup-x64.exe
+              ;;
+            macos-14)
+              cp "$(find apps/desktop/src-tauri/target -path '*dmg*' -name '*.dmg' | head -1)" dist-assets/XueBan-universal.dmg
+              ;;
+            ubuntu-22.04)
+              cp "$(find apps/desktop/src-tauri/target -path '*appimage*' -iname '*.AppImage' | head -1)" dist-assets/XueBan-x86_64.AppImage
+              cp "$(find apps/desktop/src-tauri/target -path '*deb*' -name '*.deb' | head -1)" dist-assets/XueBan-amd64.deb
+              ;;
+          esac
+          ls -la dist-assets
+      - name: 生成校验和
+        shell: bash
+        run: |
+          cd dist-assets
+          if command -v sha256sum >/dev/null 2>&1; then sha256sum * > "SHA256SUMS-${{ matrix.os }}.txt"; else shasum -a 256 * > "SHA256SUMS-${{ matrix.os }}.txt"; fi
+          cat "SHA256SUMS-${{ matrix.os }}.txt"
+      - name: 上传产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-release-${{ matrix.os }}
+          path: dist-assets/*
+          if-no-files-found: error
+
+  publish:
+    name: 发布 GitHub Release
+    needs: desktop
+    runs-on: ubuntu-latest
+    steps:
+      - name: 下载全部产物
+        uses: actions/download-artifact@v4
+        with:
+          path: release-files
+          merge-multiple: true
+      - name: 生成汇总校验和
+        run: |
+          cd release-files
+          ls -la
+          sha256sum XueBan-* > SHA256SUMS.txt || true
+          cat SHA256SUMS.txt || true
+      - name: 创建 Release 并上传
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            release-files/XueBan-Setup-x64.exe
+            release-files/XueBan-universal.dmg
+            release-files/XueBan-x86_64.AppImage
+            release-files/XueBan-amd64.deb
+            release-files/SHA256SUMS.txt
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

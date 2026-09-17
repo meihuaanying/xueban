@@ -1,0 +1,81 @@
+# T10.2 压测专用编排（本地验证，不入生产部署路径）：
+# - api ×2 副本（每副本 4 uvicorn worker，Linux 容器 = 生产运行时）
+# - Caddy 反向代理 + 轮询负载均衡
+# - 数据与缓存复用本机 dev 容器（host.docker.internal）
+#
+# 用法（仓库根目录）：
+#   docker compose -f infra/docker/docker-compose.loadtest.yml up -d --build
+#   "C:/Program Files/k6/k6.exe" run infra/k6/core_api.js -e K6_BASE_URL=http://127.0.0.1:8096
+services:
+  api:
+    build:
+      context: ../../services/api
+    image: xueban-api:loadtest
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+    environment:
+      # 直连开发内网（跨容器网络，避免经 Windows 端口代理的 DB 往返开销）
+      DATABASE_URL: postgresql+asyncpg://xueban:change-me@xueban-postgres-1:5432/xueban
+      REDIS_URL: redis://xueban-redis-1:6379/0
+      LLM_PROVIDER: mock
+      EMBEDDING_PROVIDER: mock
+      RERANK_PROVIDER: mock
+      OCR_PROVIDER: mock
+      TTS_PROVIDER: mock
+      SPEAKING_PROVIDER: mock
+      ENVIRONMENT: production
+      DB_POOL_SIZE: "4"
+      DB_MAX_OVERFLOW: "4"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    cap_add:
+      - SYS_PTRACE
+    networks:
+      - default
+      - xueban-dev
+    deploy:
+      replicas: 4
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=3)",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "${CADDY_HTTP_PORT:-8096}:80"
+    environment:
+      SITE_ADDRESS: ":80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:80/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  xueban-dev:
+    external: true
+    name: xueban_default

@@ -1,0 +1,69 @@
+==================================================
+学伴 M9 多端同步与体验打磨 · 出口门禁执行 · 2026-09-16 14:51:56
+执行者：DeepSeek V4.1（opencode）
+说明：移动端 Maestro/真机受 B-009 约束，以组件测试为替代证据。
+==================================================
+
+### 1) 后端回归（含 M9 同步/幂等 5 例）
+$ pytest -q --cov=app --cov-fail-under=85（441 用例）
+app\services\llm_client.py               209     50     74     10    70%
+app\services\llm_json.py                  20      2      6      2    85%
+app\services\mastery_service.py           91      1     22      1    98%
+app\services\math_verify.py               53      7     18      2    87%
+app\services\metrics_service.py           65      8     14      2    85%
+app\services\mistake_book_service.py      67      4     16      4    90%
+app\services\observability.py             43      2      8      0    96%
+app\services\ocr_client.py               122     12     36      6    86%
+app\services\parent_service.py           217     17     50     14    88%
+app\services\planner_service.py          258     20     74     10    90%
+app\services\practice_service.py         137      5     40      5    94%
+app\services\prompts.py                   24      0      0      0   100%
+app\services\quality_service.py           72      9     12      2    85%
+app\services\recitation_service.py        75      7     36      6    85%
+app\services\report_service.py           167     18     32      5    86%
+app\services\rerank.py                    53      4     18      4    89%
+app\services\retrieval_service.py         55      2     14      4    91%
+app\services\safety_service.py           109     12     28      1    89%
+app\services\security.py                  48      0      6      0   100%
+app\services\sms.py                       20      2      2      1    86%
+app\services\speaking_service.py          50      2     10      1    95%
+app\services\storage_service.py           77      8     14      4    87%
+app\services\sync_service.py              52      2      2      1    94%
+app\services\tts.py                       36      4      2      0    84%
+app\services\tutor_ext_service.py        154      9     34      8    91%
+app\services\tutor_service.py            109      1     22      2    98%
+app\worker.py                             56     42      0      0    25%
+------------------------------------------------------------------------
+TOTAL                                   7373    518   1206    184    91%
+Required test coverage of 85% reached. Total coverage: 90.60%
+
+$ ruff check . → All checks passed!
+$ mypy --strict app → Success: no issues found in 117 source files
+
+### 2) 前端质量门
+$ pnpm lint && pnpm typecheck && pnpm test → 5 包全绿（ui 27 / core 4 / web 4 / desktop 9 / mobile 17）
+
+### 3) 迁移往返（practice client_event_id / 8667c191a0e6）
+a29b14546a39 → 8667c191a0e6 → a29b14546a39 → 8667c191a0e6 全部 EXIT_CODE=0
+
+### 4) M9 专项测试
+$ pytest tests/test_sync.py -q → 5 passed（版本稳定/变化、鉴权、WS 推送、令牌拒绝、幂等重放）
+$ pnpm --filter @xueban/mobile test → 17 passed（含离线队列 3 例：入队去重/补齐/失败保留）
+
+### 5) 全端 E2E
+$ pnpm test:e2e:web（官网 24 条，含暗色/axe 3 条）
+  24 passed (27.9s)
+EXIT_CODE=0
+
+$ pnpm test:e2e:desktop（桌面 24 条，含同步/引导/三态/暗色 4 条）
+  24 passed (59.0s)
+EXIT_CODE=0
+
+### 6) 截图清单
+  - docs/verification/assets/m9-01-sync-b-context.png
+  - docs/verification/assets/m9-02-onboarding.png
+  - docs/verification/assets/m9-03-first-tutor.png
+  - docs/verification/assets/m9-04-state-error.png
+  - docs/verification/assets/m9-05-state-loading.png
+  - docs/verification/assets/m9-06-state-empty.png
+  - docs/verification/assets/m9-07-dark-plan.png

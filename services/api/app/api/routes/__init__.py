@@ -1,0 +1,43 @@
+"""路由包。"""
+
+from app.api.routes import (
+    admin,
+    analytics,
+    auth,
+    billing,
+    diagnosis,
+    exam,
+    grading,
+    lessons,
+    mistakes,
+    plan,
+    practice,
+    profile,
+    report,
+    review,
+    safety,
+    storage,
+    system,
+    tutor,
+)
+
+__all__ = [
+    "admin",
+    "analytics",
+    "auth",
+    "billing",
+    "diagnosis",
+    "exam",
+    "grading",
+    "lessons",
+    "mistakes",
+    "plan",
+    "practice",
+    "profile",
+    "report",
+    "review",
+    "safety",
+    "storage",
+    "system",
+    "tutor",
+]

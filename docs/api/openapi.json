@@ -1,0 +1,6102 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "学伴 API",
+    "description": "学伴（XueBan）AI 学习软件后端服务",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/healthz": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "健康检查",
+        "description": "健康检查端点。",
+        "operationId": "healthz_healthz_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Healthz Healthz Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/system/info": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "服务信息",
+        "description": "服务元信息。",
+        "operationId": "system_info_v1_system_info_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response System Info V1 System Info Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "注册（返回令牌）",
+        "description": "手机号注册并自动登录。",
+        "operationId": "register_v1_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPairResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "密码登录",
+        "description": "手机号 + 密码登录。",
+        "operationId": "login_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPairResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/sms/send": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "发送短信验证码",
+        "description": "发送验证码（mock 提供商；开发环境返回 debug_code）。",
+        "operationId": "send_sms_code_v1_auth_sms_send_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SmsSendRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SmsSendResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/sms/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "验证码登录",
+        "description": "验证码登录（新用户自动注册为学生）。",
+        "operationId": "sms_login_v1_auth_sms_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SmsLoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPairResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/refresh": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "刷新令牌",
+        "description": "刷新令牌（旧令牌立即失效）。",
+        "operationId": "refresh_v1_auth_refresh_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPairResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "退出登录",
+        "description": "退出登录：吊销刷新令牌。",
+        "operationId": "logout_v1_auth_logout_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/me": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "当前用户信息",
+        "description": "获取当前登录用户。",
+        "operationId": "me_v1_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/parents/children": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "孩子列表",
+        "description": "家长可见的孩子列表。",
+        "operationId": "list_children_v1_auth_parents_children_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ChildResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Children V1 Auth Parents Children Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "家长绑定孩子",
+        "description": "绑定孩子账号（须为学生）。",
+        "operationId": "bind_child_v1_auth_parents_children_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BindChildRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChildResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/parents/children/{child_id}": {
+      "delete": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "解绑孩子",
+        "description": "解除绑定。",
+        "operationId": "unbind_child_v1_auth_parents_children__child_id__delete",
+        "parameters": [
+          {
+            "name": "child_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Child Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing/plans": {
+      "get": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "订阅套餐",
+        "description": "返回可购套餐（不含免费档）。",
+        "operationId": "list_plans_v1_billing_plans_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PlanResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Plans V1 Billing Plans Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing/subscription": {
+      "get": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "当前订阅状态",
+        "description": "查询订阅（自动处理到期降级）。",
+        "operationId": "get_subscription_v1_billing_subscription_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing/trial": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "开启试用",
+        "description": "开启 7 天试用（每人一次）。",
+        "operationId": "start_trial_v1_billing_trial_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing/checkout": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "创建收银台单据（mock）",
+        "description": "创建 mock 收银台单据。",
+        "operationId": "create_checkout_v1_billing_checkout_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckoutRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckoutResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing/checkout/{checkout_id}/mock-pay": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "mock 支付回调",
+        "description": "模拟支付成功并开通 Pro（真实支付接入时替换为回调验签）。",
+        "operationId": "mock_pay_v1_billing_checkout__checkout_id__mock_pay_post",
+        "parameters": [
+          {
+            "name": "checkout_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Checkout Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayCheckoutResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/billing/cancel": {
+      "post": {
+        "tags": [
+          "billing"
+        ],
+        "summary": "取消自动续费",
+        "description": "取消 Pro 自动续费（到期降级为 free）。",
+        "operationId": "cancel_subscription_v1_billing_cancel_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/profile/mastery": {
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "知识掌握度雷达图（F-03）",
+        "description": "返回掌握度总览（含时间衰减与红黄绿分级）。",
+        "operationId": "get_mastery_v1_profile_mastery_get",
+        "parameters": [
+          {
+            "name": "subject",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 32
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Subject"
+            }
+          },
+          {
+            "name": "stage",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 20
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Stage"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MasteryOverviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/reports/weekly": {
+      "get": {
+        "tags": [
+          "reports"
+        ],
+        "summary": "每周学情报告（F-27）",
+        "description": "获取本周报告（按周幂等生成）。",
+        "operationId": "weekly_report_v1_reports_weekly_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeeklyReportResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/reports/weekly/share": {
+      "post": {
+        "tags": [
+          "reports"
+        ],
+        "summary": "生成免登录只读分享链接（F-27）",
+        "description": "生成签名 token（30 天有效，可吊销）。",
+        "operationId": "share_weekly_report_v1_reports_weekly_share_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShareResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/reports/shares/{token}": {
+      "delete": {
+        "tags": [
+          "reports"
+        ],
+        "summary": "吊销分享链接（F-27）",
+        "description": "吊销后分享链接立即失效。",
+        "operationId": "revoke_share_v1_reports_shares__token__delete",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/reports/shared/{token}": {
+      "get": {
+        "tags": [
+          "reports"
+        ],
+        "summary": "读取分享报告（免登录只读）",
+        "description": "免登录访问分享的报告内容。",
+        "operationId": "shared_report_v1_reports_shared__token__get",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SharedReportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/stats/calendar": {
+      "get": {
+        "tags": [
+          "reports"
+        ],
+        "summary": "学习日历与打卡（F-29）",
+        "description": "学习热力图数据与连续打卡天数（不含排名）。",
+        "operationId": "calendar_v1_stats_calendar_get",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "maximum": 2100,
+              "minimum": 2020,
+              "title": "Year"
+            }
+          },
+          {
+            "name": "month",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "maximum": 12,
+              "minimum": 1,
+              "title": "Month"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalendarResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/exam-prep/sprint": {
+      "get": {
+        "tags": [
+          "reports"
+        ],
+        "summary": "考前冲刺包（F-30）",
+        "description": "高频错题 + 未掌握考点 + 预测卷（与考期倒排联动）。",
+        "operationId": "sprint_package_v1_exam_prep_sprint_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SprintResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/analytics/events": {
+      "post": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "批量上报埋点事件（F-05 数据源）",
+        "description": "批量写入（最多 100 条/批；事件名与负载由 schema 校验）。",
+        "operationId": "record_events_v1_analytics_events_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalyticsBatchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsBatchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/profile/behavior": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "学习行为画像（F-05，含可解释依据）",
+        "description": "基于埋点/练习/求助记录推断学习风格。",
+        "operationId": "behavior_profile_v1_profile_behavior_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BehaviorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/diagnosis/start": {
+      "post": {
+        "tags": [
+          "diagnosis"
+        ],
+        "summary": "开启入学水平诊断（F-01）",
+        "description": "创建诊断并按初始难度给出第一题。",
+        "operationId": "start_v1_diagnosis_start_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DiagnosisStartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosisStartResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/diagnosis/{exam_id}/answer": {
+      "post": {
+        "tags": [
+          "diagnosis"
+        ],
+        "summary": "提交诊断作答（自适应选题）",
+        "description": "判定作答、更新画像与难度，并返回下一题或收卷。",
+        "operationId": "answer_v1_diagnosis__exam_id__answer_post",
+        "parameters": [
+          {
+            "name": "exam_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Exam Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DiagnosisAnswerRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosisAnswerResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/diagnosis/{exam_id}/report": {
+      "get": {
+        "tags": [
+          "diagnosis"
+        ],
+        "summary": "诊断报告（含知识点掌握度）",
+        "description": "返回诊断报告（未结束时 409）。",
+        "operationId": "report_v1_diagnosis__exam_id__report_get",
+        "parameters": [
+          {
+            "name": "exam_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Exam Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosisReportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/exams": {
+      "post": {
+        "tags": [
+          "exams"
+        ],
+        "summary": "创建限时模考（F-20）",
+        "description": "创建全真限时模考。",
+        "operationId": "create_mock_exam_v1_exams_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExamCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExamCreateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/assessments/solo": {
+      "post": {
+        "tags": [
+          "exams"
+        ],
+        "summary": "创建无辅助限时测评（F-28，服务端强制禁提示）",
+        "description": "创建独立能力测评；测评期间所有提示/讲解接口返回 403。",
+        "operationId": "create_solo_assessment_v1_assessments_solo_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExamCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExamCreateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/exams/{exam_id}/submit": {
+      "post": {
+        "tags": [
+          "exams"
+        ],
+        "summary": "交卷（即时出分 + 百分位 + 逐题诊断）",
+        "description": "提交作答（幂等：重复提交返回既有报告）。",
+        "operationId": "submit_exam_v1_exams__exam_id__submit_post",
+        "parameters": [
+          {
+            "name": "exam_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Exam Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExamSubmitRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExamReportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/exams/{exam_id}": {
+      "get": {
+        "tags": [
+          "exams"
+        ],
+        "summary": "测评报告（超时自动交卷）",
+        "description": "查询报告；倒计时结束未交卷则自动收卷。",
+        "operationId": "get_exam_v1_exams__exam_id__get",
+        "parameters": [
+          {
+            "name": "exam_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Exam Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExamReportResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/grading/objective": {
+      "post": {
+        "tags": [
+          "grading"
+        ],
+        "summary": "客观题即时批改（F-22，答案错题直达讲解流）",
+        "description": "选择/填空秒批；答错时返回守护型讲解会话入口。",
+        "operationId": "grade_objective_v1_grading_objective_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ObjectiveGradingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectiveGradingResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/grading/subjective": {
+      "post": {
+        "tags": [
+          "grading"
+        ],
+        "summary": "主观解答题批改（F-23，逐步给分 + 改写示范 + SymPy 抽检）",
+        "description": "按评分细则逐步给分，数学解答做机器校验。",
+        "operationId": "grade_subjective_v1_grading_subjective_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubjectiveGradingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubjectiveGradingResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/grading/essay": {
+      "post": {
+        "tags": [
+          "grading"
+        ],
+        "summary": "作文批改（F-24，中高考/四六级/考研口径）",
+        "description": "结构/立意/语言三维评分 + 逐段评语 + 升格范文。",
+        "operationId": "grade_essay_v1_grading_essay_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EssayGradingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EssayGradingResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/mistakes": {
+      "get": {
+        "tags": [
+          "mistakes"
+        ],
+        "summary": "错题本列表（按错因分组，F-18）",
+        "description": "返回未移出的错题与错因分组统计。",
+        "operationId": "list_mistakes_v1_mistakes_get",
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 20
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State"
+            }
+          },
+          {
+            "name": "error_reason",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 32
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Error Reason"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MistakeListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/mistakes/repractice": {
+      "post": {
+        "tags": [
+          "mistakes"
+        ],
+        "summary": "一键重练（F-18）",
+        "description": "拉取错题用于重练；作答 source=repractice 且答对后自动移出。",
+        "operationId": "repractice_v1_mistakes_repractice_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MistakeRepracticeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MistakeRepracticeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/mistakes/export.pdf": {
+      "get": {
+        "tags": [
+          "mistakes"
+        ],
+        "summary": "导出错题本 PDF（含题目与解析，F-18）",
+        "description": "生成并返回错题本 PDF。",
+        "operationId": "export_pdf_v1_mistakes_export_pdf_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/mistakes/{entry_id}/attribute": {
+      "post": {
+        "tags": [
+          "mistakes"
+        ],
+        "summary": "错因自动归因（F-02）",
+        "description": "调用 LLM 归因（限定五类枚举）并写回错题本。",
+        "operationId": "attribute_v1_mistakes__entry_id__attribute_post",
+        "parameters": [
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttributionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/micro-lessons": {
+      "post": {
+        "tags": [
+          "micro-lessons"
+        ],
+        "summary": "创建知识点微课（异步生成，F-16）",
+        "description": "创建微课并投递异步生成任务（不阻塞请求）。",
+        "operationId": "create_lesson_v1_micro_lessons_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MicroLessonCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MicroLessonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/micro-lessons/{lesson_id}/audio": {
+      "get": {
+        "tags": [
+          "micro-lessons"
+        ],
+        "summary": "微课音频地址（可在线播放）",
+        "description": "返回预签名音频地址；未就绪返回 409。",
+        "operationId": "get_audio_v1_micro_lessons__lesson_id__audio_get",
+        "parameters": [
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Lesson Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MicroLessonAudioResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/plan/path": {
+      "get": {
+        "tags": [
+          "plan"
+        ],
+        "summary": "个性化学习路径（F-06）",
+        "description": "获取活跃路径（不存在则自动生成）。",
+        "operationId": "get_path_v1_plan_path_get",
+        "parameters": [
+          {
+            "name": "subject",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 32
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Subject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PathResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/plan/path/regenerate": {
+      "post": {
+        "tags": [
+          "plan"
+        ],
+        "summary": "重排学习路径（F-06）",
+        "description": "按最新学情重排（旧路径归档）。",
+        "operationId": "regenerate_path_v1_plan_path_regenerate_post",
+        "parameters": [
+          {
+            "name": "subject",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 32
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Subject"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PathResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/plan/today": {
+      "get": {
+        "tags": [
+          "plan"
+        ],
+        "summary": "每日任务卡（F-07）",
+        "description": "获取/生成今日任务卡与打卡状态。",
+        "operationId": "get_today_v1_plan_today_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TodayResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/plan/tasks/{task_id}/complete": {
+      "post": {
+        "tags": [
+          "plan"
+        ],
+        "summary": "完成任务打卡（F-07）",
+        "description": "完成任务并返回最新打卡状态（幂等）。",
+        "operationId": "complete_task_v1_plan_tasks__task_id__complete_post",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Task Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompleteTaskResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/plan/exam-countdown": {
+      "post": {
+        "tags": [
+          "plan"
+        ],
+        "summary": "考期倒排计划（F-08）",
+        "description": "基础/强化/冲刺三阶段；落后自动压缩并给出警示。",
+        "operationId": "exam_countdown_v1_plan_exam_countdown_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExamCountdownRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExamCountdownResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/plan/backtrack": {
+      "post": {
+        "tags": [
+          "plan"
+        ],
+        "summary": "前置知识回溯（F-09）",
+        "description": "检测连续答错并返回前置知识建议。",
+        "operationId": "backtrack_v1_plan_backtrack_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BacktrackRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BacktrackResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/practice/generate": {
+      "post": {
+        "tags": [
+          "practice"
+        ],
+        "summary": "智能出题（F-17）",
+        "description": "薄弱知识点占比 ≥60%，近 7 天去重。",
+        "operationId": "generate_v1_practice_generate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PracticeGenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PracticeGenerateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/practice/answer": {
+      "post": {
+        "tags": [
+          "practice"
+        ],
+        "summary": "练习作答（错题自动归集 + FSRS 联动 + 动态难度）",
+        "description": "判定作答并联动画像、错题本与复习卡。",
+        "operationId": "answer_v1_practice_answer_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PracticeAnswerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PracticeAnswerResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/review/due": {
+      "get": {
+        "tags": [
+          "review"
+        ],
+        "summary": "到期复习卡片（F-19）",
+        "description": "返回已到期（含逾期）的复习卡片。",
+        "operationId": "due_v1_review_due_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewDueResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/review/{card_id}/grade": {
+      "post": {
+        "tags": [
+          "review"
+        ],
+        "summary": "FSRS 评分（1–4）",
+        "description": "应用一次 FSRS 评分并返回下次间隔。",
+        "operationId": "grade_v1_review__card_id__grade_post",
+        "parameters": [
+          {
+            "name": "card_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Card Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewGradeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewGradeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tutor/session": {
+      "post": {
+        "tags": [
+          "tutor"
+        ],
+        "summary": "开启守护型讲解会话（F-11）",
+        "description": "创建讲解会话（初始层级 0，不直接给答案）。",
+        "operationId": "create_session_v1_tutor_session_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TutorSessionStartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TutorSessionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tutor/{session_id}/hint": {
+      "post": {
+        "tags": [
+          "tutor"
+        ],
+        "summary": "请求下一层提示（不可跳层）",
+        "description": "按状态机返回下一层提示（思路 → 关键步骤 → 全解）。",
+        "operationId": "request_hint_v1_tutor__session_id__hint_post",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TutorHintRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TutorHintResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tutor/{session_id}/hint/stream": {
+      "post": {
+        "tags": [
+          "tutor"
+        ],
+        "summary": "请求下一层提示（SSE 流式）",
+        "description": "SSE 流式输出：start → delta* → done（校验在流开始前完成）。",
+        "operationId": "stream_hint_v1_tutor__session_id__hint_stream_post",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TutorHintRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tutor/{session_id}/alt-solutions": {
+      "post": {
+        "tags": [
+          "tutor"
+        ],
+        "summary": "多解法对比讲解（F-12）",
+        "description": "生成 2~3 种解法并做 SymPy 等价性抽检。",
+        "operationId": "alt_solutions_v1_tutor__session_id__alt_solutions_post",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AltSolutionsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tutor/{session_id}/analogy": {
+      "post": {
+        "tags": [
+          "tutor"
+        ],
+        "summary": "生活化类比生成（F-13）",
+        "description": "生成贴近学生生活的类比与对应关系说明。",
+        "operationId": "analogy_v1_tutor__session_id__analogy_post",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalogyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tutor/{session_id}/variants": {
+      "post": {
+        "tags": [
+          "tutor"
+        ],
+        "summary": "举一反三变式题（F-14）",
+        "description": "生成 1~2 道同知识点变式题（入库，可作答）。",
+        "operationId": "variants_v1_tutor__session_id__variants_post",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VariantsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/tutor/{session_id}/variants/{variant_id}/answer": {
+      "post": {
+        "tags": [
+          "tutor"
+        ],
+        "summary": "变式题作答（答错自动回炉，F-14）",
+        "description": "答对计入掌握度；答错进入错题本并开启回炉讲解会话。",
+        "operationId": "answer_variant_v1_tutor__session_id__variants__variant_id__answer_post",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Session Id"
+            }
+          },
+          {
+            "name": "variant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Variant Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VariantAnswerRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VariantAnswerResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/storage/presign-upload": {
+      "post": {
+        "tags": [
+          "storage"
+        ],
+        "summary": "申请上传凭证",
+        "description": "校验类型/大小并返回预签名直传凭证。",
+        "operationId": "presign_upload_v1_storage_presign_upload_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PresignUploadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PresignUploadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/storage/presign-download": {
+      "get": {
+        "tags": [
+          "storage"
+        ],
+        "summary": "申请下载地址",
+        "description": "返回预签名下载地址（仅限本人对象）。",
+        "operationId": "presign_download_v1_storage_presign_download_get",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512,
+              "title": "Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PresignDownloadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/storage/objects": {
+      "delete": {
+        "tags": [
+          "storage"
+        ],
+        "summary": "删除对象",
+        "description": "删除本人对象（管理员可删任意对象）。",
+        "operationId": "delete_object_v1_storage_objects_delete",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512,
+              "title": "Key"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteObjectResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/safety/check": {
+      "post": {
+        "tags": [
+          "safety"
+        ],
+        "summary": "文本内容安全检查",
+        "description": "检查文本是否合规；阻断事件落库（F-42 数据源）。",
+        "operationId": "check_text_v1_safety_check_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SafetyCheckRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SafetyCheckResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/ping": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "管理员权限探针",
+        "description": "仅管理员可访问（用于 RBAC 验收）。",
+        "operationId": "admin_ping_v1_admin_ping_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Admin Ping V1 Admin Ping Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AltSolutionOut": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "steps": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Steps"
+          },
+          "scenario": {
+            "type": "string",
+            "title": "Scenario"
+          },
+          "answer_verified": {
+            "type": "boolean",
+            "title": "Answer Verified",
+            "description": "SymPy 等价性抽检是否通过"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "steps",
+          "scenario",
+          "answer_verified"
+        ],
+        "title": "AltSolutionOut",
+        "description": "一种解法。"
+      },
+      "AltSolutionsResponse": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Session Id"
+          },
+          "solutions": {
+            "items": {
+              "$ref": "#/components/schemas/AltSolutionOut"
+            },
+            "type": "array",
+            "title": "Solutions"
+          },
+          "checked_count": {
+            "type": "integer",
+            "title": "Checked Count"
+          },
+          "verified_count": {
+            "type": "integer",
+            "title": "Verified Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "solutions",
+          "checked_count",
+          "verified_count"
+        ],
+        "title": "AltSolutionsResponse",
+        "description": "多解法对比。"
+      },
+      "AnalogyResponse": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Session Id"
+          },
+          "analogy": {
+            "type": "string",
+            "title": "Analogy"
+          },
+          "mapping": {
+            "type": "string",
+            "title": "Mapping"
+          },
+          "caveat": {
+            "type": "string",
+            "title": "Caveat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "analogy",
+          "mapping",
+          "caveat"
+        ],
+        "title": "AnalogyResponse",
+        "description": "生活化类比。"
+      },
+      "AnalyticsBatchRequest": {
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/AnalyticsEventItem"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "events"
+        ],
+        "title": "AnalyticsBatchRequest",
+        "description": "批量上报。"
+      },
+      "AnalyticsBatchResponse": {
+        "properties": {
+          "recorded": {
+            "type": "integer",
+            "title": "Recorded"
+          }
+        },
+        "type": "object",
+        "required": [
+          "recorded"
+        ],
+        "title": "AnalyticsBatchResponse",
+        "description": "上报结果。"
+      },
+      "AnalyticsEventItem": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_.]{1,63}$",
+            "title": "Name",
+            "description": "事件名，如 answer.change"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payload"
+          },
+          "occurred_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Occurred At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "AnalyticsEventItem",
+        "description": "单条埋点事件。"
+      },
+      "AttributionResponse": {
+        "properties": {
+          "entry_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Entry Id"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "reason_label": {
+            "type": "string",
+            "title": "Reason Label"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "entry_id",
+          "reason",
+          "reason_label",
+          "confidence",
+          "explanation"
+        ],
+        "title": "AttributionResponse",
+        "description": "错因归因响应。"
+      },
+      "BackToTutorOut": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Session Id"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "message"
+        ],
+        "title": "BackToTutorOut",
+        "description": "答错回炉信息。"
+      },
+      "BacktrackRequest": {
+        "properties": {
+          "knowledge_point_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Knowledge Point Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "knowledge_point_id"
+        ],
+        "title": "BacktrackRequest",
+        "description": "前置回溯请求。"
+      },
+      "BacktrackResponse": {
+        "properties": {
+          "backtrack": {
+            "type": "boolean",
+            "title": "Backtrack"
+          },
+          "prerequisites": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Prerequisites"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "backtrack",
+          "prerequisites",
+          "message"
+        ],
+        "title": "BacktrackResponse",
+        "description": "前置回溯结果。"
+      },
+      "BehaviorResponse": {
+        "properties": {
+          "learning_style": {
+            "type": "string",
+            "title": "Learning Style"
+          },
+          "learning_style_label": {
+            "type": "string",
+            "title": "Learning Style Label"
+          },
+          "evidence": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Evidence"
+          },
+          "independent_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Independent Score"
+          },
+          "assisted_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assisted Score"
+          }
+        },
+        "type": "object",
+        "required": [
+          "learning_style",
+          "learning_style_label",
+          "evidence"
+        ],
+        "title": "BehaviorResponse",
+        "description": "学习行为画像（含可解释依据）。"
+      },
+      "BillingCycle": {
+        "type": "string",
+        "enum": [
+          "monthly",
+          "quarterly",
+          "yearly"
+        ],
+        "title": "BillingCycle",
+        "description": "付费周期。"
+      },
+      "BindChildRequest": {
+        "properties": {
+          "child_phone": {
+            "type": "string",
+            "pattern": "^1[3-9]\\d{9}$",
+            "title": "Child Phone"
+          }
+        },
+        "type": "object",
+        "required": [
+          "child_phone"
+        ],
+        "title": "BindChildRequest",
+        "description": "家长绑定孩子请求。"
+      },
+      "CalendarDayOut": {
+        "properties": {
+          "day": {
+            "type": "string",
+            "format": "date",
+            "title": "Day"
+          },
+          "practice_count": {
+            "type": "integer",
+            "title": "Practice Count"
+          },
+          "correct_count": {
+            "type": "integer",
+            "title": "Correct Count"
+          },
+          "tasks_total": {
+            "type": "integer",
+            "title": "Tasks Total"
+          },
+          "tasks_done": {
+            "type": "integer",
+            "title": "Tasks Done"
+          },
+          "studied": {
+            "type": "boolean",
+            "title": "Studied"
+          }
+        },
+        "type": "object",
+        "required": [
+          "day",
+          "practice_count",
+          "correct_count",
+          "tasks_total",
+          "tasks_done",
+          "studied"
+        ],
+        "title": "CalendarDayOut",
+        "description": "日历中的一天。"
+      },
+      "CalendarResponse": {
+        "properties": {
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "month": {
+            "type": "integer",
+            "title": "Month"
+          },
+          "streak_days": {
+            "type": "integer",
+            "title": "Streak Days"
+          },
+          "max_practice": {
+            "type": "integer",
+            "title": "Max Practice"
+          },
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/CalendarDayOut"
+            },
+            "type": "array",
+            "title": "Days"
+          }
+        },
+        "type": "object",
+        "required": [
+          "year",
+          "month",
+          "streak_days",
+          "max_practice",
+          "days"
+        ],
+        "title": "CalendarResponse",
+        "description": "学习日历（打卡热力图 + 连续天数）。"
+      },
+      "CheckoutRequest": {
+        "properties": {
+          "cycle": {
+            "$ref": "#/components/schemas/BillingCycle"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cycle"
+        ],
+        "title": "CheckoutRequest",
+        "description": "创建收银台单据请求。"
+      },
+      "CheckoutResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "cycle": {
+            "$ref": "#/components/schemas/BillingCycle"
+          },
+          "amount_cents": {
+            "type": "integer",
+            "title": "Amount Cents"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "paid_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paid At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "cycle",
+          "amount_cents",
+          "currency",
+          "status"
+        ],
+        "title": "CheckoutResponse",
+        "description": "收银台单据。"
+      },
+      "ChildResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "phone": {
+            "type": "string",
+            "title": "Phone"
+          },
+          "nickname": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nickname"
+          },
+          "is_k12": {
+            "type": "boolean",
+            "title": "Is K12"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "phone",
+          "is_k12",
+          "created_at"
+        ],
+        "title": "ChildResponse",
+        "description": "家长可见的孩子信息（手机号脱敏）。"
+      },
+      "CompleteTaskResponse": {
+        "properties": {
+          "task": {
+            "$ref": "#/components/schemas/TodayTaskOut"
+          },
+          "today": {
+            "$ref": "#/components/schemas/TodayResponse"
+          }
+        },
+        "type": "object",
+        "required": [
+          "task",
+          "today"
+        ],
+        "title": "CompleteTaskResponse",
+        "description": "完成任务响应。"
+      },
+      "CountdownPhaseOut": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "start": {
+            "type": "string",
+            "format": "date",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date",
+            "title": "End"
+          },
+          "days": {
+            "type": "integer",
+            "title": "Days"
+          },
+          "focus": {
+            "type": "string",
+            "title": "Focus"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "title",
+          "start",
+          "end",
+          "days",
+          "focus"
+        ],
+        "title": "CountdownPhaseOut",
+        "description": "倒排阶段。"
+      },
+      "DeleteObjectResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "deleted": {
+            "type": "boolean",
+            "title": "Deleted",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "key"
+        ],
+        "title": "DeleteObjectResponse",
+        "description": "删除结果。"
+      },
+      "DiagnosisAnswerRequest": {
+        "properties": {
+          "question_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Question Id"
+          },
+          "answer": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Answer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question_id",
+          "answer"
+        ],
+        "title": "DiagnosisAnswerRequest",
+        "description": "提交作答。"
+      },
+      "DiagnosisAnswerResponse": {
+        "properties": {
+          "exam_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Exam Id"
+          },
+          "is_correct": {
+            "type": "boolean",
+            "title": "Is Correct"
+          },
+          "correct_answer": {
+            "type": "string",
+            "title": "Correct Answer"
+          },
+          "progress": {
+            "$ref": "#/components/schemas/DiagnosisProgress"
+          },
+          "finished": {
+            "type": "boolean",
+            "title": "Finished"
+          },
+          "next_question": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DiagnosisQuestionOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "exam_id",
+          "is_correct",
+          "correct_answer",
+          "progress",
+          "finished"
+        ],
+        "title": "DiagnosisAnswerResponse",
+        "description": "作答判定与下一题。"
+      },
+      "DiagnosisProgress": {
+        "properties": {
+          "answered": {
+            "type": "integer",
+            "title": "Answered"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "answered",
+          "total"
+        ],
+        "title": "DiagnosisProgress",
+        "description": "进度。"
+      },
+      "DiagnosisQuestionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "stem": {
+            "type": "string",
+            "title": "Stem"
+          },
+          "qtype": {
+            "type": "string",
+            "title": "Qtype"
+          },
+          "options": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Options"
+          },
+          "difficulty": {
+            "type": "integer",
+            "title": "Difficulty"
+          },
+          "knowledge_points": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Knowledge Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "stem",
+          "qtype",
+          "difficulty"
+        ],
+        "title": "DiagnosisQuestionOut",
+        "description": "诊断题目（不下发答案）。"
+      },
+      "DiagnosisReportResponse": {
+        "properties": {
+          "exam_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Exam Id"
+          },
+          "finished": {
+            "type": "boolean",
+            "title": "Finished"
+          },
+          "summary": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Summary"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/MasteryPointResponse"
+            },
+            "type": "array",
+            "title": "Points"
+          },
+          "has_data": {
+            "type": "boolean",
+            "title": "Has Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "exam_id",
+          "finished",
+          "summary",
+          "points",
+          "has_data"
+        ],
+        "title": "DiagnosisReportResponse",
+        "description": "诊断报告。"
+      },
+      "DiagnosisStartRequest": {
+        "properties": {
+          "subject": {
+            "type": "string",
+            "maxLength": 32,
+            "title": "Subject",
+            "default": "math"
+          },
+          "stage": {
+            "type": "string",
+            "maxLength": 20,
+            "title": "Stage",
+            "default": "junior"
+          },
+          "target_count": {
+            "type": "integer",
+            "maximum": 30.0,
+            "minimum": 20.0,
+            "title": "Target Count",
+            "description": "题量 20~30",
+            "default": 25
+          }
+        },
+        "type": "object",
+        "title": "DiagnosisStartRequest",
+        "description": "开启诊断。"
+      },
+      "DiagnosisStartResponse": {
+        "properties": {
+          "exam_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Exam Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "progress": {
+            "$ref": "#/components/schemas/DiagnosisProgress"
+          },
+          "question": {
+            "$ref": "#/components/schemas/DiagnosisQuestionOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "exam_id",
+          "status",
+          "progress",
+          "question"
+        ],
+        "title": "DiagnosisStartResponse",
+        "description": "开启诊断响应。"
+      },
+      "DimensionScoreOut": {
+        "properties": {
+          "score": {
+            "type": "number",
+            "title": "Score"
+          },
+          "max_score": {
+            "type": "number",
+            "title": "Max Score"
+          },
+          "comment": {
+            "type": "string",
+            "title": "Comment"
+          }
+        },
+        "type": "object",
+        "required": [
+          "score",
+          "max_score",
+          "comment"
+        ],
+        "title": "DimensionScoreOut",
+        "description": "作文维度分。"
+      },
+      "EssayGradingRequest": {
+        "properties": {
+          "rubric": {
+            "type": "string",
+            "enum": [
+              "zhongkao",
+              "gaokao",
+              "cet",
+              "kaoyan"
+            ],
+            "title": "Rubric"
+          },
+          "content": {
+            "type": "string",
+            "maxLength": 20000,
+            "minLength": 50,
+            "title": "Content"
+          },
+          "prompt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rubric",
+          "content"
+        ],
+        "title": "EssayGradingRequest",
+        "description": "作文批改请求。"
+      },
+      "EssayGradingResponse": {
+        "properties": {
+          "total_score": {
+            "type": "number",
+            "title": "Total Score"
+          },
+          "max_score": {
+            "type": "number",
+            "title": "Max Score"
+          },
+          "rubric": {
+            "type": "string",
+            "title": "Rubric"
+          },
+          "structure": {
+            "$ref": "#/components/schemas/DimensionScoreOut"
+          },
+          "ideas": {
+            "$ref": "#/components/schemas/DimensionScoreOut"
+          },
+          "language": {
+            "$ref": "#/components/schemas/DimensionScoreOut"
+          },
+          "paragraphs": {
+            "items": {
+              "$ref": "#/components/schemas/ParagraphCommentOut"
+            },
+            "type": "array",
+            "title": "Paragraphs"
+          },
+          "upgrade_sample": {
+            "type": "string",
+            "title": "Upgrade Sample"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_score",
+          "max_score",
+          "rubric",
+          "structure",
+          "ideas",
+          "language",
+          "paragraphs",
+          "upgrade_sample",
+          "summary"
+        ],
+        "title": "EssayGradingResponse",
+        "description": "作文批改结果。"
+      },
+      "ExamAnswerItem": {
+        "properties": {
+          "question_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Question Id"
+          },
+          "answer": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Answer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question_id",
+          "answer"
+        ],
+        "title": "ExamAnswerItem",
+        "description": "一道作答。"
+      },
+      "ExamCountdownRequest": {
+        "properties": {
+          "exam_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Exam Date"
+          },
+          "target_score": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 999.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Score"
+          },
+          "progress_ratio": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Progress Ratio",
+            "description": "当前进度（0~1）",
+            "default": 1.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "exam_date"
+        ],
+        "title": "ExamCountdownRequest",
+        "description": "考期倒排请求。"
+      },
+      "ExamCountdownResponse": {
+        "properties": {
+          "plan_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Plan Id"
+          },
+          "exam_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Exam Date"
+          },
+          "total_days": {
+            "type": "integer",
+            "title": "Total Days"
+          },
+          "compressed": {
+            "type": "boolean",
+            "title": "Compressed"
+          },
+          "warning": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Warning"
+          },
+          "phases": {
+            "items": {
+              "$ref": "#/components/schemas/CountdownPhaseOut"
+            },
+            "type": "array",
+            "title": "Phases"
+          }
+        },
+        "type": "object",
+        "required": [
+          "plan_id",
+          "exam_date",
+          "total_days",
+          "compressed",
+          "phases"
+        ],
+        "title": "ExamCountdownResponse",
+        "description": "考期倒排计划。"
+      },
+      "ExamCreateRequest": {
+        "properties": {
+          "subject": {
+            "type": "string",
+            "maxLength": 32,
+            "title": "Subject",
+            "default": "math"
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage"
+          },
+          "count": {
+            "type": "integer",
+            "maximum": 50.0,
+            "minimum": 3.0,
+            "title": "Count",
+            "default": 10
+          },
+          "time_limit_minutes": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 300.0,
+                "minimum": 5.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Limit Minutes"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "type": "object",
+        "title": "ExamCreateRequest",
+        "description": "创建限时测评。"
+      },
+      "ExamCreateResponse": {
+        "properties": {
+          "exam_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Exam Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "time_limit_minutes": {
+            "type": "integer",
+            "title": "Time Limit Minutes"
+          },
+          "deadline": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deadline"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/ExamQuestionOut"
+            },
+            "type": "array",
+            "title": "Questions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "exam_id",
+          "kind",
+          "title",
+          "time_limit_minutes",
+          "questions"
+        ],
+        "title": "ExamCreateResponse",
+        "description": "创建结果。"
+      },
+      "ExamDiagnosisOut": {
+        "properties": {
+          "question_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Question Id"
+          },
+          "stem": {
+            "type": "string",
+            "title": "Stem"
+          },
+          "is_correct": {
+            "type": "boolean",
+            "title": "Is Correct"
+          },
+          "correct_answer": {
+            "type": "string",
+            "title": "Correct Answer"
+          },
+          "analysis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Analysis"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question_id",
+          "stem",
+          "is_correct",
+          "correct_answer"
+        ],
+        "title": "ExamDiagnosisOut",
+        "description": "逐题诊断。"
+      },
+      "ExamQuestionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "stem": {
+            "type": "string",
+            "title": "Stem"
+          },
+          "qtype": {
+            "type": "string",
+            "title": "Qtype"
+          },
+          "options": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Options"
+          },
+          "difficulty": {
+            "type": "integer",
+            "title": "Difficulty"
+          },
+          "knowledge_points": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Knowledge Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "stem",
+          "qtype",
+          "difficulty"
+        ],
+        "title": "ExamQuestionOut",
+        "description": "试卷题目（不含答案）。"
+      },
+      "ExamReportResponse": {
+        "properties": {
+          "exam_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Exam Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "auto_submitted": {
+            "type": "boolean",
+            "title": "Auto Submitted",
+            "default": false
+          },
+          "summary": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Summary"
+          },
+          "diagnoses": {
+            "items": {
+              "$ref": "#/components/schemas/ExamDiagnosisOut"
+            },
+            "type": "array",
+            "title": "Diagnoses"
+          },
+          "submitted_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Submitted At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "exam_id",
+          "kind",
+          "status",
+          "summary",
+          "diagnoses"
+        ],
+        "title": "ExamReportResponse",
+        "description": "测评报告（即时出分 + 百分位 + 逐题诊断）。"
+      },
+      "ExamSubmitRequest": {
+        "properties": {
+          "answers": {
+            "items": {
+              "$ref": "#/components/schemas/ExamAnswerItem"
+            },
+            "type": "array",
+            "title": "Answers"
+          }
+        },
+        "type": "object",
+        "title": "ExamSubmitRequest",
+        "description": "交卷（可为空，表示自动交卷）。"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LoginRequest": {
+        "properties": {
+          "phone": {
+            "type": "string",
+            "pattern": "^1[3-9]\\d{9}$",
+            "title": "Phone"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "phone",
+          "password"
+        ],
+        "title": "LoginRequest",
+        "description": "密码登录请求。"
+      },
+      "LogoutRequest": {
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "title": "Refresh Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "refresh_token"
+        ],
+        "title": "LogoutRequest",
+        "description": "退出登录请求。"
+      },
+      "MasteryOverviewResponse": {
+        "properties": {
+          "has_data": {
+            "type": "boolean",
+            "title": "Has Data"
+          },
+          "average_mastery": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Average Mastery"
+          },
+          "red_count": {
+            "type": "integer",
+            "title": "Red Count"
+          },
+          "yellow_count": {
+            "type": "integer",
+            "title": "Yellow Count"
+          },
+          "green_count": {
+            "type": "integer",
+            "title": "Green Count"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/MasteryPointResponse"
+            },
+            "type": "array",
+            "title": "Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "has_data",
+          "red_count",
+          "yellow_count",
+          "green_count",
+          "points"
+        ],
+        "title": "MasteryOverviewResponse",
+        "description": "雷达图/画像总览（空数据时 has_data=false，前端展示引导态）。"
+      },
+      "MasteryPointResponse": {
+        "properties": {
+          "knowledge_point_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Knowledge Point Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "subject": {
+            "type": "string",
+            "title": "Subject"
+          },
+          "stage": {
+            "type": "string",
+            "title": "Stage"
+          },
+          "mastery": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Mastery"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level",
+            "description": "red/yellow/green 预警分级"
+          },
+          "total_attempts": {
+            "type": "integer",
+            "title": "Total Attempts"
+          },
+          "correct_attempts": {
+            "type": "integer",
+            "title": "Correct Attempts"
+          },
+          "last_practiced_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Practiced At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "knowledge_point_id",
+          "code",
+          "name",
+          "subject",
+          "stage",
+          "mastery",
+          "level",
+          "total_attempts",
+          "correct_attempts"
+        ],
+        "title": "MasteryPointResponse",
+        "description": "单个知识点掌握度。"
+      },
+      "MicroLessonAudioResponse": {
+        "properties": {
+          "lesson_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Lesson Id"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "mime": {
+            "type": "string",
+            "title": "Mime"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lesson_id",
+          "url",
+          "mime",
+          "expires_in"
+        ],
+        "title": "MicroLessonAudioResponse",
+        "description": "微课音频地址。"
+      },
+      "MicroLessonCreateRequest": {
+        "properties": {
+          "knowledge_point_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Knowledge Point Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "knowledge_point_id"
+        ],
+        "title": "MicroLessonCreateRequest",
+        "description": "创建微课。"
+      },
+      "MicroLessonResponse": {
+        "properties": {
+          "lesson_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Lesson Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "char_count": {
+            "type": "integer",
+            "title": "Char Count"
+          },
+          "retries": {
+            "type": "integer",
+            "title": "Retries"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lesson_id",
+          "title",
+          "status",
+          "char_count",
+          "retries"
+        ],
+        "title": "MicroLessonResponse",
+        "description": "微课状态。"
+      },
+      "MistakeEntryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "question": {
+            "$ref": "#/components/schemas/QuestionBriefOut"
+          },
+          "wrong_answer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wrong Answer"
+          },
+          "error_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Reason"
+          },
+          "error_reason_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Reason Label"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "review_count": {
+            "type": "integer",
+            "title": "Review Count"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "question",
+          "state",
+          "review_count",
+          "created_at"
+        ],
+        "title": "MistakeEntryOut",
+        "description": "错题条目。"
+      },
+      "MistakeListResponse": {
+        "properties": {
+          "active_count": {
+            "type": "integer",
+            "title": "Active Count"
+          },
+          "mastered_count": {
+            "type": "integer",
+            "title": "Mastered Count"
+          },
+          "summary": {
+            "items": {
+              "$ref": "#/components/schemas/MistakeSummaryItem"
+            },
+            "type": "array",
+            "title": "Summary"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/MistakeEntryOut"
+            },
+            "type": "array",
+            "title": "Entries"
+          }
+        },
+        "type": "object",
+        "required": [
+          "active_count",
+          "mastered_count",
+          "summary",
+          "entries"
+        ],
+        "title": "MistakeListResponse",
+        "description": "错题本列表（按错因分组统计）。"
+      },
+      "MistakeRepracticeRequest": {
+        "properties": {
+          "count": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Count",
+            "default": 5
+          },
+          "error_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Reason"
+          }
+        },
+        "type": "object",
+        "title": "MistakeRepracticeRequest",
+        "description": "一键重练。"
+      },
+      "MistakeRepracticeResponse": {
+        "properties": {
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionBriefOut"
+            },
+            "type": "array",
+            "title": "Questions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "count",
+          "questions"
+        ],
+        "title": "MistakeRepracticeResponse",
+        "description": "重练题目列表（作答时 source=repractice 以触发移出）。"
+      },
+      "MistakeSummaryItem": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "reason_label": {
+            "type": "string",
+            "title": "Reason Label"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason",
+          "reason_label",
+          "count"
+        ],
+        "title": "MistakeSummaryItem",
+        "description": "错因分组计数。"
+      },
+      "ObjectiveGradingRequest": {
+        "properties": {
+          "question_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Question Id"
+          },
+          "answer": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Answer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question_id",
+          "answer"
+        ],
+        "title": "ObjectiveGradingRequest",
+        "description": "客观题批改请求。"
+      },
+      "ObjectiveGradingResponse": {
+        "properties": {
+          "is_correct": {
+            "type": "boolean",
+            "title": "Is Correct"
+          },
+          "correct_answer": {
+            "type": "string",
+            "title": "Correct Answer"
+          },
+          "analysis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Analysis"
+          },
+          "tutor_session_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tutor Session Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "is_correct",
+          "correct_answer"
+        ],
+        "title": "ObjectiveGradingResponse",
+        "description": "客观题批改结果（答错给出讲解会话直达入口）。"
+      },
+      "ParagraphCommentOut": {
+        "properties": {
+          "index": {
+            "type": "integer",
+            "title": "Index"
+          },
+          "comment": {
+            "type": "string",
+            "title": "Comment"
+          },
+          "suggestion": {
+            "type": "string",
+            "title": "Suggestion"
+          }
+        },
+        "type": "object",
+        "required": [
+          "index",
+          "comment",
+          "suggestion"
+        ],
+        "title": "ParagraphCommentOut",
+        "description": "逐段评语。"
+      },
+      "PathPhaseOut": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "knowledge_points": {
+            "items": {
+              "$ref": "#/components/schemas/PathPointOut"
+            },
+            "type": "array",
+            "title": "Knowledge Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "title",
+          "knowledge_points"
+        ],
+        "title": "PathPhaseOut",
+        "description": "路径阶段。"
+      },
+      "PathPointOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "mastery": {
+            "type": "number",
+            "title": "Mastery"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "mastery"
+        ],
+        "title": "PathPointOut",
+        "description": "路径知识点。"
+      },
+      "PathResponse": {
+        "properties": {
+          "has_path": {
+            "type": "boolean",
+            "title": "Has Path"
+          },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "generated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generated At"
+          },
+          "phases": {
+            "items": {
+              "$ref": "#/components/schemas/PathPhaseOut"
+            },
+            "type": "array",
+            "title": "Phases"
+          }
+        },
+        "type": "object",
+        "required": [
+          "has_path"
+        ],
+        "title": "PathResponse",
+        "description": "学习路径（has_path=false 表示暂无数据）。"
+      },
+      "PayCheckoutResponse": {
+        "properties": {
+          "checkout": {
+            "$ref": "#/components/schemas/CheckoutResponse"
+          },
+          "subscription": {
+            "$ref": "#/components/schemas/SubscriptionResponse"
+          }
+        },
+        "type": "object",
+        "required": [
+          "checkout",
+          "subscription"
+        ],
+        "title": "PayCheckoutResponse",
+        "description": "mock 支付结果。"
+      },
+      "PlanResponse": {
+        "properties": {
+          "cycle": {
+            "$ref": "#/components/schemas/BillingCycle"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "price_cents": {
+            "type": "integer",
+            "title": "Price Cents"
+          },
+          "days": {
+            "type": "integer",
+            "title": "Days"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cycle",
+          "title",
+          "price_cents",
+          "days"
+        ],
+        "title": "PlanResponse",
+        "description": "付费周期规格。"
+      },
+      "PracticeAnswerRequest": {
+        "properties": {
+          "question_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Question Id"
+          },
+          "answer": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Answer"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "practice",
+              "repractice",
+              "variant"
+            ],
+            "title": "Source",
+            "default": "practice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question_id",
+          "answer"
+        ],
+        "title": "PracticeAnswerRequest",
+        "description": "练习作答。"
+      },
+      "PracticeAnswerResponse": {
+        "properties": {
+          "is_correct": {
+            "type": "boolean",
+            "title": "Is Correct"
+          },
+          "correct_answer": {
+            "type": "string",
+            "title": "Correct Answer"
+          },
+          "next_difficulty": {
+            "type": "integer",
+            "title": "Next Difficulty"
+          },
+          "mistake_collected": {
+            "type": "boolean",
+            "title": "Mistake Collected"
+          },
+          "mistake_removed": {
+            "type": "boolean",
+            "title": "Mistake Removed"
+          },
+          "card_due_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Card Due At"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Explanation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "is_correct",
+          "correct_answer",
+          "next_difficulty",
+          "mistake_collected",
+          "mistake_removed"
+        ],
+        "title": "PracticeAnswerResponse",
+        "description": "练习作答结果（含动态难度与错题归集状态）。"
+      },
+      "PracticeGenerateRequest": {
+        "properties": {
+          "subject": {
+            "type": "string",
+            "maxLength": 32,
+            "title": "Subject",
+            "default": "math"
+          },
+          "stage": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stage"
+          },
+          "count": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Count",
+            "default": 5
+          },
+          "knowledge_point_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Knowledge Point Ids"
+          }
+        },
+        "type": "object",
+        "title": "PracticeGenerateRequest",
+        "description": "智能出题请求。"
+      },
+      "PracticeGenerateResponse": {
+        "properties": {
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "weak_count": {
+            "type": "integer",
+            "title": "Weak Count"
+          },
+          "weak_ratio": {
+            "type": "number",
+            "title": "Weak Ratio"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/PracticeQuestionOut"
+            },
+            "type": "array",
+            "title": "Questions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "count",
+          "weak_count",
+          "weak_ratio",
+          "questions"
+        ],
+        "title": "PracticeGenerateResponse",
+        "description": "出题结果。"
+      },
+      "PracticeQuestionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "stem": {
+            "type": "string",
+            "title": "Stem"
+          },
+          "qtype": {
+            "type": "string",
+            "title": "Qtype"
+          },
+          "options": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Options"
+          },
+          "difficulty": {
+            "type": "integer",
+            "title": "Difficulty"
+          },
+          "knowledge_points": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Knowledge Points"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "weak=薄弱知识点 / explore=拓展"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "stem",
+          "qtype",
+          "difficulty",
+          "reason"
+        ],
+        "title": "PracticeQuestionOut",
+        "description": "练习题目（含出题原因）。"
+      },
+      "PresignDownloadResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "url",
+          "expires_in"
+        ],
+        "title": "PresignDownloadResponse",
+        "description": "预签名下载地址。"
+      },
+      "PresignUploadRequest": {
+        "properties": {
+          "filename": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Filename"
+          },
+          "content_type": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 3,
+            "title": "Content Type"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Size Bytes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "filename",
+          "content_type",
+          "size_bytes"
+        ],
+        "title": "PresignUploadRequest",
+        "description": "申请预签名直传。"
+      },
+      "PresignUploadResponse": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "fields": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Fields"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In"
+          },
+          "max_bytes": {
+            "type": "integer",
+            "title": "Max Bytes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "url",
+          "fields",
+          "expires_in",
+          "max_bytes"
+        ],
+        "title": "PresignUploadResponse",
+        "description": "预签名直传凭证。"
+      },
+      "QuestionBriefOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "stem": {
+            "type": "string",
+            "title": "Stem"
+          },
+          "qtype": {
+            "type": "string",
+            "title": "Qtype"
+          },
+          "options": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Options"
+          },
+          "difficulty": {
+            "type": "integer",
+            "title": "Difficulty"
+          },
+          "knowledge_points": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Knowledge Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "stem",
+          "qtype",
+          "difficulty"
+        ],
+        "title": "QuestionBriefOut",
+        "description": "题目简要信息（不含答案）。"
+      },
+      "RefreshRequest": {
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "title": "Refresh Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "refresh_token"
+        ],
+        "title": "RefreshRequest",
+        "description": "刷新令牌请求。"
+      },
+      "RegisterRequest": {
+        "properties": {
+          "phone": {
+            "type": "string",
+            "pattern": "^1[3-9]\\d{9}$",
+            "title": "Phone",
+            "description": "中国大陆手机号"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 8,
+            "title": "Password",
+            "description": "密码（8-64 位）"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "student",
+              "parent"
+            ],
+            "title": "Role",
+            "default": "student"
+          },
+          "nickname": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nickname"
+          },
+          "is_k12": {
+            "type": "boolean",
+            "title": "Is K12",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "phone",
+          "password"
+        ],
+        "title": "RegisterRequest",
+        "description": "注册请求。"
+      },
+      "ReviewCardOut": {
+        "properties": {
+          "card_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Card Id"
+          },
+          "question": {
+            "$ref": "#/components/schemas/QuestionBriefOut"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "reps": {
+            "type": "integer",
+            "title": "Reps"
+          },
+          "lapses": {
+            "type": "integer",
+            "title": "Lapses"
+          },
+          "difficulty": {
+            "type": "number",
+            "title": "Difficulty"
+          },
+          "due_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "card_id",
+          "question",
+          "state",
+          "reps",
+          "lapses",
+          "difficulty"
+        ],
+        "title": "ReviewCardOut",
+        "description": "复习卡片。"
+      },
+      "ReviewDueResponse": {
+        "properties": {
+          "due_count": {
+            "type": "integer",
+            "title": "Due Count"
+          },
+          "cards": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewCardOut"
+            },
+            "type": "array",
+            "title": "Cards"
+          }
+        },
+        "type": "object",
+        "required": [
+          "due_count",
+          "cards"
+        ],
+        "title": "ReviewDueResponse",
+        "description": "到期复习卡片。"
+      },
+      "ReviewGradeRequest": {
+        "properties": {
+          "grade": {
+            "type": "integer",
+            "maximum": 4.0,
+            "minimum": 1.0,
+            "title": "Grade"
+          }
+        },
+        "type": "object",
+        "required": [
+          "grade"
+        ],
+        "title": "ReviewGradeRequest",
+        "description": "FSRS 评分（1=Again 2=Hard 3=Good 4=Easy）。"
+      },
+      "ReviewGradeResponse": {
+        "properties": {
+          "card_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Card Id"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "interval_days": {
+            "type": "number",
+            "title": "Interval Days"
+          },
+          "due_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Due At"
+          },
+          "reps": {
+            "type": "integer",
+            "title": "Reps"
+          },
+          "lapses": {
+            "type": "integer",
+            "title": "Lapses"
+          },
+          "difficulty": {
+            "type": "number",
+            "title": "Difficulty"
+          }
+        },
+        "type": "object",
+        "required": [
+          "card_id",
+          "state",
+          "interval_days",
+          "due_at",
+          "reps",
+          "lapses",
+          "difficulty"
+        ],
+        "title": "ReviewGradeResponse",
+        "description": "评分后的调度结果。"
+      },
+      "SafetyCheckRequest": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Text"
+          },
+          "scene": {
+            "type": "string",
+            "maxLength": 32,
+            "title": "Scene",
+            "default": "chat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "SafetyCheckRequest",
+        "description": "文本检查请求。"
+      },
+      "SafetyCheckResponse": {
+        "properties": {
+          "allowed": {
+            "type": "boolean",
+            "title": "Allowed"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "categories": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Categories"
+          }
+        },
+        "type": "object",
+        "required": [
+          "allowed",
+          "action",
+          "provider",
+          "categories"
+        ],
+        "title": "SafetyCheckResponse",
+        "description": "文本检查结果。"
+      },
+      "ShareResponse": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "url_path": {
+            "type": "string",
+            "title": "Url Path"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token",
+          "url_path",
+          "expires_at"
+        ],
+        "title": "ShareResponse",
+        "description": "分享链接。"
+      },
+      "SharedReportResponse": {
+        "properties": {
+          "report": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Report"
+          }
+        },
+        "type": "object",
+        "required": [
+          "report"
+        ],
+        "title": "SharedReportResponse",
+        "description": "免登录只读报告。"
+      },
+      "SmsLoginRequest": {
+        "properties": {
+          "phone": {
+            "type": "string",
+            "pattern": "^1[3-9]\\d{9}$",
+            "title": "Phone"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 8,
+            "minLength": 4,
+            "title": "Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "phone",
+          "code"
+        ],
+        "title": "SmsLoginRequest",
+        "description": "验证码登录请求。"
+      },
+      "SmsSendRequest": {
+        "properties": {
+          "phone": {
+            "type": "string",
+            "pattern": "^1[3-9]\\d{9}$",
+            "title": "Phone"
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "login",
+              "bind"
+            ],
+            "title": "Purpose",
+            "default": "login"
+          }
+        },
+        "type": "object",
+        "required": [
+          "phone"
+        ],
+        "title": "SmsSendRequest",
+        "description": "发送验证码请求。"
+      },
+      "SmsSendResponse": {
+        "properties": {
+          "sent": {
+            "type": "boolean",
+            "title": "Sent",
+            "default": true
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In",
+            "description": "有效期（秒）"
+          },
+          "debug_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Debug Code",
+            "description": "仅开发环境返回，便于联调"
+          }
+        },
+        "type": "object",
+        "required": [
+          "expires_in"
+        ],
+        "title": "SmsSendResponse",
+        "description": "发送验证码响应。"
+      },
+      "SprintResponse": {
+        "properties": {
+          "exam_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Exam Date"
+          },
+          "remaining_days": {
+            "type": "integer",
+            "title": "Remaining Days"
+          },
+          "high_freq_mistakes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "High Freq Mistakes"
+          },
+          "unmastered_knowledge_points": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Unmastered Knowledge Points"
+          },
+          "predicted_paper": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Predicted Paper"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "exam_date",
+          "remaining_days",
+          "high_freq_mistakes",
+          "unmastered_knowledge_points",
+          "predicted_paper",
+          "generated_at"
+        ],
+        "title": "SprintResponse",
+        "description": "考前冲刺包。"
+      },
+      "SubjectiveGradingRequest": {
+        "properties": {
+          "question_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question Id"
+          },
+          "stem": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stem"
+          },
+          "answer": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer"
+          },
+          "criteria": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Criteria"
+          },
+          "student_answer": {
+            "type": "string",
+            "maxLength": 8000,
+            "minLength": 1,
+            "title": "Student Answer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "student_answer"
+        ],
+        "title": "SubjectiveGradingRequest",
+        "description": "主观题批改请求（question_id 与 stem+answer 二选一）。"
+      },
+      "SubjectiveGradingResponse": {
+        "properties": {
+          "total_score": {
+            "type": "number",
+            "title": "Total Score"
+          },
+          "max_score": {
+            "type": "number",
+            "title": "Max Score"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/SubjectiveStepOut"
+            },
+            "type": "array",
+            "title": "Steps"
+          },
+          "rewrite": {
+            "type": "string",
+            "title": "Rewrite"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "machine_check": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Machine Check"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_score",
+          "max_score",
+          "steps",
+          "rewrite",
+          "summary"
+        ],
+        "title": "SubjectiveGradingResponse",
+        "description": "主观题批改结果。"
+      },
+      "SubjectiveStepOut": {
+        "properties": {
+          "step": {
+            "type": "string",
+            "title": "Step"
+          },
+          "score": {
+            "type": "number",
+            "title": "Score"
+          },
+          "comment": {
+            "type": "string",
+            "title": "Comment"
+          },
+          "lost_points": {
+            "type": "string",
+            "title": "Lost Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "step",
+          "score",
+          "comment",
+          "lost_points"
+        ],
+        "title": "SubjectiveStepOut",
+        "description": "逐步得分点。"
+      },
+      "SubscriptionResponse": {
+        "properties": {
+          "plan": {
+            "type": "string",
+            "title": "Plan"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "trial_used": {
+            "type": "boolean",
+            "title": "Trial Used"
+          },
+          "auto_renew": {
+            "type": "boolean",
+            "title": "Auto Renew"
+          }
+        },
+        "type": "object",
+        "required": [
+          "plan",
+          "trial_used",
+          "auto_renew"
+        ],
+        "title": "SubscriptionResponse",
+        "description": "订阅状态。"
+      },
+      "TodayResponse": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "tasks": {
+            "items": {
+              "$ref": "#/components/schemas/TodayTaskOut"
+            },
+            "type": "array",
+            "title": "Tasks"
+          },
+          "completed_count": {
+            "type": "integer",
+            "title": "Completed Count"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "all_completed": {
+            "type": "boolean",
+            "title": "All Completed"
+          },
+          "streak_days": {
+            "type": "integer",
+            "title": "Streak Days"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "tasks",
+          "completed_count",
+          "total",
+          "all_completed",
+          "streak_days"
+        ],
+        "title": "TodayResponse",
+        "description": "今日任务卡与打卡状态。"
+      },
+      "TodayTaskOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "task_type": {
+            "type": "string",
+            "title": "Task Type"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "ref_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref Type"
+          },
+          "ref_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "task_type",
+          "status"
+        ],
+        "title": "TodayTaskOut",
+        "description": "今日任务。"
+      },
+      "TokenPairResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "refresh_token": {
+            "type": "string",
+            "title": "Refresh Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "Bearer"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In",
+            "description": "访问令牌有效期（秒）"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "refresh_token",
+          "expires_in"
+        ],
+        "title": "TokenPairResponse",
+        "description": "令牌对响应。"
+      },
+      "TutorHintRequest": {
+        "properties": {
+          "level": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 3.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          }
+        },
+        "type": "object",
+        "title": "TutorHintRequest",
+        "description": "请求某层提示（不填则自动进入下一层）。"
+      },
+      "TutorHintResponse": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Session Id"
+          },
+          "level": {
+            "type": "integer",
+            "title": "Level"
+          },
+          "level_name": {
+            "type": "string",
+            "title": "Level Name"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "next_level": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Level"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "level",
+          "level_name",
+          "content"
+        ],
+        "title": "TutorHintResponse",
+        "description": "提示内容。"
+      },
+      "TutorQuestionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "stem": {
+            "type": "string",
+            "title": "Stem"
+          },
+          "qtype": {
+            "type": "string",
+            "title": "Qtype"
+          },
+          "options": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Options"
+          },
+          "difficulty": {
+            "type": "integer",
+            "title": "Difficulty"
+          },
+          "knowledge_points": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Knowledge Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "stem",
+          "qtype",
+          "difficulty"
+        ],
+        "title": "TutorQuestionOut",
+        "description": "讲解题目信息（不含答案）。"
+      },
+      "TutorSessionResponse": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Session Id"
+          },
+          "question": {
+            "$ref": "#/components/schemas/TutorQuestionOut"
+          },
+          "hint_level": {
+            "type": "integer",
+            "title": "Hint Level"
+          },
+          "hint_level_name": {
+            "type": "string",
+            "title": "Hint Level Name"
+          },
+          "max_hint_level": {
+            "type": "integer",
+            "title": "Max Hint Level",
+            "default": 3
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "question",
+          "hint_level",
+          "hint_level_name"
+        ],
+        "title": "TutorSessionResponse",
+        "description": "讲解会话。"
+      },
+      "TutorSessionStartRequest": {
+        "properties": {
+          "question_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Question Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question_id"
+        ],
+        "title": "TutorSessionStartRequest",
+        "description": "开启讲解会话。"
+      },
+      "UserResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "phone": {
+            "type": "string",
+            "title": "Phone"
+          },
+          "nickname": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nickname"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "is_k12": {
+            "type": "boolean",
+            "title": "Is K12"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "phone",
+          "role",
+          "is_k12",
+          "created_at"
+        ],
+        "title": "UserResponse",
+        "description": "当前用户信息。"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VariantAnswerRequest": {
+        "properties": {
+          "answer": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Answer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "answer"
+        ],
+        "title": "VariantAnswerRequest",
+        "description": "变式题作答。"
+      },
+      "VariantAnswerResponse": {
+        "properties": {
+          "is_correct": {
+            "type": "boolean",
+            "title": "Is Correct"
+          },
+          "correct_answer": {
+            "type": "string",
+            "title": "Correct Answer"
+          },
+          "back_to_tutor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BackToTutorOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "is_correct",
+          "correct_answer"
+        ],
+        "title": "VariantAnswerResponse",
+        "description": "变式题作答结果。"
+      },
+      "VariantOut": {
+        "properties": {
+          "question_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Question Id"
+          },
+          "stem": {
+            "type": "string",
+            "title": "Stem"
+          },
+          "options": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Options"
+          },
+          "difficulty": {
+            "type": "integer",
+            "title": "Difficulty"
+          }
+        },
+        "type": "object",
+        "required": [
+          "question_id",
+          "stem",
+          "difficulty"
+        ],
+        "title": "VariantOut",
+        "description": "变式题（不含答案）。"
+      },
+      "VariantsResponse": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Session Id"
+          },
+          "variants": {
+            "items": {
+              "$ref": "#/components/schemas/VariantOut"
+            },
+            "type": "array",
+            "title": "Variants"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "variants"
+        ],
+        "title": "VariantsResponse",
+        "description": "变式题列表。"
+      },
+      "WeeklyReportResponse": {
+        "properties": {
+          "week_start": {
+            "type": "string",
+            "format": "date",
+            "title": "Week Start"
+          },
+          "week_end": {
+            "type": "string",
+            "format": "date",
+            "title": "Week End"
+          },
+          "report": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Report"
+          }
+        },
+        "type": "object",
+        "required": [
+          "week_start",
+          "week_end",
+          "report"
+        ],
+        "title": "WeeklyReportResponse",
+        "description": "每周学情报告。"
+      }
+    }
+  }
+}

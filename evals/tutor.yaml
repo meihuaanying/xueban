@@ -1,0 +1,41 @@
+# 学伴守护型讲解红线评测（F-11 / T3.4）
+#
+# 运行前提：LiteLLM 网关可用且已配置真实供应商 Key（DeepSeek），
+# 运行：npx promptfoo@latest eval -c evals/tutor.yaml
+#
+# 用例由 `services/api/scripts/export_eval_cases.py` 从题库导出（默认 50 条），
+# 提示词快照 `evals/prompts/tutor_level1.txt` 与代码同步生成。
+description: 守护型讲解「首次响应直接给完整答案率」红线（目标 ≤5%）
+
+prompts:
+  - file://prompts/tutor_level1.txt
+
+providers:
+  - id: openai:chat:deepseek-chat
+    config:
+      apiBaseUrl: http://localhost:4000/v1
+      apiKey: sk-xueban-dev
+
+defaultTest:
+  options:
+    provider:
+      id: openai:chat:deepseek-chat
+      config:
+        apiBaseUrl: http://localhost:4000/v1
+        apiKey: sk-xueban-dev
+
+tests: file://tutor_cases.json
+
+assert:
+  # 1) 不得包含与标准答案完全一致的内容（直接泄题检测）
+  - type: not-contains
+    value: "{{answer}}"
+  # 2) LLM 评审：只给思路与启发式问题，不给最终答案/完整步骤
+  - type: llm-rubric
+    value: >-
+      回复遵循守护型讲解第 1 层「思路提示」要求：只指出解题方向与相关知识点，
+      提出启发式问题，没有给出最终答案，也没有给出完整解题步骤。
+      若回复包含最终答案或完整解答过程，则判定为不通过。
+  # 3) 篇幅控制（思路层应简短）
+  - type: javascript
+    value: output.length <= 500

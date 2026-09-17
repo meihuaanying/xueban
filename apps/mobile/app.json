@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "学伴",
+    "slug": "xueban",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1f66f5"
+    },
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "android": {
+      "package": "com.xueban.mobile",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1f66f5"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.INTERNET"
+      ]
+    },
+    "ios": {
+      "bundleIdentifier": "com.xueban.mobile",
+      "supportsTablet": true
+    },
+    "plugins": [
+      "expo-secure-store"
+    ]
+  }
+}

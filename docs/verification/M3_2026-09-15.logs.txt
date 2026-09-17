@@ -1,0 +1,139 @@
+==================================================
+学伴 M3 学情闭环核心 API · 出口门禁全量执行 · 2026-09-15 15:47:00
+执行者：DeepSeek V4.1（opencode）
+==================================================
+
+### 1) 工具链
+Python 3.12.10
+Docker version 29.7.2, build a7dcaa6
+
+### 2) ruff check .
+All checks passed!
+EXIT_CODE=0
+
+### 3) mypy --strict app
+Success: no issues found in 92 source files
+EXIT_CODE=0
+
+### 4) pytest --cov=app --cov-fail-under=85（M3 门禁阈值）
+........................................................................ [ 19%]
+........................................................................ [ 39%]
+........................................................................ [ 58%]
+........................................................................ [ 78%]
+........................................................................ [ 97%]
+.........                                                                [100%]
+============================== warnings summary ===============================
+.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\Users\Lenovo\Documents\Default Project\xueban\services\api\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=============================== tests coverage ================================
+______________ coverage: platform win32, python 3.12.10-final-0 _______________
+
+Name                                   Stmts   Miss Branch BrPart  Cover
+------------------------------------------------------------------------
+app\api\routes\plan.py                    60      1      2      1    97%
+app\api\routes\review.py                  28      1      4      1    94%
+app\data\demo_questions.py               172     68     46      6    61%
+app\main.py                               90     11      0      0    88%
+app\services\analytics_service.py         63      0     16      3    96%
+app\services\attribution_service.py       58      1     14      1    97%
+app\services\auth_service.py             142      5     36      3    96%
+app\services\billing_service.py           92      2     22      2    96%
+app\services\diagnosis_service.py        166     17     38      8    86%
+app\services\embeddings.py                69      3     20      2    94%
+app\services\exam_service.py             123     12     38     10    86%
+app\services\fsrs_service.py              96      2     18      2    96%
+app\services\grading_service.py          123      4     28      7    93%
+app\services\import_service.py           175     31     66      7    78%
+app\services\ingest_service.py            70      1     14      2    96%
+app\services\lesson_service.py            98     10     20      4    88%
+app\services\llm_client.py               175     45     58      8    68%
+app\services\llm_json.py                  20      2      6      2    85%
+app\services\mastery_service.py           91      1     22      1    98%
+app\services\math_verify.py               53      7     18      2    87%
+app\services\mistake_book_service.py      67      4     16      4    90%
+app\services\observability.py             43      2      8      0    96%
+app\services\planner_service.py          258     20     74     10    90%
+app\services\practice_service.py         132      5     36      5    94%
+app\services\report_service.py           167     18     32      5    86%
+app\services\rerank.py                    53      4     18      4    89%
+app\services\retrieval_service.py         55      2     14      4    91%
+app\services\safety_service.py           109     12     28      1    89%
+app\services\sms.py                       20      2      2      1    86%
+app\services\storage_service.py           71      3     14      4    92%
+app\services\tts.py                       36      4      2      0    84%
+app\services\tutor_ext_service.py        154      9     34      8    91%
+app\services\tutor_service.py            109      1     22      2    98%
+app\worker.py                             47     34      0      0    28%
+------------------------------------------------------------------------
+TOTAL                                   5229    344    858    120    91%
+
+58 files skipped due to complete coverage.
+Required test coverage of 85% reached. Total coverage: 91.39%
+EXIT_CODE=0
+
+### 5) Alembic 五迁移无损往返：upgrade head -> downgrade base -> upgrade head
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 82fa741c89f2 -> , initial schema
+INFO  [alembic.runtime.migration] Running upgrade 72bbe0dc076a -> 179c6a6fe678, reports and analytics
+EXIT_CODE=0
+
+### 6) 清库后重建演示数据（M2 种子管线回归）
+知识点图谱种子完成：节点 641（新增 641），依赖边 836（新增 836），错因标签新增 5
+已生成演示题库 1114 条 → C:\Users\Lenovo\Documents\Default Project\xueban\services\api\data\demo\demo_questions.json
+入库：total=1114 imported=1105 skipped=9 invalid=0
+已向量化 1105 条（provider=mock）
+EXIT_CODE=0
+
+### 7) 题库导入校验
+校验完成：C:\Users\Lenovo\Documents\Default Project\xueban\services\api\data\demo\demo_questions.json（共 1114 行）
+导入报告：total=1114 imported=0 skipped=1114 invalid=0
+EXIT_CODE=0
+
+### 8) 检索评测回归
+检索评测：query 数=30 recall@5=100.0% （embedding=mock rerank=mock）
+RECALL_OK
+EXIT_CODE=0
+
+### 9) OpenAPI 导出
+OpenAPI 已写出：C:\Users\Lenovo\Documents\Default Project\xueban\docs\api\openapi.json
+标题：学伴 API 版本：0.1.0
+路径数量：64
+EXIT_CODE=0
+
+### 10) 活体冒烟（真实 uvicorn）
+[PASS] /healthz -> 200 {'status': 'ok', 'service': 'xueban-api', 'version': '0.1.0'}
+[PASS] /docs -> 200
+[PASS] /openapi.json 路径数=64 标题=学伴 API
+[PASS] 注册 -> 201
+[PASS] /v1/auth/me -> 13782243572
+[PASS] 订阅状态 -> free
+[PASS] X-Trace-Id -> 1e1a7f26fe104e3fb0bcfeb849d823ee
+SMOKE_OK
+EXIT_CODE=0
+
+### 11) Langfuse 全链路 trace 验证（回归）
+[1] Langfuse 观测启用：True
+[2] 记录讲解请求 trace：26a8af78eb254afe90e6e2a76fc4b74c
+[3] 经 LiteLLM 真实调用（http://localhost:4000）
+LLM 调用失败但错误明确（未崩溃）：LLM_AUTH_FAILED - 模型网关鉴权失败：请检查 LITELLM_MASTER_KEY 或供应商 API Key（litellm.AuthenticationError: AuthenticationError: Deeps
+[4] 等待 Langfuse 摄取并检索 trace ...
+TRACE_FOUND id=26a8af78eb254afe90e6e2a76fc4b74c name=llm.connectivity_check
+  - observation: llm.connectivity_check type=GENERATION level=ERROR model=deepseek-chat
+  - observation: tutor.hint.level1 type=GENERATION level=DEFAULT model=deepseek-chat
+VERIFY_OK
+EXIT_CODE=0
+
+### 12) 全表清单（public schema）
+34
+EXIT_CODE=0
+
+### 13) 规格书原文门禁链：pytest --cov-fail-under=85 && mypy --strict app && ruff check .
+EXIT_CODE=0
+
+### 14) promptfoo 红线评测（B-005：待真实模型 Key）
+命令：npx promptfoo@latest eval -c evals/tutor.yaml
+状态：配置与 50 条用例已就绪，需 DeepSeek Key（docs/BLOCKERS.md B-005）
+EXIT_CODE=skipped

@@ -1,0 +1,43 @@
+# ============================================================
+# LiteLLM 网关配置：主模型 deepseek-chat + 备用模型 fallback 链
+# 密钥一律通过环境变量注入（见仓库根 .env.example）
+# ============================================================
+
+model_list:
+  # ----- 主推理模型 -----
+  - model_name: deepseek-chat
+    litellm_params:
+      model: deepseek/deepseek-chat
+      api_key: os.environ/DEEPSEEK_API_KEY
+
+  # ----- 备用模型链 -----
+  - model_name: qwen-plus
+    litellm_params:
+      model: dashscope/qwen-plus
+      api_key: os.environ/DASHSCOPE_API_KEY
+
+  - model_name: glm-4
+    litellm_params:
+      model: zhipu/glm-4
+      api_key: os.environ/ZHIPU_API_KEY
+
+  # ----- Embedding（题库/知识库向量化） -----
+  - model_name: bge-m3
+    litellm_params:
+      model: siliconflow/BAAI/bge-m3
+      api_key: os.environ/SILICONFLOW_API_KEY
+
+router_settings:
+  # 主模型失败时按顺序降级
+  fallbacks:
+    - deepseek-chat: ["qwen-plus", "glm-4"]
+  num_retries: 2
+  timeout: 60
+  routing_strategy: simple-shuffle
+
+litellm_settings:
+  drop_params: true
+  set_verbose: false
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY

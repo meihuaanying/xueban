@@ -1,0 +1,49 @@
+# 学伴 Caddy 配置（生产：自动 HTTPS；本地压测：SITE_ADDRESS=":80"）
+#
+# 生产（.env）：
+#   SITE_ADDRESS=xueban.example.com   # 官网/家长端/后台 + API 同域
+#   ACME_EMAIL=ops@example.com        # Let's Encrypt 账号邮箱
+#   MINIO_HOST=minio.example.com      # 对象存储公网子域（预签名直传），无则保持 minio.localhost
+#
+# 路由：/v1/* /healthz /readyz /docs /openapi.json → api:8000（轮询负载均衡）
+#       其余 → web:3000（Next.js standalone）
+{
+	admin off
+	email {$ACME_EMAIL:admin@example.com}
+}
+
+{$SITE_ADDRESS:http://localhost} {
+	encode zstd gzip
+
+	@api path /v1/* /healthz /readyz /openapi.json /docs /docs/* /redoc
+	handle @api {
+		reverse_proxy api:8000 {
+			lb_policy round_robin
+			health_uri /healthz
+			health_interval 10s
+			health_timeout 3s
+		}
+	}
+
+	handle {
+		reverse_proxy web:3000
+	}
+
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+
+	log {
+		output stdout
+		format json
+		level ERROR
+	}
+}
+
+# MinIO S3 公网入口（预签名直传/下载；无独立域名时本段不对外使用）
+http://{$MINIO_HOST:minio.localhost} {
+	reverse_proxy minio:9000
+}

@@ -1,0 +1,52 @@
+# Maestro：注册 → 诊断 → 查看计划 → 打卡（T6.2 验收流程）
+# 运行：maestro test maestro/01-register-diagnosis-plan.yaml -e PHONE=13900000001
+appId: com.xueban.mobile
+name: 注册 → 诊断 → 计划 → 打卡
+---
+- launchApp:
+    clearState: true
+- assertVisible: "登录"
+- tapOn: "注册"
+- tapOn:
+    id: "phone-input"
+- inputText: "${PHONE}"
+- tapOn:
+    id: "password-input"
+- inputText: "E2e-pass-1234"
+- tapOn:
+    id: "submit-auth"
+- assertVisible: "今日任务"
+- tapOn: "开始诊断"
+- assertVisible: "开始诊断"
+- tapOn:
+    id: "start-diagnosis"
+# 20 题自适应诊断：选择题点 A，填空题走“输入答案”占位，再提交
+- repeat:
+    times: 20
+    commands:
+      - runFlow:
+          when:
+            visible:
+              id: "option-A"
+          commands:
+            - tapOn:
+                id: "option-A"
+      - runFlow:
+          when:
+            notVisible:
+              id: "option-A"
+          commands:
+            - tapOn:
+                id: "fill-answer"
+      - tapOn:
+          id: "submit-answer"
+- assertVisible:
+    id: "diagnosis-report"
+- back
+- tapOn: "学习规划"
+- assertVisible:
+    id: "plan-today"
+- back
+- assertVisible: "今日任务"
+- tapOn: "打卡"
+- assertVisible: "已完成"

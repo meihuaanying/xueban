@@ -1,0 +1,25 @@
+{
+  "name": "@xueban/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --coverage"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@xueban/config": "workspace:*",
+    "eslint": "^9.13.0",
+    "typescript": "^5.6.3",
+    "vitest": "^3.0.0",
+    "@vitest/coverage-v8": "^3.2.7"
+  }
+}

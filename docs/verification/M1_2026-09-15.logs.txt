@@ -1,0 +1,130 @@
+==================================================
+学伴 M1 后端基座 · 出口门禁全量执行 · 2026-09-15 09:28:06
+执行者：DeepSeek V4.1（opencode）
+==================================================
+
+### 1) 工具链
+v24.20.0
+9.15.9
+Python 3.12.10
+Docker version 29.7.2, build a7dcaa6
+
+### 2) ruff check .
+All checks passed!
+EXIT_CODE=0
+
+### 3) mypy --strict app
+Success: no issues found in 39 source files
+EXIT_CODE=0
+
+### 4) pytest --cov=app --cov-fail-under=80
+........................................................................ [ 58%]
+...................................................                      [100%]
+============================== warnings summary ===============================
+.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\Users\Lenovo\Documents\Default Project\xueban\services\api\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=============================== tests coverage ================================
+______________ coverage: platform win32, python 3.12.10-final-0 _______________
+
+Name                              Stmts   Miss Branch BrPart  Cover
+-------------------------------------------------------------------
+app\__init__.py                       1      0      0      0   100%
+app\api\__init__.py                   0      0      0      0   100%
+app\api\deps.py                      35      0      8      0   100%
+app\api\routes\__init__.py            2      0      0      0   100%
+app\api\routes\admin.py               8      0      0      0   100%
+app\api\routes\auth.py               67      0      0      0   100%
+app\api\routes\billing.py            41      0      0      0   100%
+app\api\routes\safety.py             14      0      0      0   100%
+app\api\routes\storage.py            35      0      4      0   100%
+app\api\routes\system.py             11      0      0      0   100%
+app\config.py                        41      0      0      0   100%
+app\db.py                            35      1     10      0    98%
+app\errors.py                        39      0      4      0   100%
+app\logging_setup.py                 23      0      8      0   100%
+app\main.py                          78     11      0      0    86%
+app\middleware.py                    21      0      0      0   100%
+app\models\__init__.py                8      0      0      0   100%
+app\models\audit.py                  26      0      0      0   100%
+app\models\billing.py                40      0      0      0   100%
+app\models\chat.py                   42      0      0      0   100%
+app\models\content.py                68      0      0      0   100%
+app\models\exam.py                   59      0      0      0   100%
+app\models\learning.py               96      0      0      0   100%
+app\models\user.py                   57      0      0      0   100%
+app\schemas\__init__.py               6      0      0      0   100%
+app\schemas\auth.py                  51      0      0      0   100%
+app\schemas\billing.py               30      0      0      0   100%
+app\schemas\common.py                 8      0      0      0   100%
+app\schemas\safety.py                10      0      0      0   100%
+app\schemas\storage.py               19      0      0      0   100%
+app\services\__init__.py              0      0      0      0   100%
+app\services\auth_service.py        142      5     36      3    96%
+app\services\billing_service.py      92      2     22      2    96%
+app\services\llm_client.py          108     13     30      4    82%
+app\services\observability.py        43      2      8      0    96%
+app\services\safety_service.py      109     12     28      1    89%
+app\services\security.py             48      0      6      0   100%
+app\services\sms.py                  20      2      2      1    86%
+app\services\storage_service.py      67      3     14      4    91%
+-------------------------------------------------------------------
+TOTAL                              1600     51    180     15    96%
+Required test coverage of 80% reached. Total coverage: 95.73%
+123 passed, 1 warning in 175.36s (0:02:55)
+EXIT_CODE=0
+
+### 5) Alembic 往返：upgrade head -> downgrade base -> upgrade head
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 82fa741c89f2 -> , initial schema
+INFO  [alembic.runtime.migration] Running upgrade  -> 82fa741c89f2, initial schema
+EXIT_CODE=0
+
+### 6) OpenAPI 导出
+OpenAPI 已写出：C:\Users\Lenovo\Documents\Default Project\xueban\docs\api\openapi.json
+标题：学伴 API 版本：0.1.0
+路径数量：22
+EXIT_CODE=0
+
+### 7) 活体冒烟（真实 uvicorn）
+[PASS] /healthz -> 200 {'status': 'ok', 'service': 'xueban-api', 'version': '0.1.0'}
+[PASS] /docs -> 200
+[PASS] /openapi.json 路径数=22 标题=学伴 API
+[PASS] 注册 -> 201
+[PASS] /v1/auth/me -> 13784974096
+[PASS] 订阅状态 -> free
+[PASS] X-Trace-Id -> f7516087090947d8997b5af46f09692a
+SMOKE_OK
+EXIT_CODE=0
+
+### 8) Langfuse 全链路 trace 验证
+[1] Langfuse 观测启用：True
+[2] 记录讲解请求 trace：bfce1eaf76e840378611336b9ccdef55
+[3] 经 LiteLLM 真实调用（http://localhost:4000）
+LLM 调用失败但错误明确（未崩溃）：LLM_AUTH_FAILED - 模型网关鉴权失败：请检查 LITELLM_MASTER_KEY 或供应商 API Key（litellm.AuthenticationError: AuthenticationError: Deeps
+[4] 等待 Langfuse 摄取并检索 trace ...
+TRACE_FOUND id=bfce1eaf76e840378611336b9ccdef55 name=llm.connectivity_check
+  - observation: llm.connectivity_check type=GENERATION level=ERROR model=deepseek-chat
+  - observation: tutor.hint.level1 type=GENERATION level=DEFAULT model=deepseek-chat
+VERIFY_OK
+EXIT_CODE=0
+
+### 9) LiteLLM fallback 链证据（无供应商 Key：主模型失败后尝试备用模型，最终明确报错）
+HTTP 429
+{"error":{"message":"No deployments available for selected model, Try again in 5 seconds. Passed model=deepseek-chat. pre-call-checks=False, cooldown_list=['9f537f08f4e221edb71d15cf9e94f80b0a08361090b340a74553e4893eda0423']","type":"None","param":"None","code":"429"}}
+EXIT_CODE=0
+
+### 10) 数据库表清单（public schema）
+27
+alembic_version, audit_logs, chat_messages, chat_sessions, checkouts, exam_answers, exams, grading_records, knowledge_edges, knowledge_points, learning_profiles, mastery_records, mistake_book_entries, mistake_tags, parent_children, parent_controls, plan_tasks, plans, question_knowledge_points, question_mistake_tags, questions, refresh_tokens, review_cards, safety_events, sms_codes, subscriptions, users
+EXIT_CODE=0
+
+### 11) 规格书原文门禁链：pytest --cov-fail-under=80 && mypy --strict app && ruff check .
+EXIT_CODE=0
+
+### 12) 认证与订阅 E2E 用例清单（httpx）
+tests/test_auth_extra.py: 14
+tests/test_billing.py: 19
+

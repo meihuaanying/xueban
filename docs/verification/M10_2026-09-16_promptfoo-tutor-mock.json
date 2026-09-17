@@ -1,0 +1,4834 @@
+{
+  "evalId": "eval-DOY-2026-09-17T05:29:33",
+  "results": {
+    "version": 3,
+    "timestamp": "2026-09-17T05:29:33.757Z",
+    "prompts": [
+      {
+        "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+        "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+        "id": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "provider": "xueban-api-mock",
+        "metrics": {
+          "score": 50,
+          "testPassCount": 50,
+          "testFailCount": 0,
+          "testErrorCount": 0,
+          "assertPassCount": 0,
+          "assertFailCount": 0,
+          "totalLatencyMs": 4972,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 50,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0,
+                "cacheReadInputTokens": 0,
+                "cacheCreationInputTokens": 0
+              }
+            }
+          },
+          "namedScores": {},
+          "namedScoresCount": {},
+          "namedScoreWeights": {},
+          "cost": 0
+        }
+      }
+    ],
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "0ac9cd64-10e0-451c-a4c1-0caa2951a3b5",
+        "latencyMs": 391,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[正数与负数] 计算：18 × 5 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #1",
+          "vars": {
+            "stem": "[正数与负数] 计算：18 × 5 = ？",
+            "qtype": "choice",
+            "answer": "A",
+            "question_id": "7615321b-5c1b-4510-b0a2-60d2ea285b54"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 0,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[正数与负数] 计算：18 × 5 = ？",
+          "qtype": "choice",
+          "answer": "A",
+          "question_id": "7615321b-5c1b-4510-b0a2-60d2ea285b54"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "147e7a8c-f31b-4948-bb58-02094f5d2a22",
+        "latencyMs": 414,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[正数与负数] 计算：4 × 5 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #2",
+          "vars": {
+            "stem": "[正数与负数] 计算：4 × 5 = ?",
+            "qtype": "fill",
+            "answer": "20",
+            "question_id": "6bb0755c-2d6e-4364-8af3-4c27407801a7"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 1,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[正数与负数] 计算：4 × 5 = ?",
+          "qtype": "fill",
+          "answer": "20",
+          "question_id": "6bb0755c-2d6e-4364-8af3-4c27407801a7"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "6fbf0190-a990-43dd-9c21-21d15a51bc78",
+        "latencyMs": 437,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[正数与负数] 计算：38 - 14 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #3",
+          "vars": {
+            "stem": "[正数与负数] 计算：38 - 14 = ？",
+            "qtype": "choice",
+            "answer": "A",
+            "question_id": "f27f54aa-4d92-47bd-9c6c-26962aac6da4"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 2,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[正数与负数] 计算：38 - 14 = ？",
+          "qtype": "choice",
+          "answer": "A",
+          "question_id": "f27f54aa-4d92-47bd-9c6c-26962aac6da4"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "b9245e1e-4e09-4694-b9a4-27bffba218c2",
+        "latencyMs": 425,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[正数与负数] 计算：52 - 28 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #4",
+          "vars": {
+            "stem": "[正数与负数] 计算：52 - 28 = ?",
+            "qtype": "fill",
+            "answer": "24",
+            "question_id": "8de744e7-de08-4136-b843-762cb28c654f"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 3,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[正数与负数] 计算：52 - 28 = ?",
+          "qtype": "fill",
+          "answer": "24",
+          "question_id": "8de744e7-de08-4136-b843-762cb28c654f"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "b5c2be30-fe3f-45c5-ba2a-d57b6bf93dfe",
+        "latencyMs": 56,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[正数与负数] 计算：47 - 46 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #5",
+          "vars": {
+            "stem": "[正数与负数] 计算：47 - 46 = ？",
+            "qtype": "choice",
+            "answer": "D",
+            "question_id": "4087c052-22f0-4bb5-a072-16fddcd3a187"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 4,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[正数与负数] 计算：47 - 46 = ？",
+          "qtype": "choice",
+          "answer": "D",
+          "question_id": "4087c052-22f0-4bb5-a072-16fddcd3a187"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "70e5823d-cb4d-4936-a824-1125d3539f23",
+        "latencyMs": 54,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[正数与负数] 计算：38 + 60 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #6",
+          "vars": {
+            "stem": "[正数与负数] 计算：38 + 60 = ?",
+            "qtype": "fill",
+            "answer": "98",
+            "question_id": "28ad892b-bd9e-4d4a-baa3-fa93fb21e68c"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 5,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[正数与负数] 计算：38 + 60 = ?",
+          "qtype": "fill",
+          "answer": "98",
+          "question_id": "28ad892b-bd9e-4d4a-baa3-fa93fb21e68c"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "7a3caa67-6fb3-44fc-8e6c-06635b3d902b",
+        "latencyMs": 66,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[正数与负数] 计算：11 × 2 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #7",
+          "vars": {
+            "stem": "[正数与负数] 计算：11 × 2 = ？",
+            "qtype": "choice",
+            "answer": "A",
+            "question_id": "8131661e-2f86-46ce-a616-51f7cec51b0b"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 6,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[正数与负数] 计算：11 × 2 = ？",
+          "qtype": "choice",
+          "answer": "A",
+          "question_id": "8131661e-2f86-46ce-a616-51f7cec51b0b"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "832eca99-20f0-4d9b-b2dc-06d928acb92d",
+        "latencyMs": 42,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[数轴] 计算：19 × 17 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #8",
+          "vars": {
+            "stem": "[数轴] 计算：19 × 17 = ？",
+            "qtype": "choice",
+            "answer": "A",
+            "question_id": "be1151e0-8910-42f7-8da0-d47ea16634d6"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 7,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[数轴] 计算：19 × 17 = ？",
+          "qtype": "choice",
+          "answer": "A",
+          "question_id": "be1151e0-8910-42f7-8da0-d47ea16634d6"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "c93cc17b-cae9-40ca-9b9e-d8c0ff468156",
+        "latencyMs": 72,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[数轴] 计算：74 - 55 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #9",
+          "vars": {
+            "stem": "[数轴] 计算：74 - 55 = ?",
+            "qtype": "fill",
+            "answer": "19",
+            "question_id": "c4ac3234-b17d-4eba-9dff-e93b41b5a2e1"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 8,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[数轴] 计算：74 - 55 = ?",
+          "qtype": "fill",
+          "answer": "19",
+          "question_id": "c4ac3234-b17d-4eba-9dff-e93b41b5a2e1"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "bfd94349-eee3-4f18-b271-f48244c36a1a",
+        "latencyMs": 49,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[数轴] 计算：67 + 68 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #10",
+          "vars": {
+            "stem": "[数轴] 计算：67 + 68 = ？",
+            "qtype": "choice",
+            "answer": "D",
+            "question_id": "1449f57b-d264-41be-b007-ef05d241eba0"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 9,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[数轴] 计算：67 + 68 = ？",
+          "qtype": "choice",
+          "answer": "D",
+          "question_id": "1449f57b-d264-41be-b007-ef05d241eba0"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "3a064f2d-a663-4c5c-9349-6d6da2c80e86",
+        "latencyMs": 69,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[数轴] 计算：93 - 81 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #11",
+          "vars": {
+            "stem": "[数轴] 计算：93 - 81 = ?",
+            "qtype": "fill",
+            "answer": "12",
+            "question_id": "9ff364b5-0eec-445d-9d88-ddce8d714302"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 10,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[数轴] 计算：93 - 81 = ?",
+          "qtype": "fill",
+          "answer": "12",
+          "question_id": "9ff364b5-0eec-445d-9d88-ddce8d714302"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "208057a5-596e-4dd5-9c01-5eca952ede1b",
+        "latencyMs": 47,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[数轴] 计算：62 - 20 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #12",
+          "vars": {
+            "stem": "[数轴] 计算：62 - 20 = ？",
+            "qtype": "choice",
+            "answer": "A",
+            "question_id": "4a49536b-0579-4666-ac7e-a0049270de61"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 11,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[数轴] 计算：62 - 20 = ？",
+          "qtype": "choice",
+          "answer": "A",
+          "question_id": "4a49536b-0579-4666-ac7e-a0049270de61"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "37258231-e8f3-4db0-9d94-4be9e72f9d38",
+        "latencyMs": 85,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[数轴] 计算：93 - 71 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #13",
+          "vars": {
+            "stem": "[数轴] 计算：93 - 71 = ?",
+            "qtype": "fill",
+            "answer": "22",
+            "question_id": "ed3dd86a-fed5-419c-a854-d003dc9f41f5"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 12,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[数轴] 计算：93 - 71 = ?",
+          "qtype": "fill",
+          "answer": "22",
+          "question_id": "ed3dd86a-fed5-419c-a854-d003dc9f41f5"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "9ff5c458-75a1-4e35-9e42-9e35df10d818",
+        "latencyMs": 56,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[数轴] 计算：11 × 19 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #14",
+          "vars": {
+            "stem": "[数轴] 计算：11 × 19 = ？",
+            "qtype": "choice",
+            "answer": "A",
+            "question_id": "99480650-e978-496e-a220-7b08a1f66cdf"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 13,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[数轴] 计算：11 × 19 = ？",
+          "qtype": "choice",
+          "answer": "A",
+          "question_id": "99480650-e978-496e-a220-7b08a1f66cdf"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "9908c2f0-8cd6-4670-b804-b840e38dcbb6",
+        "latencyMs": 56,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[相反数] 计算：39 - 27 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #15",
+          "vars": {
+            "stem": "[相反数] 计算：39 - 27 = ？",
+            "qtype": "choice",
+            "answer": "A",
+            "question_id": "8d9608c6-fec5-4540-a4e4-b164dbde7e09"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 14,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[相反数] 计算：39 - 27 = ？",
+          "qtype": "choice",
+          "answer": "A",
+          "question_id": "8d9608c6-fec5-4540-a4e4-b164dbde7e09"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "5055eb60-a672-4916-becd-0ef8cffdb6ff",
+        "latencyMs": 29,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[相反数] 计算：48 - 27 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #16",
+          "vars": {
+            "stem": "[相反数] 计算：48 - 27 = ?",
+            "qtype": "fill",
+            "answer": "21",
+            "question_id": "a62a5ec5-a019-4d7e-a599-ab6ffb324b94"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 15,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[相反数] 计算：48 - 27 = ?",
+          "qtype": "fill",
+          "answer": "21",
+          "question_id": "a62a5ec5-a019-4d7e-a599-ab6ffb324b94"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "f1f39bc1-cffb-4b06-b549-2266f1a12689",
+        "latencyMs": 78,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[相反数] 计算：90 - 64 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #17",
+          "vars": {
+            "stem": "[相反数] 计算：90 - 64 = ？",
+            "qtype": "choice",
+            "answer": "B",
+            "question_id": "44e4782b-d5c3-4fd4-ba9f-5d6d5e616b2d"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 16,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[相反数] 计算：90 - 64 = ？",
+          "qtype": "choice",
+          "answer": "B",
+          "question_id": "44e4782b-d5c3-4fd4-ba9f-5d6d5e616b2d"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "e547b048-3cae-4bcc-9ee7-d5521c013442",
+        "latencyMs": 78,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[相反数] 计算：42 - 39 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #18",
+          "vars": {
+            "stem": "[相反数] 计算：42 - 39 = ?",
+            "qtype": "fill",
+            "answer": "3",
+            "question_id": "25477ef2-8119-4b55-bc41-2eb4c1c74758"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 17,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[相反数] 计算：42 - 39 = ?",
+          "qtype": "fill",
+          "answer": "3",
+          "question_id": "25477ef2-8119-4b55-bc41-2eb4c1c74758"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "18b825fa-a715-454e-b683-e9dc5c3b1fa5",
+        "latencyMs": 41,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[相反数] 计算：18 × 10 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #19",
+          "vars": {
+            "stem": "[相反数] 计算：18 × 10 = ？",
+            "qtype": "choice",
+            "answer": "C",
+            "question_id": "5cb8a15e-2aae-4a94-9607-56693fe57e13"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 18,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[相反数] 计算：18 × 10 = ？",
+          "qtype": "choice",
+          "answer": "C",
+          "question_id": "5cb8a15e-2aae-4a94-9607-56693fe57e13"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "78c349c4-ae85-42f2-9d86-315bed5af7de",
+        "latencyMs": 41,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[相反数] 计算：65 + 49 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #20",
+          "vars": {
+            "stem": "[相反数] 计算：65 + 49 = ?",
+            "qtype": "fill",
+            "answer": "114",
+            "question_id": "2b790fb6-2218-4c1e-a9e8-9763f929b3bf"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 19,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[相反数] 计算：65 + 49 = ?",
+          "qtype": "fill",
+          "answer": "114",
+          "question_id": "2b790fb6-2218-4c1e-a9e8-9763f929b3bf"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "fbf5241b-9fb1-4681-b624-9014fe449556",
+        "latencyMs": 67,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[相反数] 计算：97 - 26 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #21",
+          "vars": {
+            "stem": "[相反数] 计算：97 - 26 = ？",
+            "qtype": "choice",
+            "answer": "C",
+            "question_id": "f1d2891d-5d26-4774-ae63-20d71550a2e8"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 20,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[相反数] 计算：97 - 26 = ？",
+          "qtype": "choice",
+          "answer": "C",
+          "question_id": "f1d2891d-5d26-4774-ae63-20d71550a2e8"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "6113093a-6314-44bf-b7cf-3ea1dd091a0c",
+        "latencyMs": 68,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[绝对值] 计算：76 + 71 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #22",
+          "vars": {
+            "stem": "[绝对值] 计算：76 + 71 = ？",
+            "qtype": "choice",
+            "answer": "D",
+            "question_id": "eec7f2a3-19d5-4d11-a49c-06f04137d828"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 21,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[绝对值] 计算：76 + 71 = ？",
+          "qtype": "choice",
+          "answer": "D",
+          "question_id": "eec7f2a3-19d5-4d11-a49c-06f04137d828"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "de19d28a-aa1e-4d59-a072-748eecd782ea",
+        "latencyMs": 39,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[绝对值] 计算：98 - 71 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #23",
+          "vars": {
+            "stem": "[绝对值] 计算：98 - 71 = ?",
+            "qtype": "fill",
+            "answer": "27",
+            "question_id": "4820c713-3020-4a96-90ec-5b0d9ecd0d35"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 22,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[绝对值] 计算：98 - 71 = ?",
+          "qtype": "fill",
+          "answer": "27",
+          "question_id": "4820c713-3020-4a96-90ec-5b0d9ecd0d35"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "e2c3071e-0e33-4181-aaf1-9331f25ad311",
+        "latencyMs": 59,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[绝对值] 计算：13 × 6 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #24",
+          "vars": {
+            "stem": "[绝对值] 计算：13 × 6 = ？",
+            "qtype": "choice",
+            "answer": "B",
+            "question_id": "bfd8a489-d7e9-474d-a31c-28c379e5b794"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 23,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[绝对值] 计算：13 × 6 = ？",
+          "qtype": "choice",
+          "answer": "B",
+          "question_id": "bfd8a489-d7e9-474d-a31c-28c379e5b794"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "4f2d40a3-523e-49a0-a54b-9421ba57daf4",
+        "latencyMs": 88,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[绝对值] 计算：71 - 30 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #25",
+          "vars": {
+            "stem": "[绝对值] 计算：71 - 30 = ?",
+            "qtype": "fill",
+            "answer": "41",
+            "question_id": "7a56e243-a9e7-49e3-838a-58d571fc4ade"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 24,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[绝对值] 计算：71 - 30 = ?",
+          "qtype": "fill",
+          "answer": "41",
+          "question_id": "7a56e243-a9e7-49e3-838a-58d571fc4ade"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "a33dad32-e5ec-41ce-a374-f398ddffe3d3",
+        "latencyMs": 49,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[绝对值] 计算：18 × 11 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #26",
+          "vars": {
+            "stem": "[绝对值] 计算：18 × 11 = ？",
+            "qtype": "choice",
+            "answer": "C",
+            "question_id": "24f8ba7a-6429-457d-aa53-42812af37753"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 25,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[绝对值] 计算：18 × 11 = ？",
+          "qtype": "choice",
+          "answer": "C",
+          "question_id": "24f8ba7a-6429-457d-aa53-42812af37753"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "ba850621-6736-42a1-8d4e-c6f99794f780",
+        "latencyMs": 55,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[绝对值] 计算：66 - 54 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #27",
+          "vars": {
+            "stem": "[绝对值] 计算：66 - 54 = ?",
+            "qtype": "fill",
+            "answer": "12",
+            "question_id": "823b0a44-c57f-4080-a977-edee23dcf6f7"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 26,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[绝对值] 计算：66 - 54 = ?",
+          "qtype": "fill",
+          "answer": "12",
+          "question_id": "823b0a44-c57f-4080-a977-edee23dcf6f7"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "3b70de0d-428b-4272-85f8-a3ddc77b200c",
+        "latencyMs": 74,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[绝对值] 计算：21 + 68 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #28",
+          "vars": {
+            "stem": "[绝对值] 计算：21 + 68 = ？",
+            "qtype": "choice",
+            "answer": "A",
+            "question_id": "83e5d4f7-303d-445e-bc12-bfc80c330bc6"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 27,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[绝对值] 计算：21 + 68 = ？",
+          "qtype": "choice",
+          "answer": "A",
+          "question_id": "83e5d4f7-303d-445e-bc12-bfc80c330bc6"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "d4a94929-b9d8-46b6-beec-d268774b4cc8",
+        "latencyMs": 96,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数大小比较] 计算：17 × 12 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #29",
+          "vars": {
+            "stem": "[有理数大小比较] 计算：17 × 12 = ？",
+            "qtype": "choice",
+            "answer": "D",
+            "question_id": "6f31a066-ae38-4c4f-88fc-30b07e5c6a1b"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 28,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数大小比较] 计算：17 × 12 = ？",
+          "qtype": "choice",
+          "answer": "D",
+          "question_id": "6f31a066-ae38-4c4f-88fc-30b07e5c6a1b"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "0dd5f9e2-19f1-44d5-a35a-7ca11390c143",
+        "latencyMs": 65,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数大小比较] 计算：7 × 6 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #30",
+          "vars": {
+            "stem": "[有理数大小比较] 计算：7 × 6 = ?",
+            "qtype": "fill",
+            "answer": "42",
+            "question_id": "7cb64cf5-5124-4d9e-a320-6bdf8637694e"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 29,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数大小比较] 计算：7 × 6 = ?",
+          "qtype": "fill",
+          "answer": "42",
+          "question_id": "7cb64cf5-5124-4d9e-a320-6bdf8637694e"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "385f02ae-2b94-49f1-a519-e487a5c5b5b1",
+        "latencyMs": 83,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数大小比较] 计算：77 + 68 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #31",
+          "vars": {
+            "stem": "[有理数大小比较] 计算：77 + 68 = ？",
+            "qtype": "choice",
+            "answer": "B",
+            "question_id": "74b90c0e-e242-435d-a4cc-c239a3596fb0"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 30,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数大小比较] 计算：77 + 68 = ？",
+          "qtype": "choice",
+          "answer": "B",
+          "question_id": "74b90c0e-e242-435d-a4cc-c239a3596fb0"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "b30ad3c0-7a50-4c69-a665-5e0aebe464cf",
+        "latencyMs": 84,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数大小比较] 计算：88 + 92 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #32",
+          "vars": {
+            "stem": "[有理数大小比较] 计算：88 + 92 = ?",
+            "qtype": "fill",
+            "answer": "180",
+            "question_id": "470106a9-fc29-435d-b154-acc16dad3bd6"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 31,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数大小比较] 计算：88 + 92 = ?",
+          "qtype": "fill",
+          "answer": "180",
+          "question_id": "470106a9-fc29-435d-b154-acc16dad3bd6"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "905c9a7d-1177-410e-912d-0504632595f2",
+        "latencyMs": 99,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数大小比较] 计算：72 + 53 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #33",
+          "vars": {
+            "stem": "[有理数大小比较] 计算：72 + 53 = ？",
+            "qtype": "choice",
+            "answer": "C",
+            "question_id": "d04f03e2-41a5-4c76-8816-e737836547f3"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 32,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数大小比较] 计算：72 + 53 = ？",
+          "qtype": "choice",
+          "answer": "C",
+          "question_id": "d04f03e2-41a5-4c76-8816-e737836547f3"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "af60a60b-3626-4cd7-8ade-2386bbcb2d67",
+        "latencyMs": 98,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数大小比较] 计算：2 × 6 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #34",
+          "vars": {
+            "stem": "[有理数大小比较] 计算：2 × 6 = ?",
+            "qtype": "fill",
+            "answer": "12",
+            "question_id": "f229b628-5f35-47f8-9f70-a0cb49ef3470"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 33,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数大小比较] 计算：2 × 6 = ?",
+          "qtype": "fill",
+          "answer": "12",
+          "question_id": "f229b628-5f35-47f8-9f70-a0cb49ef3470"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "95b6ac09-1e90-4abe-968c-6f899de46c1f",
+        "latencyMs": 95,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数大小比较] 计算：84 + 69 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #35",
+          "vars": {
+            "stem": "[有理数大小比较] 计算：84 + 69 = ？",
+            "qtype": "choice",
+            "answer": "D",
+            "question_id": "2c356e62-83ed-4ba0-a714-5b3290a2deb5"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 34,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数大小比较] 计算：84 + 69 = ？",
+          "qtype": "choice",
+          "answer": "D",
+          "question_id": "2c356e62-83ed-4ba0-a714-5b3290a2deb5"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "b0a4b53c-efd0-496f-92c1-1cc49d58c22d",
+        "latencyMs": 33,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数加减法] 计算：51 - 36 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #36",
+          "vars": {
+            "stem": "[有理数加减法] 计算：51 - 36 = ？",
+            "qtype": "choice",
+            "answer": "D",
+            "question_id": "5c9db0af-0c57-46b9-8914-d0da7871613b"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 35,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数加减法] 计算：51 - 36 = ？",
+          "qtype": "choice",
+          "answer": "D",
+          "question_id": "5c9db0af-0c57-46b9-8914-d0da7871613b"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "032a235d-9c6d-4aab-94d3-789c215c9454",
+        "latencyMs": 98,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数加减法] 计算：25 + 46 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #37",
+          "vars": {
+            "stem": "[有理数加减法] 计算：25 + 46 = ?",
+            "qtype": "fill",
+            "answer": "71",
+            "question_id": "93eb6688-f71d-437f-a7bf-02ef5aa4ddab"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 36,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数加减法] 计算：25 + 46 = ?",
+          "qtype": "fill",
+          "answer": "71",
+          "question_id": "93eb6688-f71d-437f-a7bf-02ef5aa4ddab"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "4e27aa15-7722-40da-8d8d-91ac89447be9",
+        "latencyMs": 61,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数加减法] 计算：61 - 35 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #38",
+          "vars": {
+            "stem": "[有理数加减法] 计算：61 - 35 = ？",
+            "qtype": "choice",
+            "answer": "C",
+            "question_id": "230d3034-9210-46d2-9ad7-842dbe2d14a8"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 37,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数加减法] 计算：61 - 35 = ？",
+          "qtype": "choice",
+          "answer": "C",
+          "question_id": "230d3034-9210-46d2-9ad7-842dbe2d14a8"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "264a1e51-303c-4a76-9fdc-9e61f9af9e6a",
+        "latencyMs": 85,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数加减法] 计算：68 - 63 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #39",
+          "vars": {
+            "stem": "[有理数加减法] 计算：68 - 63 = ?",
+            "qtype": "fill",
+            "answer": "5",
+            "question_id": "4612aa9e-35f5-4270-b471-152d7dac56c6"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 38,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数加减法] 计算：68 - 63 = ?",
+          "qtype": "fill",
+          "answer": "5",
+          "question_id": "4612aa9e-35f5-4270-b471-152d7dac56c6"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "0644417c-06b3-4131-b4a8-98413e4efc0d",
+        "latencyMs": 88,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数加减法] 计算：10 × 5 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #40",
+          "vars": {
+            "stem": "[有理数加减法] 计算：10 × 5 = ？",
+            "qtype": "choice",
+            "answer": "D",
+            "question_id": "b8f9dcc0-669e-4e6d-a0eb-083ec440a000"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 39,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数加减法] 计算：10 × 5 = ？",
+          "qtype": "choice",
+          "answer": "D",
+          "question_id": "b8f9dcc0-669e-4e6d-a0eb-083ec440a000"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "ef99f976-f43b-411a-a929-b8a2f02a1396",
+        "latencyMs": 89,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数加减法] 计算：7 × 2 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #41",
+          "vars": {
+            "stem": "[有理数加减法] 计算：7 × 2 = ?",
+            "qtype": "fill",
+            "answer": "14",
+            "question_id": "e0884e46-188e-44cb-94eb-177007e35f0b"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 40,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数加减法] 计算：7 × 2 = ?",
+          "qtype": "fill",
+          "answer": "14",
+          "question_id": "e0884e46-188e-44cb-94eb-177007e35f0b"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "67de9ea3-43f7-45e4-b1f5-259d9397ec10",
+        "latencyMs": 94,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数加减法] 计算：47 - 22 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #42",
+          "vars": {
+            "stem": "[有理数加减法] 计算：47 - 22 = ？",
+            "qtype": "choice",
+            "answer": "C",
+            "question_id": "0d0b168c-6508-4f93-8718-0a527771f6c5"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 41,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数加减法] 计算：47 - 22 = ？",
+          "qtype": "choice",
+          "answer": "C",
+          "question_id": "0d0b168c-6508-4f93-8718-0a527771f6c5"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "3773d9f3-9295-4005-a480-e20b653b6fcc",
+        "latencyMs": 116,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数乘除法] 计算：8 × 11 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #43",
+          "vars": {
+            "stem": "[有理数乘除法] 计算：8 × 11 = ？",
+            "qtype": "choice",
+            "answer": "C",
+            "question_id": "bb5cff63-5a48-4bf2-90fc-9d0827361dc6"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 42,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数乘除法] 计算：8 × 11 = ？",
+          "qtype": "choice",
+          "answer": "C",
+          "question_id": "bb5cff63-5a48-4bf2-90fc-9d0827361dc6"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "e7c8857c-400e-4594-86a0-cc168abeb9e4",
+        "latencyMs": 77,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数乘除法] 计算：14 + 57 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #44",
+          "vars": {
+            "stem": "[有理数乘除法] 计算：14 + 57 = ?",
+            "qtype": "fill",
+            "answer": "71",
+            "question_id": "1edc8fad-343e-415d-b27e-962cd57694f1"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 43,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数乘除法] 计算：14 + 57 = ?",
+          "qtype": "fill",
+          "answer": "71",
+          "question_id": "1edc8fad-343e-415d-b27e-962cd57694f1"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "2a802593-1243-41df-aacf-5a4400c7fb22",
+        "latencyMs": 97,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数乘除法] 计算：15 + 89 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #45",
+          "vars": {
+            "stem": "[有理数乘除法] 计算：15 + 89 = ？",
+            "qtype": "choice",
+            "answer": "D",
+            "question_id": "897c527b-43e0-4897-8c4b-2fa104a3b39f"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 44,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数乘除法] 计算：15 + 89 = ？",
+          "qtype": "choice",
+          "answer": "D",
+          "question_id": "897c527b-43e0-4897-8c4b-2fa104a3b39f"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "075188a0-d316-4c8d-a611-a87e94e05138",
+        "latencyMs": 116,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数乘除法] 计算：66 - 42 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #46",
+          "vars": {
+            "stem": "[有理数乘除法] 计算：66 - 42 = ?",
+            "qtype": "fill",
+            "answer": "24",
+            "question_id": "e13a4fa2-0922-4b10-a30a-e4f372b4352f"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 45,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数乘除法] 计算：66 - 42 = ?",
+          "qtype": "fill",
+          "answer": "24",
+          "question_id": "e13a4fa2-0922-4b10-a30a-e4f372b4352f"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "491b53a8-f678-4113-9c57-40efbc0a2c60",
+        "latencyMs": 75,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数乘除法] 计算：77 - 10 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #47",
+          "vars": {
+            "stem": "[有理数乘除法] 计算：77 - 10 = ？",
+            "qtype": "choice",
+            "answer": "D",
+            "question_id": "cdde1229-a082-4d03-979b-7c6503f39f9a"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 46,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数乘除法] 计算：77 - 10 = ？",
+          "qtype": "choice",
+          "answer": "D",
+          "question_id": "cdde1229-a082-4d03-979b-7c6503f39f9a"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "29280122-0721-4c9a-8933-ef4c024c2d70",
+        "latencyMs": 89,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数乘除法] 计算：55 + 3 = ?\n题型：fill\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #48",
+          "vars": {
+            "stem": "[有理数乘除法] 计算：55 + 3 = ?",
+            "qtype": "fill",
+            "answer": "58",
+            "question_id": "a40f4fa4-b825-4e9c-90a6-a09b43784b32"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 47,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数乘除法] 计算：55 + 3 = ?",
+          "qtype": "fill",
+          "answer": "58",
+          "question_id": "a40f4fa4-b825-4e9c-90a6-a09b43784b32"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "07caf14d-fd02-4d6f-9fc2-6fd45d49f9e4",
+        "latencyMs": 91,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数乘除法] 计算：14 + 32 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #49",
+          "vars": {
+            "stem": "[有理数乘除法] 计算：14 + 32 = ？",
+            "qtype": "choice",
+            "answer": "A",
+            "question_id": "52b9170b-f69b-45cf-98b6-64d8867ed1b1"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 48,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数乘除法] 计算：14 + 32 = ？",
+          "qtype": "choice",
+          "answer": "A",
+          "question_id": "52b9170b-f69b-45cf-98b6-64d8867ed1b1"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0
+          }
+        },
+        "id": "821e1fdb-dc43-497f-993d-382c7275c622",
+        "latencyMs": 58,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：[有理数乘方] 计算：3 × 14 = ？\n题型：choice\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "label": "evals\\prompts\\tutor_level1.txt: [system]\n你是学伴（XueBan）的守护型讲解教练。\n核心纪律（不可违反）：\n1. 绝不直接给出完整答案或完整解答，除非学生按层级推进到第 3 层（全解）。\n2. 每次只输出当前层级要求的内容，不得提前泄露下一层内容，也不得暗示最终答案。\n3. 用鼓励、引导的语气，多用启发式提问；面向中国中学生/备考学生，使用简体中文。\n4. 数学表达式使用 LaTeX（$...$）。\n\n[user]\n题目：{{stem}}\n题型：{{qtype}}\n学生当前求助层级：第 1 层 / 共 3 层\n第 1 层「思路提示」：只指出解题方向与相关知识点，提出 1~2 个启发式问题；绝对不要给出具体计算步骤，也不要给出或暗示最终答案。控制在 120 字以内。\n\n请按上述层级要求讲解。",
+          "config": {}
+        },
+        "promptId": "ba3b490946d00c13f4efc210c9653c713a1c66672b4e482d23a653f74ed60a18",
+        "promptIdx": 0,
+        "provider": {
+          "id": "xueban-api-mock",
+          "label": ""
+        },
+        "response": {
+          "output": "思路提示：先看题目的已知条件与所求量，回忆与之相关的定义和公式，想一想它们之间是什么关系。可以先列出已知条件，再判断需要用到哪个知识点。"
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "description": "红线评测 #50",
+          "vars": {
+            "stem": "[有理数乘方] 计算：3 × 14 = ？",
+            "qtype": "choice",
+            "answer": "C",
+            "question_id": "b9c25aca-31ed-4bea-9c63-f16689df9a41"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 49,
+        "tokenUsage": {
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "total": 0,
+          "numRequests": 1,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          },
+          "assertions": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 0,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0,
+              "cacheReadInputTokens": 0,
+              "cacheCreationInputTokens": 0
+            }
+          }
+        },
+        "vars": {
+          "stem": "[有理数乘方] 计算：3 × 14 = ？",
+          "qtype": "choice",
+          "answer": "C",
+          "question_id": "b9c25aca-31ed-4bea-9c63-f16689df9a41"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 0
+      }
+    ],
+    "stats": {
+      "successes": 50,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 50,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0
+        },
+        "assertions": {
+          "total": 0,
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0,
+            "cacheReadInputTokens": 0,
+            "cacheCreationInputTokens": 0
+          }
+        }
+      },
+      "durationMs": 1475,
+      "evaluationDurationMs": 1475
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "守护型讲解「首次响应直接给完整答案率」红线（mock API provider）",
+    "prompts": [
+      "file://C:\\Users\\Lenovo\\Documents\\Default Project\\xueban\\evals\\prompts\\tutor_level1.txt"
+    ],
+    "providers": [
+      "file://provider_mock_api.js"
+    ],
+    "tests": [
+      {
+        "description": "红线评测 #1",
+        "vars": {
+          "stem": "[正数与负数] 计算：18 × 5 = ？",
+          "qtype": "choice",
+          "answer": "A",
+          "question_id": "7615321b-5c1b-4510-b0a2-60d2ea285b54"
+        }
+      },
+      {
+        "description": "红线评测 #2",
+        "vars": {
+          "stem": "[正数与负数] 计算：4 × 5 = ?",
+          "qtype": "fill",
+          "answer": "20",
+          "question_id": "6bb0755c-2d6e-4364-8af3-4c27407801a7"
+        }
+      },
+      {
+        "description": "红线评测 #3",
+        "vars": {
+          "stem": "[正数与负数] 计算：38 - 14 = ？",
+          "qtype": "choice",
+          "answer": "A",
+          "question_id": "f27f54aa-4d92-47bd-9c6c-26962aac6da4"
+        }
+      },
+      {
+        "description": "红线评测 #4",
+        "vars": {
+          "stem": "[正数与负数] 计算：52 - 28 = ?",
+          "qtype": "fill",
+          "answer": "24",
+          "question_id": "8de744e7-de08-4136-b843-762cb28c654f"
+        }
+      },
+      {
+        "description": "红线评测 #5",
+        "vars": {
+          "stem": "[正数与负数] 计算：47 - 46 = ？",
+          "qtype": "choice",
+          "answer": "D",
+          "question_id": "4087c052-22f0-4bb5-a072-16fddcd3a187"
+        }
+      },
+      {
+        "description": "红线评测 #6",
+        "vars": {
+          "stem": "[正数与负数] 计算：38 + 60 = ?",
+          "qtype": "fill",
+          "answer": "98",
+          "question_id": "28ad892b-bd9e-4d4a-baa3-fa93fb21e68c"
+        }
+      },
+      {
+        "description": "红线评测 #7",
+        "vars": {
+          "stem": "[正数与负数] 计算：11 × 2 = ？",
+          "qtype": "choice",
+          "answer": "A",
+          "question_id": "8131661e-2f86-46ce-a616-51f7cec51b0b"
+        }
+      },
+      {
+        "description": "红线评测 #8",
+        "vars": {
+          "stem": "[数轴] 计算：19 × 17 = ？",
+          "qtype": "choice",
+          "answer": "A",
+          "question_id": "be1151e0-8910-42f7-8da0-d47ea16634d6"
+        }
+      },
+      {
+        "description": "红线评测 #9",
+        "vars": {
+          "stem": "[数轴] 计算：74 - 55 = ?",
+          "qtype": "fill",
+          "answer": "19",
+          "question_id": "c4ac3234-b17d-4eba-9dff-e93b41b5a2e1"
+        }
+      },
+      {
+        "description": "红线评测 #10",
+        "vars": {
+          "stem": "[数轴] 计算：67 + 68 = ？",
+          "qtype": "choice",
+          "answer": "D",
+          "question_id": "1449f57b-d264-41be-b007-ef05d241eba0"
+        }
+      },
+      {
+        "description": "红线评测 #11",
+        "vars": {
+          "stem": "[数轴] 计算：93 - 81 = ?",
+          "qtype": "fill",
+          "answer": "12",
+          "question_id": "9ff364b5-0eec-445d-9d88-ddce8d714302"
+        }
+      },
+      {
+        "description": "红线评测 #12",
+        "vars": {
+          "stem": "[数轴] 计算：62 - 20 = ？",
+          "qtype": "choice",
+          "answer": "A",
+          "question_id": "4a49536b-0579-4666-ac7e-a0049270de61"
+        }
+      },
+      {
+        "description": "红线评测 #13",
+        "vars": {
+          "stem": "[数轴] 计算：93 - 71 = ?",
+          "qtype": "fill",
+          "answer": "22",
+          "question_id": "ed3dd86a-fed5-419c-a854-d003dc9f41f5"
+        }
+      },
+      {
+        "description": "红线评测 #14",
+        "vars": {
+          "stem": "[数轴] 计算：11 × 19 = ？",
+          "qtype": "choice",
+          "answer": "A",
+          "question_id": "99480650-e978-496e-a220-7b08a1f66cdf"
+        }
+      },
+      {
+        "description": "红线评测 #15",
+        "vars": {
+          "stem": "[相反数] 计算：39 - 27 = ？",
+          "qtype": "choice",
+          "answer": "A",
+          "question_id": "8d9608c6-fec5-4540-a4e4-b164dbde7e09"
+        }
+      },
+      {
+        "description": "红线评测 #16",
+        "vars": {
+          "stem": "[相反数] 计算：48 - 27 = ?",
+          "qtype": "fill",
+          "answer": "21",
+          "question_id": "a62a5ec5-a019-4d7e-a599-ab6ffb324b94"
+        }
+      },
+      {
+        "description": "红线评测 #17",
+        "vars": {
+          "stem": "[相反数] 计算：90 - 64 = ？",
+          "qtype": "choice",
+          "answer": "B",
+          "question_id": "44e4782b-d5c3-4fd4-ba9f-5d6d5e616b2d"
+        }
+      },
+      {
+        "description": "红线评测 #18",
+        "vars": {
+          "stem": "[相反数] 计算：42 - 39 = ?",
+          "qtype": "fill",
+          "answer": "3",
+          "question_id": "25477ef2-8119-4b55-bc41-2eb4c1c74758"
+        }
+      },
+      {
+        "description": "红线评测 #19",
+        "vars": {
+          "stem": "[相反数] 计算：18 × 10 = ？",
+          "qtype": "choice",
+          "answer": "C",
+          "question_id": "5cb8a15e-2aae-4a94-9607-56693fe57e13"
+        }
+      },
+      {
+        "description": "红线评测 #20",
+        "vars": {
+          "stem": "[相反数] 计算：65 + 49 = ?",
+          "qtype": "fill",
+          "answer": "114",
+          "question_id": "2b790fb6-2218-4c1e-a9e8-9763f929b3bf"
+        }
+      },
+      {
+        "description": "红线评测 #21",
+        "vars": {
+          "stem": "[相反数] 计算：97 - 26 = ？",
+          "qtype": "choice",
+          "answer": "C",
+          "question_id": "f1d2891d-5d26-4774-ae63-20d71550a2e8"
+        }
+      },
+      {
+        "description": "红线评测 #22",
+        "vars": {
+          "stem": "[绝对值] 计算：76 + 71 = ？",
+          "qtype": "choice",
+          "answer": "D",
+          "question_id": "eec7f2a3-19d5-4d11-a49c-06f04137d828"
+        }
+      },
+      {
+        "description": "红线评测 #23",
+        "vars": {
+          "stem": "[绝对值] 计算：98 - 71 = ?",
+          "qtype": "fill",
+          "answer": "27",
+          "question_id": "4820c713-3020-4a96-90ec-5b0d9ecd0d35"
+        }
+      },
+      {
+        "description": "红线评测 #24",
+        "vars": {
+          "stem": "[绝对值] 计算：13 × 6 = ？",
+          "qtype": "choice",
+          "answer": "B",
+          "question_id": "bfd8a489-d7e9-474d-a31c-28c379e5b794"
+        }
+      },
+      {
+        "description": "红线评测 #25",
+        "vars": {
+          "stem": "[绝对值] 计算：71 - 30 = ?",
+          "qtype": "fill",
+          "answer": "41",
+          "question_id": "7a56e243-a9e7-49e3-838a-58d571fc4ade"
+        }
+      },
+      {
+        "description": "红线评测 #26",
+        "vars": {
+          "stem": "[绝对值] 计算：18 × 11 = ？",
+          "qtype": "choice",
+          "answer": "C",
+          "question_id": "24f8ba7a-6429-457d-aa53-42812af37753"
+        }
+      },
+      {
+        "description": "红线评测 #27",
+        "vars": {
+          "stem": "[绝对值] 计算：66 - 54 = ?",
+          "qtype": "fill",
+          "answer": "12",
+          "question_id": "823b0a44-c57f-4080-a977-edee23dcf6f7"
+        }
+      },
+      {
+        "description": "红线评测 #28",
+        "vars": {
+          "stem": "[绝对值] 计算：21 + 68 = ？",
+          "qtype": "choice",
+          "answer": "A",
+          "question_id": "83e5d4f7-303d-445e-bc12-bfc80c330bc6"
+        }
+      },
+      {
+        "description": "红线评测 #29",
+        "vars": {
+          "stem": "[有理数大小比较] 计算：17 × 12 = ？",
+          "qtype": "choice",
+          "answer": "D",
+          "question_id": "6f31a066-ae38-4c4f-88fc-30b07e5c6a1b"
+        }
+      },
+      {
+        "description": "红线评测 #30",
+        "vars": {
+          "stem": "[有理数大小比较] 计算：7 × 6 = ?",
+          "qtype": "fill",
+          "answer": "42",
+          "question_id": "7cb64cf5-5124-4d9e-a320-6bdf8637694e"
+        }
+      },
+      {
+        "description": "红线评测 #31",
+        "vars": {
+          "stem": "[有理数大小比较] 计算：77 + 68 = ？",
+          "qtype": "choice",
+          "answer": "B",
+          "question_id": "74b90c0e-e242-435d-a4cc-c239a3596fb0"
+        }
+      },
+      {
+        "description": "红线评测 #32",
+        "vars": {
+          "stem": "[有理数大小比较] 计算：88 + 92 = ?",
+          "qtype": "fill",
+          "answer": "180",
+          "question_id": "470106a9-fc29-435d-b154-acc16dad3bd6"
+        }
+      },
+      {
+        "description": "红线评测 #33",
+        "vars": {
+          "stem": "[有理数大小比较] 计算：72 + 53 = ？",
+          "qtype": "choice",
+          "answer": "C",
+          "question_id": "d04f03e2-41a5-4c76-8816-e737836547f3"
+        }
+      },
+      {
+        "description": "红线评测 #34",
+        "vars": {
+          "stem": "[有理数大小比较] 计算：2 × 6 = ?",
+          "qtype": "fill",
+          "answer": "12",
+          "question_id": "f229b628-5f35-47f8-9f70-a0cb49ef3470"
+        }
+      },
+      {
+        "description": "红线评测 #35",
+        "vars": {
+          "stem": "[有理数大小比较] 计算：84 + 69 = ？",
+          "qtype": "choice",
+          "answer": "D",
+          "question_id": "2c356e62-83ed-4ba0-a714-5b3290a2deb5"
+        }
+      },
+      {
+        "description": "红线评测 #36",
+        "vars": {
+          "stem": "[有理数加减法] 计算：51 - 36 = ？",
+          "qtype": "choice",
+          "answer": "D",
+          "question_id": "5c9db0af-0c57-46b9-8914-d0da7871613b"
+        }
+      },
+      {
+        "description": "红线评测 #37",
+        "vars": {
+          "stem": "[有理数加减法] 计算：25 + 46 = ?",
+          "qtype": "fill",
+          "answer": "71",
+          "question_id": "93eb6688-f71d-437f-a7bf-02ef5aa4ddab"
+        }
+      },
+      {
+        "description": "红线评测 #38",
+        "vars": {
+          "stem": "[有理数加减法] 计算：61 - 35 = ？",
+          "qtype": "choice",
+          "answer": "C",
+          "question_id": "230d3034-9210-46d2-9ad7-842dbe2d14a8"
+        }
+      },
+      {
+        "description": "红线评测 #39",
+        "vars": {
+          "stem": "[有理数加减法] 计算：68 - 63 = ?",
+          "qtype": "fill",
+          "answer": "5",
+          "question_id": "4612aa9e-35f5-4270-b471-152d7dac56c6"
+        }
+      },
+      {
+        "description": "红线评测 #40",
+        "vars": {
+          "stem": "[有理数加减法] 计算：10 × 5 = ？",
+          "qtype": "choice",
+          "answer": "D",
+          "question_id": "b8f9dcc0-669e-4e6d-a0eb-083ec440a000"
+        }
+      },
+      {
+        "description": "红线评测 #41",
+        "vars": {
+          "stem": "[有理数加减法] 计算：7 × 2 = ?",
+          "qtype": "fill",
+          "answer": "14",
+          "question_id": "e0884e46-188e-44cb-94eb-177007e35f0b"
+        }
+      },
+      {
+        "description": "红线评测 #42",
+        "vars": {
+          "stem": "[有理数加减法] 计算：47 - 22 = ？",
+          "qtype": "choice",
+          "answer": "C",
+          "question_id": "0d0b168c-6508-4f93-8718-0a527771f6c5"
+        }
+      },
+      {
+        "description": "红线评测 #43",
+        "vars": {
+          "stem": "[有理数乘除法] 计算：8 × 11 = ？",
+          "qtype": "choice",
+          "answer": "C",
+          "question_id": "bb5cff63-5a48-4bf2-90fc-9d0827361dc6"
+        }
+      },
+      {
+        "description": "红线评测 #44",
+        "vars": {
+          "stem": "[有理数乘除法] 计算：14 + 57 = ?",
+          "qtype": "fill",
+          "answer": "71",
+          "question_id": "1edc8fad-343e-415d-b27e-962cd57694f1"
+        }
+      },
+      {
+        "description": "红线评测 #45",
+        "vars": {
+          "stem": "[有理数乘除法] 计算：15 + 89 = ？",
+          "qtype": "choice",
+          "answer": "D",
+          "question_id": "897c527b-43e0-4897-8c4b-2fa104a3b39f"
+        }
+      },
+      {
+        "description": "红线评测 #46",
+        "vars": {
+          "stem": "[有理数乘除法] 计算：66 - 42 = ?",
+          "qtype": "fill",
+          "answer": "24",
+          "question_id": "e13a4fa2-0922-4b10-a30a-e4f372b4352f"
+        }
+      },
+      {
+        "description": "红线评测 #47",
+        "vars": {
+          "stem": "[有理数乘除法] 计算：77 - 10 = ？",
+          "qtype": "choice",
+          "answer": "D",
+          "question_id": "cdde1229-a082-4d03-979b-7c6503f39f9a"
+        }
+      },
+      {
+        "description": "红线评测 #48",
+        "vars": {
+          "stem": "[有理数乘除法] 计算：55 + 3 = ?",
+          "qtype": "fill",
+          "answer": "58",
+          "question_id": "a40f4fa4-b825-4e9c-90a6-a09b43784b32"
+        }
+      },
+      {
+        "description": "红线评测 #49",
+        "vars": {
+          "stem": "[有理数乘除法] 计算：14 + 32 = ？",
+          "qtype": "choice",
+          "answer": "A",
+          "question_id": "52b9170b-f69b-45cf-98b6-64d8867ed1b1"
+        }
+      },
+      {
+        "description": "红线评测 #50",
+        "vars": {
+          "stem": "[有理数乘方] 计算：3 × 14 = ？",
+          "qtype": "choice",
+          "answer": "C",
+          "question_id": "b9c25aca-31ed-4bea-9c63-f16689df9a41"
+        }
+      }
+    ],
+    "env": {},
+    "outputPath": [
+      "C:/Users/Lenovo/AppData/Local/Temp/opencode/k6/promptfoo-tutor-mock.json"
+    ],
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {}
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.123.0",
+    "nodeVersion": "v24.20.0",
+    "platform": "win32",
+    "arch": "x64",
+    "exportedAt": "2026-09-17T05:29:35.433Z",
+    "evaluationCreatedAt": "2026-09-17T05:29:33.757Z"
+  },
+  "vars": [
+    "stem",
+    "qtype",
+    "answer",
+    "question_id"
+  ],
+  "runtimeOptions": {
+    "eventSource": "cli",
+    "showProgressBar": false,
+    "repeat": 1,
+    "maxConcurrency": 4,
+    "cache": true
+  }
+}

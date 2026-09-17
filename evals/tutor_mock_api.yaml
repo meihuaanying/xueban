@@ -1,0 +1,34 @@
+# 守护型讲解红线评测（mock 模式，可离线/CI 运行）
+#
+# 与 tutor.yaml（真实模型）同源断言：答案泄露 + 篇幅 + 思路层特征词。
+# 本模式直连本机 API（LLM_PROVIDER=mock），用于在无 Key（B-005）时把
+# 「红线断言可运行」纳入 CI 证据；真实模型评测仍以 tutor.yaml 为准。
+#
+# 运行（仓库根目录，API 见 evals/README.md 的端口说明）：
+#   PROMPTFOO_DISABLE_TELEMETRY=1 npx promptfoo@latest eval -c evals/tutor_mock_api.yaml
+description: 守护型讲解「首次响应直接给完整答案率」红线（mock API provider）
+
+prompts:
+  - file://prompts/tutor_level1.txt
+
+providers:
+  - file://provider_mock_api.js
+
+tests: file://tutor_cases.json
+
+assert:
+  # 1) 不得包含与标准答案完全一致的内容（直接泄题检测）
+  - type: not-contains
+    value: "{{answer}}"
+  # 2) 篇幅控制（第 1 层思路提示应简短）
+  - type: javascript
+    value: output.length > 0 && output.length <= 500
+  # 3) 思路层特征词：必须给出方向/启发，而非完整解答
+  - type: contains-any
+    value:
+      - "思路"
+      - "想一想"
+      - "回忆"
+      - "知识点"
+      - "提示"
+      - "已知"

@@ -1,0 +1,77 @@
+==================================================
+学伴 M8 V3 功能攻坚 · 出口门禁执行 · 2026-09-16 13:36:27
+执行者：DeepSeek V4.1（opencode）
+说明：真实 OCR 引擎与口语供应商未接入（B-012/B-013），按 mock-first 契约实现并保留降级路径；
+      promptfoo 实跑仍受模型 Key 阻塞（B-005）。
+==================================================
+
+### 1) 后端静态检查与全量测试
+$ ruff check .  → All checks passed!
+$ mypy --strict app → Success: no issues found in 114 source files
+$ pytest -q --cov=app --cov-fail-under=85（436 用例）
+app\services\attribution_service.py       58      1     14      1    97%
+app\services\auth_service.py             152     14     40      3    89%
+app\services\billing_service.py           92      2     22      2    96%
+app\services\card_service.py              47      2      6      1    94%
+app\services\coach_service.py             68      4     10      3    88%
+app\services\diagnosis_service.py        166     17     38      8    86%
+app\services\embeddings.py                69      3     20      2    94%
+app\services\exam_service.py             123     12     38     10    86%
+app\services\experiment_service.py       112     16     36      7    82%
+app\services\fsrs_service.py              96      2     18      2    96%
+app\services\grading_service.py          123      4     28      7    93%
+app\services\import_service.py           175     31     66      7    78%
+app\services\ingest_service.py            70      1     14      2    96%
+app\services\judge_service.py            107      4     38      7    92%
+app\services\lesson_service.py            98     10     20      4    88%
+app\services\library_service.py          114     18     36      5    79%
+app\services\llm_client.py               209     50     74     10    70%
+app\services\llm_json.py                  20      2      6      2    85%
+app\services\mastery_service.py           91      1     22      1    98%
+app\services\math_verify.py               53      7     18      2    87%
+app\services\metrics_service.py           65      8     14      2    85%
+app\services\mistake_book_service.py      67      4     16      4    90%
+app\services\observability.py             43      2      8      0    96%
+app\services\ocr_client.py               122     12     36      6    86%
+app\services\parent_service.py           217     17     50     14    88%
+app\services\planner_service.py          258     20     74     10    90%
+app\services\practice_service.py         132      5     36      5    94%
+app\services\prompts.py                   24      0      0      0   100%
+app\services\quality_service.py           72      9     12      2    85%
+app\services\recitation_service.py        76      7     36      6    85%
+app\services\report_service.py           167     18     32      5    86%
+app\services\rerank.py                    53      4     18      4    89%
+app\services\retrieval_service.py         55      2     14      4    91%
+app\services\safety_service.py           109     12     28      1    89%
+app\services\security.py                  48      0      6      0   100%
+app\services\sms.py                       20      2      2      1    86%
+app\services\speaking_service.py          50      2     10      1    95%
+app\services\storage_service.py           77      8     14      4    87%
+app\services\tts.py                       36      4      2      0    84%
+app\services\tutor_ext_service.py        154      9     34      8    91%
+app\services\tutor_service.py            109      1     22      2    98%
+app\worker.py                             56     42      0      0    25%
+------------------------------------------------------------------------
+TOTAL                                   7249    512   1196    182    91%
+Required test coverage of 85% reached. Total coverage: 90.55%
+
+### 2) M8 新增测试模块
+$ pytest tests/test_judge.py tests/test_coach.py tests/test_recitation_speaking.py tests/test_library_cards.py tests/test_ocr_flow.py -q
+38 passed（判题 8 / 陪练 8 / 背诵口语 8 / 文档卡片 4 / OCR 9 + 参数化）
+$ pytest tests/test_analytics.py tests/test_micro_lessons.py -q
+19 passed（F-05 画像 + F-16 微课 TTS 回归）
+
+### 3) 迁移往返（knowledge_cards / a29b14546a39）
+1a2576ed05d2 → a29b14546a39（upgrade）→ 1a2576ed05d2（downgrade）→ a29b14546a39（upgrade）全部 EXIT_CODE=0
+
+### 4) 前端质量门
+$ pnpm lint && pnpm typecheck && pnpm test → 5 包全绿（web 4 / desktop 9 / mobile 14 / ui 27 / core 4）
+
+### 5) 桌面端 E2E（含 M8 陪练/V3 工具）
+$ pnpm test:e2e:desktop
+  20 passed (33.0s)
+EXIT_CODE=0
+
+$ pnpm --filter @xueban/mobile test
+Tests:       14 passed, 14 total
+EXIT_CODE=0

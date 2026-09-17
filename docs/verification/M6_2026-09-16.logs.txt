@@ -1,0 +1,104 @@
+==================================================
+学伴 M6 安卓端 · 出口门禁执行 · 2026-09-16 00:48:36
+执行者：DeepSeek V4.1（opencode）
+
+本机环境说明：
+  · 无 Android SDK / 模拟器 / Maestro（java 17 可用）——APK 与 Maestro 执行记入 BLOCKERS B-009；
+  · 组件测试（Jest + RNTL）与 Android JS bundle 构建在本机完成。
+==================================================
+
+### 0) 工具链
+$ npx expo --version
+0.24.24
+EXIT_CODE=0
+$ java -version
+openjdk version "17.0.20.1" 2026-08-18
+
+### 1) 移动端静态检查与组件测试（Jest + RNTL）
+$ pnpm --filter @xueban/mobile lint
+
+> @xueban/mobile@0.1.0 lint C:\Users\Lenovo\Documents\Default Project\xueban\apps\mobile
+> eslint .
+
+EXIT_CODE=0
+$ pnpm --filter @xueban/mobile typecheck
+
+> @xueban/mobile@0.1.0 typecheck C:\Users\Lenovo\Documents\Default Project\xueban\apps\mobile
+> tsc --noEmit
+
+EXIT_CODE=0
+$ pnpm --filter @xueban/mobile test
+
+> @xueban/mobile@0.1.0 test C:\Users\Lenovo\Documents\Default Project\xueban\apps\mobile
+> jest
+
+PASS src/__tests__/practice.test.tsx
+PASS src/__tests__/tutor.test.tsx
+PASS src/__tests__/learn.test.tsx
+PASS ./App.test.tsx
+  ● Console
+
+    console.warn
+      expo-notifications: Android Push notifications (remote notifications) functionality provided by expo-notifications was removed from Expo Go with the release of SDK 53. Use a development build instead of Expo Go. Read more at https://docs.expo.dev/develop/development-builds/introduction/.
+
+    [0m [90m  5 |[39m [36mimport[39m type { [33mNativeStackNavigationProp[39m } [36mfrom[39m [32m"@react-navigation/native-stack"[39m[33m;[39m
+     [90m  6 |[39m [36mimport[39m [33m*[39m [36mas[39m [33mImagePicker[39m [36mfrom[39m [32m"expo-image-picker"[39m[33m;[39m
+    [31m[1m>[22m[39m[90m  7 |[39m [36mimport[39m [33m*[39m [36mas[39m [33mNotifications[39m [36mfrom[39m [32m"expo-notifications"[39m[33m;[39m
+     [90m    |[39m [31m[1m^[22m[39m
+     [90m  8 |[39m [36mimport[39m { [33mText[39m[33m,[39m [33mView[39m } [36mfrom[39m [32m"react-native"[39m[33m;[39m
+     [90m  9 |[39m
+     [90m 10 |[39m [36mimport[39m { [33mBadge[39m[33m,[39m [33mCard[39m[33m,[39m [33mErrorBlock[39m[33m,[39m [33mPrimaryButton[39m[33m,[39m [33mScreen[39m } [36mfrom[39m [32m"../components/ui"[39m[33m;[39m[0m
+
+      at warn (../../node_modules/expo-notifications/src/warnOfExpoGoPushUsage.ts:14:15)
+      at addPushTokenListener (../../node_modules/expo-notifications/src/TokenEmitter.ts:44:24)
+      at Object.<anonymous> (../../node_modules/expo-notifications/src/DevicePushTokenAutoRegistration.fx.ts:86:23)
+      at Object.require (../../node_modules/expo-notifications/src/getExpoPushTokenAsync.ts:5:1)
+      at Object.require (../../node_modules/expo-notifications/src/index.ts:16:1)
+      at Object.require (src/screens/profile.tsx:7:1)
+      at Object.require (App.tsx:13:1)
+      at Object.require (App.test.tsx:3:1)
+
+
+Test Suites: 4 passed, 4 total
+Tests:       10 passed, 10 total
+Snapshots:   0 total
+Time:        5.024 s
+Ran all test suites.
+EXIT_CODE=0
+
+### 2) Android JS bundle 构建（expo export）
+$ pnpm --filter @xueban/mobile build
+
+> @xueban/mobile@0.1.0 build C:\Users\Lenovo\Documents\Default Project\xueban\apps\mobile
+> expo export --platform android --output-dir dist
+
+Starting Metro Bundler
+Android apps\mobile\index.ts ▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░ 89.5% (775/819)
+Android Bundled 4668ms apps\mobile\index.ts (1202 modules)
+
+› Assets (17):
+..\..\node_modules\@react-navigation\elements\lib\module\assets\back-icon-mask.png (653 B)
+..\..\node_modules\@react-navigation\elements\lib\module\assets\back-icon.png (4 variations | 152 B)
+..\..\node_modules\@react-navigation\elements\lib\module\assets\clear-icon.png (4 variations | 425 B)
+..\..\node_modules\@react-navigation\elements\lib\module\assets\close-icon.png (4 variations | 235 B)
+..\..\node_modules\@react-navigation\elements\lib\module\assets\search-icon.png (4 variations | 599 B)
+
+› android bundles (1):
+_expo/static/js/android/index-d3f42bcff2c64d60d8c55b60cce89af0.hbc (3.61 MB)
+
+› Files (1):
+metadata.json (1.36 kB)
+
+Exported: dist
+EXIT_CODE=0
+
+### 3) Maestro 流程（已编写，需模拟器执行）
+total 8
+-rw-r--r-- 1 Lenovo 197612 1281 Sep 16 00:48 01-register-diagnosis-plan.yaml
+-rw-r--r-- 1 Lenovo 197612  874 Sep 16 00:48 02-practice-mistake-loop.yaml
+
+$ maestro test apps/mobile/maestro/  ← 本机无 Maestro/模拟器，未执行（见 BLOCKERS B-009）
+
+### 4) APK 构建
+$ pnpm exec expo prebuild --platform android && ./gradlew assembleRelease  ← 本机无 Android SDK，未执行（见 BLOCKERS B-009）
+CI 已配置：mobile-apk 作业（ubuntu + Java 17 + expo prebuild + gradle assembleRelease + APK 体积门禁 + android-emulator-runner + Maestro 两条流程）

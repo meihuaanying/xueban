@@ -1,0 +1,162 @@
+==============================================================
+M10 质量加固 · 原始日志汇编（2026-09-16 ~ 09-17，UTC+8）
+==============================================================
+
+## 0) 环境
+---
+node: v24.20.0
+python: Python 3.12.10
+k6: 2.2.0（C:/Program Files/k6/k6.exe）
+docker: 29.7.2 / compose 5.5.0
+docker CPUs: 16
+
+## 1) T10.1 覆盖率门禁（后端）
+--- 命令: pytest -q --cov=app --cov-fail-under=85
+
+........................................................................ [ 16%]
+........................................................................ [ 32%]
+........................................................................ [ 48%]
+........................................................................ [ 64%]
+........................................................................ [ 80%]
+........................................................................ [ 97%]
+.............                                                            [100%]
+============================== warnings summary ===============================
+...（省略逐文件表）
+app\services\tutor_service.py            109      1     22      2    98%
+app\worker.py                             56     42      0      0    25%
+------------------------------------------------------------------------
+TOTAL                                   7407    515   1214    186    91%
+Required test coverage of 85% reached. Total coverage: 90.71%
+
+--- 命令: ruff check . / mypy --strict app
+
+All checks passed!
+Success: no issues found in 117 source files
+
+## 2) 前端质量门禁
+--- 命令: pnpm lint / pnpm typecheck
+
+ Tasks:    5 successful, 5 total
+Cached:    4 cached, 5 total
+  Time:    2.963s 
+
+ Tasks:    5 successful, 5 total
+Cached:    2 cached, 5 total
+  Time:    5.432s 
+
+
+--- 命令: pnpm test（184 用例）
+
+@xueban/core:test: [2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+@xueban/ui:test: [2m Test Files [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+@xueban/desktop:test: [2m Test Files [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+@xueban/web:test: [2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+@xueban/mobile:test: Tests:       54 passed, 54 total
+
+## 3) T10.3 安全扫描
+--- pip-audit
+
+WARNING:pip_audit._cache:Failed to write to cache directory, performance may be degraded: [WinError 3] ϵͳ�Ҳ���ָ����·����: 'C:\\Users\\Lenovo\\AppData\\Local\\pip-audit\\Cache\\d\\b\\8\\f\\2\\tmphtmu8h4h' -> 'C:\\Users\\Lenovo\\AppData\\Local\\pip-audit\\Cache\\d\\b\\8\\f\\2\\db8f2200b6949f3474a304088e505a2dd206d5734d42a0f17e2ed541'
+No known vulnerabilities found
+Name       Skip Reason
+---------- -------------------------------------------------------------------------
+xueban-api Dependency not found on PyPI and could not be audited: xueban-api (0.1.0)
+
+--- pnpm audit --prod --registry=https://registry.npmjs.org/
+
+│                     │ information                                            │
+├─────────────────────┼────────────────────────────────────────────────────────┤
+│ More info           │ https://github.com/advisories/GHSA-5p2g-fcmc-qvqq      │
+└─────────────────────┴────────────────────────────────────────────────────────┘
+2 vulnerabilities found
+Severity: 2 high
+
+--- detect-secrets scan（findings=0）
+
+findings: 0
+
+--- trufflehog filesystem（ghcr.io 镜像，B-016 闭环）
+
+{"level":"info-0","ts":"2026-09-17T05:19:28Z","logger":"trufflehog","msg":"running source","source_manager_worker_id":"33xSR","with_units":true}
+{"level":"info-0","ts":"2026-09-17T05:19:32Z","logger":"trufflehog","msg":"finished scanning","chunks":9713,"bytes":96339293,"verified_secrets":0,"unverified_secrets":0,"scan_duration":"3.853364187s","trufflehog_version":"3.97.5","verification_caching":{"Hits":0,"Misses":1,"HitsWasted":0,"AttemptsSaved":0,"VerificationTimeSpentMS":1504}}
+
+--- ZAP baseline 汇总（FAIL=0）
+
+grep: C:/Users/Lenovo/AppData/Local/Temp/opencode/k6/zap-run.log: No such file or directory
+
+## 4) T10.2 k6 压测（200 VU × 5 分钟，api×4 副本×4 worker + Caddy）
+--- 命令: k6 run infra/k6/core_api.js -e K6_VUS=200 -e K6_DURATION=5m
+
+  █ THRESHOLDS 
+
+    checks
+    ✓ 'rate>0.999' rate=100.00%
+
+    http_req_duration
+    ✗ 'p(95)<300' p(95)=605.18ms
+
+    http_req_failed
+    ✓ 'rate<0.001' rate=0.00%
+
+
+  █ TOTAL RESULTS 
+    checks_succeeded...: 100.00% 272221 out of 272221
+    http_req_duration..............: avg=220ms    min=1.91ms med=170.57ms p(90)=478.79ms p(95)=605.18ms p(99)=921.58ms max=3.9s
+    http_req_failed................: 0.00%  0 out of 272222
+    http_reqs......................: 272222 905.550135/s
+    iteration_duration.............: avg=220.45ms min=2.13ms med=171ms    p(90)=479.23ms p(95)=605.83ms p(99)=922.49ms max=3.9s
+    vus_max........................: 200    min=200         max=200
+
+--- LLM 流式首 token（mock provider，记录实测）
+
+  █ THRESHOLDS 
+
+    http_req_failed
+    ✓ 'rate<0.01' rate=0.01%
+
+    http_req_waiting
+    ✓ 'p(95)<3000' p(95)=18.16ms
+
+
+  █ TOTAL RESULTS 
+    http_req_waiting
+    http_req_failed................: 0.01% 3 out of 29277
+    http_reqs......................: 29277 243.273097/s
+
+## 5) T10.4 promptfoo（mock API provider 红线回归）
+
+
+Results:
+  ✓ 50 passed (100%)
+  0 failed (0%)
+  0 errors (0%)
+Duration: 2s (concurrency: 4)
+
+Writing output to C:/Users/Lenovo/AppData/Local/Temp/opencode/k6/promptfoo-tutor-mock.json
+
+--- 危机话术
+
+Results:
+  ✓ 10 passed (100%)
+  0 failed (0%)
+  0 errors (0%)
+Duration: 1s (concurrency: 4)
+
+Writing output to C:/Users/Lenovo/AppData/Local/Temp/opencode/k6/promptfoo-crisis-mock.json
+
+## 6) T10.5 备份恢复演练（重跑）
+
+  questions            源=1115     还原=1115     OK
+  knowledge_points     源=641      还原=641      OK
+  plan_tasks           源=268      还原=268      OK
+  practice_records     源=26       还原=26       OK
+  mastery_records      源=88       还原=88       OK
+  exam_answers         源=246      还原=246      OK
+  knowledge_cards      源=0        还原=0        OK
+题目抽样 md5：源=bc03a82a3bc04d1a255c6344ea1afe0e 还原=bc03a82a3bc04d1a255c6344ea1afe0e
+== 4) 清理演练库
+DRILL_OK 备份恢复演练通过（备份文件：backups/xueban_20260917_134543.dump）
+
+## 7) 安全头变更后的官网 E2E 回归
+
+（见 2026-09-17 会话输出：pnpm test:e2e:web → 24 passed (33.4s)；Playwright 截图/报告在 apps/web/playwright-report）

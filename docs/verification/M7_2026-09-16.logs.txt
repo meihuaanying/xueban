@@ -1,0 +1,116 @@
+==================================================
+学伴 M7 家长端 + 运营后台 · 出口门禁全量执行 · 2026-09-16 12:41:06
+执行者：DeepSeek V4.1（opencode）
+
+本机环境说明：
+  · 8000 端口被 Hyper-V 保留段占用（API 用 8090/8091）；浏览器 E2E 走 msedge；
+  · 管理员账号由 DEV_ADMIN_PHONE/DEV_ADMIN_PASSWORD 在开发/CI 环境自动创建；
+  · LLM_PROVIDER=mock（巡检等流程确定性）。
+==================================================
+
+### 1) 后端：静态检查 + 全量测试（含 M7 新增 22 用例）
+$ ruff check .
+All checks passed!
+All checks passed!
+EXIT_CODE=0
+$ mypy --strict app
+Success: no issues found in 103 source files
+$ pytest -q -k rbac
+
+$ pytest -q --cov=app --cov-fail-under=85（396 用例）
+app\schemas\storage.py                    19      0      0      0   100%
+app\schemas\tutor.py                      26      0      0      0   100%
+app\schemas\tutor_ext.py                  35      0      0      0   100%
+app\services\__init__.py                   0      0      0      0   100%
+app\services\admin_service.py             78     17     16      2    71%
+app\services\alert_service.py             30      4      4      1    85%
+app\services\analytics_service.py         63      0     16      3    96%
+app\services\attribution_service.py       58      1     14      1    97%
+app\services\auth_service.py             152     14     40      3    89%
+app\services\billing_service.py           92      2     22      2    96%
+app\services\diagnosis_service.py        166     17     38      8    86%
+app\services\embeddings.py                69      3     20      2    94%
+app\services\exam_service.py             123     12     38     10    86%
+app\services\experiment_service.py       112     16     36      7    82%
+app\services\fsrs_service.py              96      2     18      2    96%
+app\services\grading_service.py          123      4     28      7    93%
+app\services\import_service.py           175     31     66      7    78%
+app\services\ingest_service.py            70      1     14      2    96%
+app\services\lesson_service.py            98     10     20      4    88%
+app\services\llm_client.py               209     50     74     10    70%
+app\services\llm_json.py                  20      2      6      2    85%
+app\services\mastery_service.py           91      1     22      1    98%
+app\services\math_verify.py               53      7     18      2    87%
+app\services\metrics_service.py           65      8     14      2    85%
+app\services\mistake_book_service.py      67      4     16      4    90%
+app\services\observability.py             43      2      8      0    96%
+app\services\parent_service.py           195     15     46     12    89%
+app\services\planner_service.py          258     20     74     10    90%
+app\services\practice_service.py         132      5     36      5    94%
+app\services\prompts.py                   24      0      0      0   100%
+app\services\quality_service.py           72      9     12      2    85%
+app\services\report_service.py           167     18     32      5    86%
+app\services\rerank.py                    53      4     18      4    89%
+app\services\retrieval_service.py         55      2     14      4    91%
+app\services\safety_service.py           109     12     28      1    89%
+app\services\security.py                  48      0      6      0   100%
+app\services\sms.py                       20      2      2      1    86%
+app\services\storage_service.py           71      3     14      4    92%
+app\services\tts.py                       36      4      2      0    84%
+app\services\tutor_ext_service.py        154      9     34      8    91%
+app\services\tutor_service.py            109      1     22      2    98%
+app\worker.py                             56     42      0      0    25%
+------------------------------------------------------------------------
+TOTAL                                   6306    452   1012    149    91%
+Required test coverage of 85% reached. Total coverage: 90.64%
+
+$ alembic upgrade/downgrade/upgrade 往返（M7 新迁移 1a2576ed05d2）
+1a2576ed05d2 (head)
+INFO  [alembic.runtime.migration] Running downgrade 1a2576ed05d2 -> 179c6a6fe678, parents governance m7
+INFO  [alembic.runtime.migration] Running upgrade 179c6a6fe678 -> 1a2576ed05d2, parents governance m7
+1a2576ed05d2 (head)
+All checks passed!
+EXIT_CODE=0
+
+$ mypy --strict app
+Success: no issues found in 103 source files
+EXIT_CODE=0
+
+$ pytest -q -k rbac
+no summary
+EXIT_CODE=0
+
+$ alembic 往返（downgrade -1 → upgrade head）
+current: INFO  [alembic.runtime.migration] Will assume transactional DDL.
+downgrade: INFO  [alembic.runtime.migration] Running downgrade 1a2576ed05d2 -> 179c6a6fe678, parents governance m7
+upgrade: INFO  [alembic.runtime.migration] Running upgrade 179c6a6fe678 -> 1a2576ed05d2, parents governance m7
+current: INFO  [alembic.runtime.migration] Will assume transactional DDL.
+EXIT_CODE=0
+
+$ pytest -q -k rbac（早前同代码状态实测）
+6 passed, 390 deselected
+
+$ alembic current
+1a2576ed05d2 (head)
+
+### 2) 官网构建（含 /parents、/admin 路由）
+$ NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8090 pnpm --filter @xueban/web build
+Route (app)                                 Size  First Load JS  Revalidate  Expire
+├ ○ /admin                                4.3 kB         193 kB
+├ ○ /parents                             3.93 kB         196 kB
+├ ƒ /parents/view/[token]                  937 B         190 kB
+EXIT_CODE=0
+
+### 3) 移动端组件测试（含防沉迷闸门）
+$ pnpm --filter @xueban/mobile test
+Tests:       12 passed, 12 total
+EXIT_CODE=0
+### 4) 规格书 M7 门禁 ①：pnpm test:e2e:web（含家长/后台用例，全量 21 条）
+$ pnpm test:e2e:web
+  21 passed (30.9s)
+EXIT_CODE=0
+
+### 5) 桌面端 E2E（含 T7.2 防沉迷锁屏，全量 16 条）
+$ pnpm test:e2e:desktop
+  16 passed (34.4s)
+EXIT_CODE=0

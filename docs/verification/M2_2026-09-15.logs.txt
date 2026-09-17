@@ -1,0 +1,92 @@
+==================================================
+学伴 M2 题库与 RAG · 出口门禁全量执行 · 2026-09-15 11:03:49
+执行者：DeepSeek V4.1（opencode）
+==================================================
+
+### 1) 工具链
+Python 3.12.10
+Docker version 29.7.2, build a7dcaa6
+
+### 2) ruff check .
+All checks passed!
+EXIT_CODE=0
+
+### 3) mypy --strict app
+Success: no issues found in 47 source files
+EXIT_CODE=0
+
+### 4) pytest -q --cov=app --cov-fail-under=80（含检索评测用例）
+........................................................................ [ 45%]
+........................................................................ [ 90%]
+...............                                                          [100%]
+============================== warnings summary ===============================
+.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\Users\Lenovo\Documents\Default Project\xueban\services\api\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=============================== tests coverage ================================
+______________ coverage: platform win32, python 3.12.10-final-0 _______________
+
+Name                                Stmts   Miss Branch BrPart  Cover
+---------------------------------------------------------------------
+app\data\demo_questions.py            172     68     46      6    61%
+app\main.py                            78     11      0      0    86%
+app\services\auth_service.py          142      5     36      3    96%
+app\services\billing_service.py        92      2     22      2    96%
+app\services\embeddings.py             69      3     20      2    94%
+app\services\import_service.py        175     31     66      7    78%
+app\services\ingest_service.py         70      1     14      2    96%
+app\services\llm_client.py            108     13     30      4    82%
+app\services\observability.py          43      2      8      0    96%
+app\services\rerank.py                 53      4     18      4    89%
+app\services\retrieval_service.py      55      2     14      4    91%
+app\services\safety_service.py        109     12     28      1    89%
+app\services\sms.py                    20      2      2      1    86%
+app\services\storage_service.py        67      3     14      4    91%
+---------------------------------------------------------------------
+TOTAL                                2311    159    382     40    91%
+
+33 files skipped due to complete coverage.
+Required test coverage of 80% reached. Total coverage: 91.35%
+EXIT_CODE=0
+
+### 5) Alembic 无损往返：upgrade head -> downgrade base -> upgrade head
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 82fa741c89f2 -> , initial schema
+INFO  [alembic.runtime.migration] Running upgrade 82fa741c89f2 -> 64be57bdd33e, documents and embeddings
+EXIT_CODE=0
+
+### 6) 从零种子：知识点图谱
+知识点图谱种子完成：节点 641（新增 641），依赖边 836（新增 836），错因标签新增 5
+EXIT_CODE=0
+
+### 6.1) 种子幂等复跑（应全部新增 0）
+知识点图谱种子完成：节点 641（新增 0），依赖边 836（新增 0），错因标签新增 0
+EXIT_CODE=0
+
+### 7) 演示题库生成 + 导入 + 向量化
+已生成演示题库 1114 条 → C:\Users\Lenovo\Documents\Default Project\xueban\services\api\data\demo\demo_questions.json
+入库：total=1114 imported=1105 skipped=9 invalid=0
+已向量化 1105 条（provider=mock）
+EXIT_CODE=0
+
+### 8) 题库导入校验（门禁命令）
+校验完成：C:\Users\Lenovo\Documents\Default Project\xueban\services\api\data\demo\demo_questions.json（共 1114 行）
+导入报告：total=1114 imported=0 skipped=1114 invalid=0
+EXIT_CODE=0
+
+### 9) 检索评测脚本（recall@5）
+检索评测：query 数=30 recall@5=100.0% （embedding=mock rerank=mock）
+RECALL_OK
+EXIT_CODE=0
+
+### 10) 数据规模与质量统计
+knowledge_points=641
+knowledge_edges=836
+english questions=540
+math questions=565
+analysis_coverage=100.0%
+embedded_questions=1105
+tags=5
+EXIT_CODE=0

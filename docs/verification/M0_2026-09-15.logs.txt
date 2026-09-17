@@ -1,0 +1,420 @@
+==================================================
+学伴 M0 出口门禁 · 全量执行 · 2026-09-15 08:14:29
+执行者：DeepSeek V4.1（opencode）
+==================================================
+
+### 工具链版本
+v24.20.0
+9.15.9
+Python 3.12.10
+Docker version 29.7.2, build a7dcaa6
+rustc 1.98.1 (48a229cea 2026-09-01)
+
+### 1) pnpm exec turbo run lint --force
+• turbo 2.10.13
+
+   • Packages in scope: @xueban/config, @xueban/core, @xueban/desktop, @xueban/mobile, @xueban/ui, @xueban/web
+   • Running lint in 6 packages
+   • Remote caching disabled
+
+@xueban/web:lint: cache bypass, force executing 4d2913e710a8dbfa
+@xueban/core:lint: cache bypass, force executing bebcdde65f14fc3a
+@xueban/mobile:lint: cache bypass, force executing abc61339f60346d3
+@xueban/desktop:lint: cache bypass, force executing eb27e1fa92a058c1
+@xueban/ui:lint: cache bypass, force executing 08eae01927e2ffca
+@xueban/web:lint: 
+@xueban/web:lint: > @xueban/web@0.1.0 lint C:\Users\Lenovo\Documents\Default Project\xueban\apps\web
+@xueban/web:lint: > eslint .
+@xueban/web:lint: 
+@xueban/core:lint: 
+@xueban/core:lint: > @xueban/core@0.1.0 lint C:\Users\Lenovo\Documents\Default Project\xueban\packages\core
+@xueban/core:lint: > eslint .
+@xueban/core:lint: 
+@xueban/mobile:lint: 
+@xueban/mobile:lint: > @xueban/mobile@0.1.0 lint C:\Users\Lenovo\Documents\Default Project\xueban\apps\mobile
+@xueban/mobile:lint: > eslint .
+@xueban/mobile:lint: 
+@xueban/desktop:lint: 
+@xueban/desktop:lint: > @xueban/desktop@0.1.0 lint C:\Users\Lenovo\Documents\Default Project\xueban\apps\desktop
+@xueban/desktop:lint: > eslint .
+@xueban/desktop:lint: 
+@xueban/ui:lint: 
+@xueban/ui:lint: > @xueban/ui@0.1.0 lint C:\Users\Lenovo\Documents\Default Project\xueban\packages\ui
+@xueban/ui:lint: > eslint .
+@xueban/ui:lint: 
+
+ Tasks:    5 successful, 5 total
+Cached:    0 cached, 5 total
+  Time:    3.842s 
+
+EXIT_CODE=0
+
+### 2) pnpm exec turbo run typecheck --force
+• turbo 2.10.13
+
+   • Packages in scope: @xueban/config, @xueban/core, @xueban/desktop, @xueban/mobile, @xueban/ui, @xueban/web
+   • Running typecheck in 6 packages
+   • Remote caching disabled
+
+@xueban/core:typecheck: cache bypass, force executing 279c02db0c1d72c0
+@xueban/core:typecheck: 
+@xueban/core:typecheck: > @xueban/core@0.1.0 typecheck C:\Users\Lenovo\Documents\Default Project\xueban\packages\core
+@xueban/core:typecheck: > tsc --noEmit
+@xueban/core:typecheck: 
+@xueban/mobile:typecheck: cache bypass, force executing 6b26b8bfb97deb21
+@xueban/ui:typecheck: cache bypass, force executing 0916026ed07c53ee
+@xueban/mobile:typecheck: 
+@xueban/mobile:typecheck: > @xueban/mobile@0.1.0 typecheck C:\Users\Lenovo\Documents\Default Project\xueban\apps\mobile
+@xueban/mobile:typecheck: > tsc --noEmit
+@xueban/mobile:typecheck: 
+@xueban/ui:typecheck: 
+@xueban/ui:typecheck: > @xueban/ui@0.1.0 typecheck C:\Users\Lenovo\Documents\Default Project\xueban\packages\ui
+@xueban/ui:typecheck: > tsc --noEmit
+@xueban/ui:typecheck: 
+@xueban/web:typecheck: cache bypass, force executing 9d63245bcf209a0c
+@xueban/desktop:typecheck: cache bypass, force executing c33cd47c1c2bc9b5
+@xueban/web:typecheck: 
+@xueban/web:typecheck: > @xueban/web@0.1.0 typecheck C:\Users\Lenovo\Documents\Default Project\xueban\apps\web
+@xueban/web:typecheck: > tsc --noEmit
+@xueban/web:typecheck: 
+@xueban/desktop:typecheck: 
+@xueban/desktop:typecheck: > @xueban/desktop@0.1.0 typecheck C:\Users\Lenovo\Documents\Default Project\xueban\apps\desktop
+@xueban/desktop:typecheck: > tsc --noEmit
+@xueban/desktop:typecheck: 
+
+ Tasks:    5 successful, 5 total
+Cached:    0 cached, 5 total
+  Time:    7.035s 
+
+EXIT_CODE=0
+
+### 3) pnpm exec turbo run test --force
+• turbo 2.10.13
+
+   • Packages in scope: @xueban/config, @xueban/core, @xueban/desktop, @xueban/mobile, @xueban/ui, @xueban/web
+   • Running test in 6 packages
+   • Remote caching disabled
+
+@xueban/core:test: cache bypass, force executing b49710f79a153b5e
+@xueban/core:test: 
+@xueban/core:test: > @xueban/core@0.1.0 test C:\Users\Lenovo\Documents\Default Project\xueban\packages\core
+@xueban/core:test: > vitest run
+@xueban/core:test: 
+@xueban/core:test: 
+@xueban/core:test: [1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/Lenovo/Documents/Default Project/xueban/packages/core[39m
+@xueban/core:test: 
+@xueban/core:test:  [32m✓[39m src/__tests__/schemas.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+@xueban/core:test: 
+@xueban/core:test: [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+@xueban/core:test: [2m      Tests [22m [1m[32m4 passed[39m[22m[90m (4)[39m
+@xueban/core:test: [2m   Start at [22m 08:14:47
+@xueban/core:test: [2m   Duration [22m 1.05s[2m (transform 46ms, setup 0ms, collect 67ms, tests 5ms, environment 0ms, prepare 133ms)[22m
+@xueban/core:test: 
+@xueban/ui:test: cache bypass, force executing c6a750d5312d367e
+@xueban/mobile:test: cache bypass, force executing a094ddbe7765adfe
+@xueban/ui:test: 
+@xueban/ui:test: > @xueban/ui@0.1.0 test C:\Users\Lenovo\Documents\Default Project\xueban\packages\ui
+@xueban/ui:test: > vitest run
+@xueban/ui:test: 
+@xueban/mobile:test: 
+@xueban/mobile:test: > @xueban/mobile@0.1.0 test C:\Users\Lenovo\Documents\Default Project\xueban\apps\mobile
+@xueban/mobile:test: > jest
+@xueban/mobile:test: 
+@xueban/ui:test: 
+@xueban/ui:test: [1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/Lenovo/Documents/Default Project/xueban/packages/ui[39m
+@xueban/ui:test: 
+@xueban/ui:test:  [32m✓[39m src/__tests__/button.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 74[2mms[22m[39m
+@xueban/mobile:test: PASS ./App.test.tsx
+@xueban/mobile:test:   学伴移动端首页
+@xueban/mobile:test:     √ 渲染产品名、主张与主按钮 (203 ms)
+@xueban/mobile:test: 
+@xueban/ui:test: 
+@xueban/ui:test: [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+@xueban/ui:test: [2m      Tests [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+@xueban/ui:test: [2m   Start at [22m 08:14:50
+@xueban/ui:test: [2m   Duration [22m 2.01s[2m (transform 54ms, setup 181ms, collect 46ms, tests 74ms, environment 639ms, prepare 107ms)[22m
+@xueban/ui:test: 
+@xueban/mobile:test: Test Suites: 1 passed, 1 total
+@xueban/mobile:test: Tests:       1 passed, 1 total
+@xueban/mobile:test: Snapshots:   0 total
+@xueban/mobile:test: Time:        1.631 s, estimated 2 s
+@xueban/mobile:test: Ran all test suites.
+@xueban/desktop:test: cache bypass, force executing c5dc865b46f97d3b
+@xueban/web:test: cache bypass, force executing 3c228e2e5782118c
+@xueban/desktop:test: 
+@xueban/desktop:test: > @xueban/desktop@0.1.0 test C:\Users\Lenovo\Documents\Default Project\xueban\apps\desktop
+@xueban/desktop:test: > vitest run
+@xueban/desktop:test: 
+@xueban/web:test: 
+@xueban/web:test: > @xueban/web@0.1.0 test C:\Users\Lenovo\Documents\Default Project\xueban\apps\web
+@xueban/web:test: > vitest run
+@xueban/web:test: 
+@xueban/desktop:test: 
+@xueban/desktop:test: [1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/Lenovo/Documents/Default Project/xueban/apps/desktop[39m
+@xueban/desktop:test: 
+@xueban/web:test: 
+@xueban/web:test: [1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/Lenovo/Documents/Default Project/xueban/apps/web[39m
+@xueban/web:test: 
+@xueban/desktop:test:  [32m✓[39m src/App.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 92[2mms[22m[39m
+@xueban/desktop:test: 
+@xueban/desktop:test: [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+@xueban/desktop:test: [2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+@xueban/desktop:test: [2m   Start at [22m 08:14:53
+@xueban/desktop:test: [2m   Duration [22m 2.28s[2m (transform 142ms, setup 309ms, collect 195ms, tests 92ms, environment 689ms, prepare 139ms)[22m
+@xueban/desktop:test: 
+@xueban/web:test:  [32m✓[39m tests/home.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 76[2mms[22m[39m
+@xueban/web:test: 
+@xueban/web:test: [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+@xueban/web:test: [2m      Tests [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+@xueban/web:test: [2m   Start at [22m 08:14:54
+@xueban/web:test: [2m   Duration [22m 2.43s[2m (transform 109ms, setup 286ms, collect 137ms, tests 76ms, environment 784ms, prepare 81ms)[22m
+@xueban/web:test: 
+
+ Tasks:    5 successful, 5 total
+Cached:    0 cached, 5 total
+  Time:    10.645s 
+
+EXIT_CODE=0
+
+### 4) docker compose config -q（cwd=infra/docker）
+EXIT_CODE=0
+
+### 5) services/api pytest -q
+..                                                                       [100%]
+============================== warnings summary ===============================
+.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\Users\Lenovo\Documents\Default Project\xueban\services\api\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\Documents\Default Project\xueban\services\api\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+EXIT_CODE=0
+
+### 6) services/api ruff + mypy --strict
+All checks passed!
+Success: no issues found in 3 source files
+EXIT_CODE=0
+
+### 7) 三端 dev 冒烟
+[PASS] web: http://127.0.0.1:3000 返回 200，命中 "学伴"，用时 9s
+[PASS] desktop: http://127.0.0.1:1420 返回 200，命中 "id="root""，用时 2s
+[PASS] mobile: http://127.0.0.1:8081/status 返回 200，命中 "packager-status:running"，用时 4s
+EXIT_CODE=0
+
+### 8) docker compose ps
+NAME                       STATUS
+xueban-clickhouse-1        Up 6 hours (healthy)
+xueban-langfuse-web-1      Up 24 minutes (healthy)
+xueban-langfuse-worker-1   Up 24 minutes
+xueban-litellm-1           Up 6 hours (healthy)
+xueban-minio-1             Up 6 hours (healthy)
+xueban-ocr-1               Up 6 hours (healthy)
+xueban-postgres-1          Up 6 hours (healthy)
+xueban-redis-1             Up 6 hours (healthy)
+EXIT_CODE=0
+
+### 9) 服务端点健康检查
+--- http://localhost:4000/health/liveliness
+"I'm alive!" [HTTP 200]
+--- http://localhost:3100/api/public/health
+{"status":"OK","version":"3.225.7"} [HTTP 200]
+--- http://localhost:8100/healthz
+{"status":"ok","service":"xueban-ocr","version":"0.1.0"} [HTTP 200]
+--- http://localhost:9000/minio/health/live
+ [HTTP 200]
+
+### 10) 构建产物
+83M	apps/web/.next
+277K	apps/desktop/dist
+2.7M	apps/mobile/dist
+apps/desktop/dist/index.html
+apps/mobile/dist/metadata.json
+
+==================================================
+### 11) 规格书原文门禁命令（仓库根原样执行）
+$ pnpm lint && pnpm typecheck && pnpm test && docker compose config -q && (cd services/api && pytest -q)
+==================================================
+
+> xueban@0.1.0 lint C:\Users\Lenovo\Documents\Default Project\xueban
+> turbo run lint
+
+• turbo 2.10.13
+
+   • Packages in scope: @xueban/config, @xueban/core, @xueban/desktop, @xueban/mobile, @xueban/ui, @xueban/web
+   • Running lint in 6 packages
+   • Remote caching disabled
+
+@xueban/web:lint: cache hit, replaying logs 4d2913e710a8dbfa
+@xueban/core:lint: cache hit, replaying logs bebcdde65f14fc3a
+@xueban/mobile:lint: cache hit, replaying logs abc61339f60346d3
+@xueban/ui:lint: cache hit, replaying logs 08eae01927e2ffca
+@xueban/desktop:lint: cache hit, replaying logs eb27e1fa92a058c1
+@xueban/mobile:lint: 
+@xueban/mobile:lint: > @xueban/mobile@0.1.0 lint C:\Users\Lenovo\Documents\Default Project\xueban\apps\mobile
+@xueban/mobile:lint: > eslint .
+@xueban/mobile:lint: 
+@xueban/desktop:lint: 
+@xueban/desktop:lint: > @xueban/desktop@0.1.0 lint C:\Users\Lenovo\Documents\Default Project\xueban\apps\desktop
+@xueban/desktop:lint: > eslint .
+@xueban/desktop:lint: 
+@xueban/web:lint: 
+@xueban/web:lint: > @xueban/web@0.1.0 lint C:\Users\Lenovo\Documents\Default Project\xueban\apps\web
+@xueban/ui:lint: 
+@xueban/ui:lint: > @xueban/ui@0.1.0 lint C:\Users\Lenovo\Documents\Default Project\xueban\packages\ui
+@xueban/core:lint: 
+@xueban/core:lint: > @xueban/core@0.1.0 lint C:\Users\Lenovo\Documents\Default Project\xueban\packages\core
+@xueban/core:lint: > eslint .
+@xueban/core:lint: 
+@xueban/web:lint: > eslint .
+@xueban/web:lint: 
+@xueban/ui:lint: > eslint .
+@xueban/ui:lint: 
+
+ Tasks:    5 successful, 5 total
+Cached:    5 cached, 5 total
+  Time:    480ms >>> FULL TURBO
+
+
+> xueban@0.1.0 typecheck C:\Users\Lenovo\Documents\Default Project\xueban
+> turbo run typecheck
+
+• turbo 2.10.13
+
+   • Packages in scope: @xueban/config, @xueban/core, @xueban/desktop, @xueban/mobile, @xueban/ui, @xueban/web
+   • Running typecheck in 6 packages
+   • Remote caching disabled
+
+@xueban/core:typecheck: cache hit, replaying logs 279c02db0c1d72c0
+@xueban/core:typecheck: 
+@xueban/core:typecheck: > @xueban/core@0.1.0 typecheck C:\Users\Lenovo\Documents\Default Project\xueban\packages\core
+@xueban/core:typecheck: > tsc --noEmit
+@xueban/core:typecheck: 
+@xueban/ui:typecheck: cache hit, replaying logs 0916026ed07c53ee
+@xueban/mobile:typecheck: cache hit, replaying logs 6b26b8bfb97deb21
+@xueban/mobile:typecheck: 
+@xueban/mobile:typecheck: > @xueban/mobile@0.1.0 typecheck C:\Users\Lenovo\Documents\Default Project\xueban\apps\mobile
+@xueban/mobile:typecheck: > tsc --noEmit
+@xueban/mobile:typecheck: 
+@xueban/ui:typecheck: 
+@xueban/ui:typecheck: > @xueban/ui@0.1.0 typecheck C:\Users\Lenovo\Documents\Default Project\xueban\packages\ui
+@xueban/ui:typecheck: > tsc --noEmit
+@xueban/ui:typecheck: 
+@xueban/desktop:typecheck: cache hit, replaying logs c33cd47c1c2bc9b5
+@xueban/web:typecheck: cache hit, replaying logs 9d63245bcf209a0c
+@xueban/web:typecheck: 
+@xueban/web:typecheck: > @xueban/web@0.1.0 typecheck C:\Users\Lenovo\Documents\Default Project\xueban\apps\web
+@xueban/web:typecheck: > tsc --noEmit
+@xueban/web:typecheck: 
+@xueban/desktop:typecheck: 
+@xueban/desktop:typecheck: > @xueban/desktop@0.1.0 typecheck C:\Users\Lenovo\Documents\Default Project\xueban\apps\desktop
+@xueban/desktop:typecheck: > tsc --noEmit
+@xueban/desktop:typecheck: 
+
+ Tasks:    5 successful, 5 total
+Cached:    5 cached, 5 total
+  Time:    373ms >>> FULL TURBO
+
+
+> xueban@0.1.0 test C:\Users\Lenovo\Documents\Default Project\xueban
+> turbo run test
+
+• turbo 2.10.13
+
+   • Packages in scope: @xueban/config, @xueban/core, @xueban/desktop, @xueban/mobile, @xueban/ui, @xueban/web
+   • Running test in 6 packages
+   • Remote caching disabled
+
+@xueban/core:test: cache hit, replaying logs b49710f79a153b5e
+@xueban/core:test: 
+@xueban/core:test: > @xueban/core@0.1.0 test C:\Users\Lenovo\Documents\Default Project\xueban\packages\core
+@xueban/core:test: > vitest run
+@xueban/core:test: 
+@xueban/core:test: 
+@xueban/core:test: [1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/Lenovo/Documents/Default Project/xueban/packages/core[39m
+@xueban/core:test: 
+@xueban/core:test:  [32m✓[39m src/__tests__/schemas.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+@xueban/core:test: 
+@xueban/core:test: [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+@xueban/core:test: [2m      Tests [22m [1m[32m4 passed[39m[22m[90m (4)[39m
+@xueban/core:test: [2m   Start at [22m 08:14:47
+@xueban/core:test: [2m   Duration [22m 1.05s[2m (transform 46ms, setup 0ms, collect 67ms, tests 5ms, environment 0ms, prepare 133ms)[22m
+@xueban/core:test: 
+@xueban/mobile:test: cache hit, replaying logs a094ddbe7765adfe
+@xueban/ui:test: cache hit, replaying logs c6a750d5312d367e
+@xueban/ui:test: 
+@xueban/ui:test: > @xueban/ui@0.1.0 test C:\Users\Lenovo\Documents\Default Project\xueban\packages\ui
+@xueban/ui:test: > vitest run
+@xueban/ui:test: 
+@xueban/mobile:test: 
+@xueban/mobile:test: > @xueban/mobile@0.1.0 test C:\Users\Lenovo\Documents\Default Project\xueban\apps\mobile
+@xueban/mobile:test: > jest
+@xueban/mobile:test: 
+@xueban/mobile:test: PASS ./App.test.tsx
+@xueban/ui:test: 
+@xueban/ui:test: [1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/Lenovo/Documents/Default Project/xueban/packages/ui[39m
+@xueban/mobile:test:   学伴移动端首页
+@xueban/mobile:test:     √ 渲染产品名、主张与主按钮 (203 ms)
+@xueban/mobile:test: 
+@xueban/ui:test: 
+@xueban/ui:test:  [32m✓[39m src/__tests__/button.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 74[2mms[22m[39m
+@xueban/mobile:test: Test Suites: 1 passed, 1 total
+@xueban/mobile:test: Tests:       1 passed, 1 total
+@xueban/ui:test: 
+@xueban/ui:test: [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+@xueban/mobile:test: Snapshots:   0 total
+@xueban/mobile:test: Time:        1.631 s, estimated 2 s
+@xueban/ui:test: [2m      Tests [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+@xueban/ui:test: [2m   Start at [22m 08:14:50
+@xueban/mobile:test: Ran all test suites.
+@xueban/ui:test: [2m   Duration [22m 2.01s[2m (transform 54ms, setup 181ms, collect 46ms, tests 74ms, environment 639ms, prepare 107ms)[22m
+@xueban/ui:test: 
+@xueban/desktop:test: cache hit, replaying logs c5dc865b46f97d3b
+@xueban/web:test: cache hit, replaying logs 3c228e2e5782118c
+@xueban/desktop:test: 
+@xueban/desktop:test: > @xueban/desktop@0.1.0 test C:\Users\Lenovo\Documents\Default Project\xueban\apps\desktop
+@xueban/desktop:test: > vitest run
+@xueban/desktop:test: 
+@xueban/desktop:test: 
+@xueban/desktop:test: [1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/Lenovo/Documents/Default Project/xueban/apps/desktop[39m
+@xueban/desktop:test: 
+@xueban/desktop:test:  [32m✓[39m src/App.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 92[2mms[22m[39m
+@xueban/desktop:test: 
+@xueban/desktop:test: [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+@xueban/desktop:test: [2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+@xueban/desktop:test: [2m   Start at [22m 08:14:53
+@xueban/desktop:test: [2m   Duration [22m 2.28s[2m (transform 142ms, setup 309ms, collect 195ms, tests 92ms, environment 689ms, prepare 139ms)[22m
+@xueban/desktop:test: 
+@xueban/web:test: 
+@xueban/web:test: > @xueban/web@0.1.0 test C:\Users\Lenovo\Documents\Default Project\xueban\apps\web
+@xueban/web:test: > vitest run
+@xueban/web:test: 
+@xueban/web:test: 
+@xueban/web:test: [1m[46m RUN [49m[22m [36mv3.2.7 [39m[90mC:/Users/Lenovo/Documents/Default Project/xueban/apps/web[39m
+@xueban/web:test: 
+@xueban/web:test:  [32m✓[39m tests/home.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 76[2mms[22m[39m
+@xueban/web:test: 
+@xueban/web:test: [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+@xueban/web:test: [2m      Tests [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+@xueban/web:test: [2m   Start at [22m 08:14:54
+@xueban/web:test: [2m   Duration [22m 2.43s[2m (transform 109ms, setup 286ms, collect 137ms, tests 76ms, environment 784ms, prepare 81ms)[22m
+@xueban/web:test: 
+
+ Tasks:    5 successful, 5 total
+Cached:    5 cached, 5 total
+  Time:    358ms >>> FULL TURBO
+
+..                                                                       [100%]
+============================== warnings summary ===============================
+.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\Users\Lenovo\Documents\Default Project\xueban\services\api\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+.venv\Lib\site-packages\starlette\testclient.py:53
+  C:\Users\Lenovo\Documents\Default Project\xueban\services\api\.venv\Lib\site-packages\starlette\testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+EXIT_CODE=0

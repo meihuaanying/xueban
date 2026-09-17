@@ -1,0 +1,4 @@
+# 根级入口：便于在仓库根直接执行 `docker compose config -q` 等命令。
+# 实际编排定义在 infra/docker/docker-compose.yml（单一事实来源）。
+include:
+  - infra/docker/docker-compose.yml

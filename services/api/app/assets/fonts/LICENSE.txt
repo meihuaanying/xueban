@@ -1,0 +1,10 @@
+# ZCOOL XiaoWei（站酷小薇）字体授权说明
+
+本目录字体用于错题本 PDF 导出（中文渲染）。
+
+- 字体：ZCOOL XiaoWei Regular（`ZCOOLXiaoWei-Regular.ttf`）
+- 来源：Google Fonts（github.com/google/fonts，目录 `ofl/zcoolxiaowei/`）
+- 授权：SIL Open Font License 1.1（OFL-1.1），允许嵌入、分发与商用
+- 许可全文：https://scripts.sil.org/OFL
+
+> 替换其他字体时，必须保持 OFL 或同等级别的可再分发授权，并同步更新本说明。

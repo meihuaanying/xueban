@@ -1,0 +1,27 @@
+# 构建上下文裁剪（用于 apps/web 的根上下文构建）
+**/node_modules
+**/.next
+**/dist
+**/target
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/playwright-report
+**/test-results
+**/coverage
+backups
+docs
+release-assets
+services/api
+services/ocr
+apps/desktop
+apps/mobile
+apps/web/e2e
+apps/web/tests
+evals
+.git
+.env
+.env.*
+*.log
