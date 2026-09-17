@@ -37,18 +37,42 @@ name: 练习 → 错题 → 重练
 - tapOn: "练习"
 - tapOn:
     id: "generate-practice"
-- assertVisible:
-    id: "practice-question"
-# 故意选 B（多数题目正确答案为 A），产生错题
-- runFlow:
-    when:
-      visible:
-        id: "option-B"
+- extendedWaitUntil:
+    visible:
+      id: "practice-question"
+    timeout: 60000
+# 逐题尝试作答，直到至少产生一道错题（选择题选 A；填空题填 999999）
+- repeat:
+    times: 5
     commands:
-      - tapOn:
-          id: "option-B"
-      - tapOn:
-          id: "submit-practice"
+      - runFlow:
+          when:
+            visible:
+              id: "option-A"
+          commands:
+            - tapOn:
+                id: "option-A"
+      - runFlow:
+          when:
+            notVisible:
+              id: "option-A"
+          commands:
+            - tapOn:
+                id: "fill-answer"
+            - inputText: "999999"
+      - runFlow:
+          when:
+            visible:
+              id: "submit-practice"
+          commands:
+            - tapOn:
+                id: "submit-practice"
+      # 答对了则进入下一题继续；答错则停在反馈页（错题已入本）
+      - runFlow:
+          when:
+            visible: "回答正确"
+          commands:
+            - tapOn: "下一题"
 # 答错后：错题本自动收录（文本为「错题本（N）」，用 testID 断言）
 - assertVisible:
     id: "mistake-list"

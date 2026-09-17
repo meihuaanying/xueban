@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Text, View } from "react-native";
 
-import { Badge, Card, EmptyBlock, ErrorBlock, PrimaryButton, Screen } from "../components/ui";
+import { Badge, Card, EmptyBlock, ErrorBlock, PrimaryButton, Screen, TextField } from "../components/ui";
 import { enqueueAnswer, flushOnReconnect, newEventId } from "../lib/offline-queue";
 import {
   ApiError,
@@ -20,6 +20,7 @@ export function PracticeScreen() {
   const [feedback, setFeedback] = useState<PracticeAnswer | null>(null);
   const [mistakes, setMistakes] = useState<MistakeEntry[]>([]);
   const [repractice, setRepractice] = useState<{ id: string; stem: string; options: Record<string, string> | null }[]>([]);
+  const [repracticeAnswers, setRepracticeAnswers] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -147,7 +148,15 @@ export function PracticeScreen() {
                     onPress={() => setAnswer(key)}
                   />
                 ))
-              : null}
+              : (
+                  <TextField
+                    label="你的答案"
+                    testID="fill-answer"
+                    value={answer}
+                    onChangeText={setAnswer}
+                    placeholder="请输入答案"
+                  />
+                )}
           </View>
           {feedback ? (
             <View className="mt-3 gap-2" testID="practice-feedback">
@@ -221,12 +230,23 @@ export function PracticeScreen() {
                     ))}
                   </View>
                 ) : (
-                  <View className="mt-2">
+                  <View className="mt-2 gap-2">
+                    <TextField
+                      label="你的答案"
+                      testID={`repractice-fill-${question.id.slice(0, 8)}`}
+                      value={repracticeAnswers[question.id] ?? ""}
+                      onChangeText={(text) =>
+                        setRepracticeAnswers((prev) => ({ ...prev, [question.id]: text }))
+                      }
+                      placeholder="请输入答案"
+                    />
                     <PrimaryButton
                       label="提交答案"
                       variant="outline"
-                      disabled={busy}
-                      onPress={() => void answerRepractice(question.id, "1")}
+                      disabled={busy || !(repracticeAnswers[question.id] ?? "").trim()}
+                      onPress={() =>
+                        void answerRepractice(question.id, repracticeAnswers[question.id] ?? "")
+                      }
                     />
                   </View>
                 )}
