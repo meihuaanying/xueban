@@ -1,12 +1,13 @@
-# 学伴（XueBan）项目交接文档 · v3
+# 学伴（XueBan）项目交接文档 · v4
 
-> **更新时间**：2026-09-17（UTC+8）
+> **更新时间**：2026-09-18（UTC+8）
+> **GitHub 远端**：https://github.com/meihuaanying/xueban （main 已推送；CI 8 作业全绿 run `35287350732`；Release `v0.1.0` 三平台安装包已发布）
 > **仓库位置**：`C:\Users\Lenovo\Documents\Default Project\xueban`
 > **规格书**：`D:\DATA\Downloads\学伴AI学习软件-项目执行规格书v1.0.md`
-> **进度**：**M0–M11 全部完成**（M10 质量加固、M11 部署/上架/最终验收均已出具证据）。
+> **进度**：**M0–M11 全部完成**；**GitHub CI 全绿并出 v0.1.0 Release**。剩余为外部依赖闭环（模型 Key / VPS p95 复测 / 商店截图）。
 > **git 状态**：`git init`（main），**仍无任何 commit**，全部文件未跟踪；commitlint + husky 已配置。
 > **M10 证据**：`docs/verification/M10_2026-09-16.md` + `.logs.txt`（+13 份原始报告）
-> **M11 证据**：`docs/verification/FINAL.md`（§12 逐项）+ `M11_2026-09-17_T11.1_本地验证.log`
+> **M11 证据**：`docs/verification/FINAL.md`（§12 逐项）+ `M11_2026-09-17_T11.1_本地验证.log` + CI 全绿 run `35287350732` + Release `v0.1.0`
 
 ---
 
@@ -20,12 +21,16 @@
 | T10.4 promptfoo（mock provider） | 讲解红线 **50/50**、危机话术 **10/10**（真实模型待 B-005） | `..._promptfoo-{tutor,crisis}-mock.{json,log}` |
 | T11.1 生产编排 | `docker-compose.prod.yml` + `deploy.sh` + Caddyfile（api×2、web、worker、litellm、ocr、PG/Redis/MinIO，日志轮转+健康检查）；全新库 8 迁移 + 种子 + 全链路冒烟通过 | `M11_2026-09-17_T11.1_本地验证.log` |
 | T11.2 部署手册 | `docs/DEPLOY.md`（服务器/域名/变量/排障/容量） | — |
-| T11.3 桌面发布 | `.github/workflows/release.yml`（三平台稳定资产名 + Release）；下载页 `latest/download` 联动 | 待 B-001 远端实跑 |
+| T11.3 桌面发布 | `.github/workflows/release.yml`（三平台稳定资产名 + Release）；下载页 `latest/download` 联动 | ✅ v0.1.0 Release |
 | T11.4 上架材料 | `docs/RELEASE.md` + `release-assets/`（图标/文案/隐私政策/未成年人声明/办理清单/截图指引）+ `apps/mobile/eas.json` | — |
 | T11.5 运维手册 | `docs/OPS.md`（模型切换实测：改 env 即生效；备份/成本/扩容/排障） | OPS §3 实测表 |
 | T11.6 最终验收 | `docs/verification/FINAL.md`（§12 清单 7✅ 3🟡 0⬜）+ `docs/COMPLIANCE.md` | — |
 | 规格 §10 补口 | 账号注销 `POST /v1/auth/account/delete` + `scripts/purge_deleted_accounts.py`（30 天物理删除，4 用例） | `tests/test_account_deletion.py` |
 | 回归 | 后端 **449 用例 / 90.74%**；前端 184；ruff/mypy/ESLint/tsc 全绿；Web E2E 24 绿（含安全头回归） | 本轮日志 |
+| **GitHub 上云** | 创建公有仓库并推送 main；**CI 8 作业全绿**（三平台桌面打包、桌面 E2E、release APK + Maestro 两条旅程、Web E2E + Lighthouse、API 449 用例） | run `35287350732` |
+| **v0.1.0 Release** | 稳定资产：`XueBan-Setup-x64.exe` / `XueBan-universal.dmg` / `XueBan-x86_64.AppImage` / `XueBan-amd64.deb` + SHA256SUMS | https://github.com/meihuaanying/xueban/releases/tag/v0.1.0 |
+| **B-001/B-008/B-009 闭环** | CI 实跑全绿；期间修复 9 类 CI 问题（服务容器平台限制、AppImage 图标、pytest 路径、被忽略的 app/data 源码、Maestro 驱动/ANR/键盘/网络/自清理） | `docs/BLOCKERS.md` |
+| **真实缺陷修复** | E2E 暴露「移动端练习填空题无法作答」→ 补 `TextField` 输入支持并由流程覆盖 | `apps/mobile/src/screens/practice.tsx` |
 
 ---
 
@@ -148,13 +153,13 @@ docker compose ... exec api python -m scripts.purge_deleted_accounts --dry-run
 
 | 编号 | 事项 | 状态/闭环动作 |
 | --- | --- | --- |
-| B-001 | GitHub Actions 未实跑（无远端） | 配远端推送后确认 CI 绿；`release.yml` 推 `v*` 验证 Release |
+| B-001 | ✅ 已闭环（CI 全绿 run `35287350732`） | — |
 | B-003 | 外部 Key（DeepSeek/硅基流动/短信/支付） | 开通后只改 `.env`（模型切换实测见 OPS §3） |
 | B-004 | 真实语义检索评测 | Key 到位后 `EMBEDDING_PROVIDER=siliconflow` 重跑 `eval_retrieval.py` |
 | B-005 | promptfoo 真实模型全量 | `npx promptfoo eval -c evals/tutor.yaml`（mock 版已 100% 通过） |
 | B-006 | FSRS 与 fsrs4anki 逐值对齐 | 引入参考调度数据集对照（T10 阶段未能收口的遗留项） |
-| B-008 | mac/Linux 包与 MSI 不可本机产 | CI 矩阵（随 B-001） |
-| B-009 | 无 Android SDK/模拟器/Maestro | CI `mobile-apk` 作业 + 设备复跑 Maestro（截图 B-014 随之） |
+| B-008 | ✅ 已闭环（CI 三平台出包 + v0.1.0 Release） | — |
+| B-009 | ✅ 已闭环（CI release APK + Maestro 两条旅程全绿）；B-014 截图待补 | — |
 | B-011~B-013 | LLM judge/OCR/口语供应商 | Key/供应商就绪后切 Provider 并回归 |
 | B-015 | pnpm audit `image-size` 2 high | 构建期依赖，跟踪上游；禁止 override 到 2.x |
 | **B-017** | k6 p95=605ms（本机共享算力） | VPS 部署后原样复跑 `infra/k6/core_api.js` 回填（错误率已达标） |
