@@ -186,7 +186,8 @@ rm -f .env   # 本地验证用的临时 .env（生产部署请重新 cp .env.exa
 7. E2E 手机号必须随机化；桌面 E2E API=8091；Playwright 走 msedge。
 8. 本机 Docker 拉镜像走镜像源再本地 tag（示例：`docker pull docker.m.daocloud.io/library/python:3.12-slim && docker tag ... python:3.12-slim`）。
 9. 纯 ASGI 中间件（`app/middleware.py`）勿改回 BaseHTTPMiddleware（压测 CPU 差别明显）。
-10. 提交纪律：commitlint 生效（`feat(api): 中文描述`）；首次提交建议 `feat: 完成 M0-M11 里程碑`。
+10. **本地/远端提交哈希差异（2026-09-18）**：推送期间 github.com 间歇不可达，部分提交经 GitHub API（Git Data）推送，远端 tree 与本地一致但 commit 哈希不同。网络恢复后执行 `git fetch origin && git reset --hard origin/main` 对齐；此前不要 `git push --force`。
+11. 提交纪律：commitlint 生效（`feat(api): 中文描述`）；首次提交建议 `feat: 完成 M0-M11 里程碑`。
 
 ---
 
