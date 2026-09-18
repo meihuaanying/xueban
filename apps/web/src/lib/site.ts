@@ -8,7 +8,7 @@ export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:30
  * （latest/download 始终指向最新 Release，发布新版本无需改前端）
  */
 export const RELEASE_BASE_URL =
-  process.env.NEXT_PUBLIC_RELEASE_BASE_URL ?? "https://dl.xueban.example.com/releases/latest";
+  process.env.NEXT_PUBLIC_RELEASE_BASE_URL ?? "https://github.com/meihuaanying/xueban/releases/latest/download";
 
 export const CONTACT_EMAIL = "support@xueban.example.com";
 

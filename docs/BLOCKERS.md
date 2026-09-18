@@ -6,10 +6,9 @@
 
 ### B-001 GitHub Actions 未实跑（M0）
 
-- **状态**：待办（不阻塞 M1~M4）
-- **原因**：本地仓库尚无 GitHub 远端，无法触发 CI；规格书 T0.5 验收标准为「推空提交触发 CI 全绿」。
-- **替代验证**：`.github/workflows/ci.yml` 的每个作业均与本地门禁命令一一对应，已在本地全部执行且退出码 0（见 `docs/verification/M0_2026-09-15.logs.txt`、`M4_2026-09-15.logs.txt`）；M4 起 web 作业已扩展为 postgres service + API 迁移 + Playwright + Lighthouse 全链路。
-- **闭环动作**：配置远端并首次推送后，确认 CI 全绿并回填证据。
+- **状态**：✅ 已闭环（2026-09-18）
+- **闭环证据**：远端 `https://github.com/meihuaanying/xueban` 已创建；首次全绿 run `35287350732`（main，8 作业全过：API / Web / Desktop×3 / Desktop E2E / Mobile / Mobile APK+Maestro / Compose）。期间修复了 9 类 CI 问题（跨平台服务容器、AppImage 图标、pytest 导入路径、被 .gitignore 遗漏的 `app/data` 源码、Maestro 驱动/ANR/键盘/网络等），并补齐证据日志入库。
+- **说明**：`v0.1.0` 标签已推送，Release 工作流随出三平台安装包（见 B-008/B-009）。
 
 ### B-002 三端界面截图缺失（M0）
 
@@ -47,10 +46,10 @@
 
 ### B-009 本机无 Android SDK / 模拟器 / Maestro（M6 / T6.8）
 
-- **状态**：进行中（CI 作业已就绪，待 B-001 远端）
-- **原因**：本机未安装 Android SDK、无模拟器设备、无 Maestro CLI（仅 Java 17），无法执行 `./gradlew assembleRelease`、APK 体积/冷启动实测与 `maestro test`。
-- **替代验证**：核心交互由 **10 条 Jest + RNTL 组件测试**覆盖（登录守卫与校验、打卡、诊断反馈、错题闭环、三层提示与流式回退）；`expo export --platform android` 产出 3.61 MB Hermes bundle，证明原生依赖可打包；Maestro 两条核心旅程已编写（`apps/mobile/maestro/`）。
-- **闭环动作**：`.github/workflows/ci.yml` 的 `mobile-apk` 作业已配置（expo prebuild + gradle assembleRelease + APK ≤80MB 门禁 + android-emulator-runner + Maestro 复跑）；远端可用或本机安装 Android 工具链后执行并回填体积/冷启数据。
+- **状态**：✅ 已闭环（2026-09-18，CI 实跑）
+- **闭环证据**：CI `mobile-apk` 作业实跑通过（run `35287350732`）：`expo prebuild` + `gradlew assembleRelease` 构建 release APK（体积门禁 ≤80MB 通过，产物 `xueban-android-apk`）+ Android 30 模拟器（headless，`hide_error_dialogs`/硬件键盘/adb reverse）+ Maestro 两条核心旅程全绿（注册→诊断→规划→打卡；练习→错题→重练）。
+- **顺带修复**：E2E 暴露「移动端练习填空题无法作答」的真实缺陷——已补 `TextField` 支持（`apps/mobile/src/screens/practice.tsx`），并由流程覆盖。
+- **遗留**：暗色设备截图（B-014）与冷启动/体积实测数值待随模拟器产物回填；APK 冷启动可在后续工作中用 emulator 计时补充。
 
 ### B-010 移动端原生公式渲染未接入（M6 / T6.3）
 
@@ -112,10 +111,9 @@
 
 ### B-008 macOS/Linux 安装包与 Windows MSI 无法在本机产出（M5 / T5.8）
 
-- **状态**：进行中（CI 矩阵已就绪，待 B-001 远端）
-- **原因**：Tauri 打包需在目标平台构建（无 mac/Linux 交叉编译）；Windows MSI 需 WiX 工具链在线下载，本机构建机无法访问 GitHub（`failed to bundle project: timeout: global`）。
-- **替代验证**：Windows **NSIS 安装包**本机产出（`XueBan_0.1.0_x64-setup.exe`，1.35 MB）并完成静默安装 → 启动冒烟（窗口就绪 413ms~1.1s）；release exe 冷启动 1.1s；14 条 Playwright E2E 在同一构建产物上通过（`docs/verification/M5_2026-09-16.md`）。
-- **闭环动作**：`.github/workflows/ci.yml` desktop 作业已配置三平台矩阵（ubuntu appimage+deb / macos dmg / windows nsis）并上传产物；远端可用后确认产物齐全并回填。
+- **状态**：✅ 已闭环（2026-09-18，CI 实跑）
+- **闭环证据**：CI desktop 矩阵实跑通过（run `35287350732` 产出可选产物；`v0.1.0` Release 工作流产出稳定资产：`XueBan-Setup-x64.exe`（NSIS）/ `XueBan-universal.dmg`（macOS 通用包）/ `XueBan-x86_64.AppImage` + `XueBan-amd64.deb`，附 SHA256SUMS）。本机 NSIS 冒烟与 24 条桌面 E2E 证据见 `M5_2026-09-16.md` 与 CI `desktop-e2e` 作业。
+- **说明**：Windows 仍以 NSIS 交付（MSI/WiX 非必须）；mac/Linux 安装冒烟在对应 runner 构建成功，安装交互冒烟建议随正式分发抽查。
 
 ### B-007 本机 Lighthouse 退出码受 chrome-launcher 清理竞态影响（M4，仅本机环境）
 
