@@ -11,17 +11,35 @@ import { useWeeklyReport } from "@/journey/use-journey-data";
 
 type Report = Record<string, unknown>;
 
-function readNumber(report: Report, key: string): number | null {
-  const value = report[key];
+/**
+ * 按点分路径读取周报指标，例如 `practice.total`、`mastery.green_count`。
+ * 后端 `build_weekly_report` 返回的是嵌套结构（见 services/api/app/services/report_service.py），
+ * 顶层没有扁平 key，所以不能直接 `report[key]`。
+ */
+function readNumber(report: Report, path: string): number | null {
+  const value = path.split(".").reduce<unknown>((node, key) => {
+    if (node && typeof node === "object") return (node as Record<string, unknown>)[key];
+    return undefined;
+  }, report);
   return typeof value === "number" ? value : null;
 }
 
-function Metric({ label, report, unit }: { label: string; report: Report; unit: string }) {
-  const value = readNumber(report, unit);
+function Metric({
+  label,
+  report,
+  path,
+  suffix,
+}: {
+  label: string;
+  report: Report;
+  path: string;
+  suffix?: string;
+}) {
+  const value = readNumber(report, path);
   return (
     <StatCard
       title={label}
-      value={value === null ? "—" : String(value)}
+      value={value === null ? "—" : `${value}${suffix ?? ""}`}
       hint={value === null ? "本周暂无数据" : undefined}
     />
   );
@@ -37,6 +55,9 @@ export default function ReviewStagePage() {
   }, [advance, mark]);
 
   const report = (weekly.data?.report ?? {}) as Report;
+  const suggestions = Array.isArray(report.suggestions)
+    ? report.suggestions.filter((item): item is string => typeof item === "string")
+    : [];
 
   return (
     <StageShell
@@ -58,19 +79,29 @@ export default function ReviewStagePage() {
               {weekly.data?.week_start} ~ {weekly.data?.week_end}
             </p>
             <div className="grid grid-cols-2 gap-sm md:grid-cols-4">
-              <Metric label="练习题量" report={report} unit="practice_count" />
-              <Metric label="掌握知识点" report={report} unit="mastered_count" />
-              <Metric label="学习时长（分钟）" report={report} unit="study_minutes" />
-              <Metric label="连续天数" report={report} unit="streak_days" />
+              <Metric label="练习题量" report={report} path="practice.total" />
+              <Metric label="答对题数" report={report} path="practice.correct" />
+              <Metric label="掌握知识点" report={report} path="mastery.green_count" />
+              <Metric label="本周完成任务" report={report} path="tasks.done" />
             </div>
             <Card>
               <CardHeader>
                 <CardTitle>下一步</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col gap-xs">
-                <p className="text-app-sm text-muted-foreground">
-                  掌握度不足的知识点会优先出现在「学习规划」里；错题会在 24 小时后进入复习卡。
-                </p>
+                {suggestions.length > 0 ? (
+                  <ul aria-label="本周建议" className="flex flex-col gap-xs">
+                    {suggestions.map((item) => (
+                      <li key={item} className="text-app-sm">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-app-sm text-muted-foreground">
+                    掌握度不足的知识点会优先出现在「学习规划」里；错题会在 24 小时后进入复习卡。
+                  </p>
+                )}
                 <p className="text-app-sm">守护型讲解：先自己想一想，卡住了再看提示，不直接给答案。</p>
               </CardContent>
             </Card>
