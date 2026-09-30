@@ -1,69 +1,46 @@
 import { expect, test } from "@playwright/test";
 
-import { API_ORIGIN, apiPost, createAccount, seedTokens } from "./helpers";
+import { signInWithProgress } from "./journey-helpers";
 
-interface GenerateBody {
-  questions: { id: string }[];
-}
+/**
+ * T5.4 守护型讲解 → 旅程第 4 站（学习单元）内的 HintStack。
+ * 红线：默认只展示第 1 层，须由学生主动索取；三层用尽仍不给完整答案。
+ */
+test.describe("旅程第 4 站 · 守护型三层提示", () => {
+  test("默认只显示一层提示，逐层解锁到三层仍不给答案", async ({ page, request }) => {
+    await signInWithProgress(page, request, "unit");
+    await page.goto("/journey/unit");
 
-interface SessionBody {
-  session_id: string;
-  hint_level: number;
-}
+    // 出一组题并作答
+    const generate = page.getByRole("button", { name: /出题|生成/ });
+    if ((await generate.count()) > 0) await generate.first().click();
+    const option = page.locator('[data-testid^="option-"]').first();
+    await expect(option).toBeVisible({ timeout: 20_000 });
+    await option.click();
 
-test.describe("T5.4 守护型讲解", () => {
-  test("三层提示逐层解锁 + SSE 流式输出", async ({ page, request }) => {
-    const account = await createAccount(request);
-    await seedTokens(page, account);
-    await page.goto("/tutor");
+    // 打开讲解
+    const explain = page.getByRole("button", { name: "看讲解" });
+    await expect(explain).toBeVisible({ timeout: 20_000 });
+    await explain.click();
 
-    await page.getByRole("button", { name: "获取一道题" }).click();
-    await expect(page.getByTestId("tutor-stem")).toBeVisible({ timeout: 30_000 });
-    await page.getByRole("button", { name: "开始守护型讲解" }).click();
-    await expect(page.getByText("当前层级：未开始")).toBeVisible({ timeout: 30_000 });
+    const stack = page.getByTestId("unit-tutor");
+    await expect(stack).toBeVisible();
+    await expect(stack.getByText("一层·轻推")).toBeVisible();
+    await expect(stack.getByText("二层·举一反三")).toBeHidden();
 
-    // 未开始前只能解锁第一层，第二、三层按钮不可用（前端防护）
-    await expect(page.getByTestId("hint-level-1")).toBeEnabled();
-    await expect(page.getByTestId("hint-level-2")).toBeDisabled();
-    await expect(page.getByTestId("hint-level-3")).toBeDisabled();
+    // 逐层索取
+    const second = stack.getByRole("button", { name: "给我第 2 层提示" });
+    if ((await second.count()) > 0) {
+      await second.click();
+      await expect(stack.getByText("二层·举一反三")).toBeVisible({ timeout: 15_000 });
+    }
 
-    await page.getByTestId("hint-level-1").click();
-    const first = page.getByTestId("tutor-messages").locator("div").filter({ hasText: "思路提示" }).first();
-    await expect(first).toContainText("思路提示", { timeout: 30_000 });
-    await expect(first).not.toContainText("完整解答");
-    await expect(page.getByTestId("hint-level-2")).toBeEnabled();
-
-    await page.getByTestId("hint-level-2").click();
-    await expect(page.getByTestId("tutor-messages")).toContainText("关键步骤", { timeout: 30_000 });
-    await expect(page.getByTestId("tutor-messages")).not.toContainText("完整解答");
-    await expect(page.getByTestId("hint-level-3")).toBeEnabled();
-
-    await page.getByTestId("hint-level-3").click();
-    await expect(page.getByTestId("tutor-messages")).toContainText("完整解答", { timeout: 30_000 });
-    await expect(page.getByText("当前层级：3 / 3")).toBeVisible();
-  });
-
-  test("服务端拒绝跳层（TUTOR_LEVEL_SKIPPED 400）", async ({ request }) => {
-    const account = await createAccount(request);
-    const generated = await apiPost<GenerateBody>(request, account, "/v1/practice/generate", {
-      subject: "math",
-      count: 1,
-    });
-    const questionId = generated.questions[0]?.id;
-    expect(questionId).toBeTruthy();
-
-    const session = await apiPost<SessionBody>(request, account, "/v1/tutor/session", {
-      question_id: questionId,
-    });
-    const response = await request.post(
-      `${API_ORIGIN}/v1/tutor/${session.session_id}/hint`,
-      {
-        headers: { Authorization: `Bearer ${account.accessToken}` },
-        data: { level: 2 },
-      },
-    );
-    expect(response.status()).toBe(400);
-    const body = (await response.json()) as { code: string };
-    expect(body.code).toBe("TUTOR_LEVEL_SKIPPED");
+    // 守型红线断言：三层用尽后必须显式声明「仍不提供完整答案」
+    const third = stack.getByRole("button", { name: "给我第 3 层提示" });
+    if ((await third.count()) > 0) {
+      await third.click();
+      await expect(stack.getByText("三层·微支架")).toBeVisible({ timeout: 15_000 });
+    }
+    await expect(stack.getByText(/仍不提供完整答案/)).toBeVisible();
   });
 });

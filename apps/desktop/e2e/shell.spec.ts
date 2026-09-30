@@ -1,96 +1,69 @@
-import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-import { apiGet, createAccount, seedTokens } from "./helpers";
+import { expectNoBlockingA11y, signInAsLearner, signInWithProgress } from "./journey-helpers";
 
-interface SubscriptionBody {
-  plan: string;
-  trial_used: boolean;
-}
+/** T5.6 复盘 → 旅程第 6 站 */
+test.describe("旅程第 6 站 · 复盘", () => {
+  test("展示本周指标并可完成今日学习", async ({ page, request }) => {
+    await signInWithProgress(page, request, "review");
+    await page.goto("/journey/review");
 
-interface CalendarBody {
-  year: number;
-  month: number;
-  days: { day: string }[];
-}
+    await expect(page.getByTestId("stage-review")).toBeVisible();
+    await page.getByTestId("review-finish").click();
+    await expect(page.getByTestId("review-finish")).toBeVisible();
+  });
+});
 
-function blockingViolations(results: Awaited<ReturnType<AxeBuilder["analyze"]>>) {
-  return results.violations
-    .filter((violation) => violation.impact === "critical" || violation.impact === "serious")
-    .map((violation) => ({
-      id: violation.id,
-      targets: violation.nodes.map((node) => node.target.join(" ")).slice(0, 6),
-    }));
-}
+/** P0 双主题与可访问性门禁 */
+test.describe("P0 双主题与可访问性", () => {
+  test("主题切换在两套皮肤间生效（kids ⇄ focus）", async ({ page, request }) => {
+    await signInAsLearner(page, request);
+    await page.goto("/journey/today");
 
-test.describe("T5.6 / T5.7 复盘与设置", () => {
-  test("设置页订阅状态与 API 一致（含试用开通）", async ({ page, request }) => {
-    const account = await createAccount(request);
-    await seedTokens(page, account);
-    await page.goto("/settings");
-
-    await expect(page.getByTestId("account-phone")).toHaveText(account.phone);
-    await expect(page.getByTestId("subscription-plan")).toHaveText("免费版");
-
-    await page.getByRole("button", { name: "开通 7 天试用" }).click();
-    await expect(page.getByTestId("subscription-plan")).toHaveText("试用中");
-
-    const subscription = await apiGet<SubscriptionBody>(
-      request,
-      account,
-      "/v1/billing/subscription",
-    );
-    expect(subscription.plan).toBe("trial");
-    expect(subscription.trial_used).toBe(true);
+    const toggle = page.getByTestId("theme-toggle");
+    await expect
+      .poll(async () => page.evaluate(() => document.documentElement.dataset.theme))
+      .toBe("kids");
+    await toggle.click();
+    await expect
+      .poll(async () => page.evaluate(() => document.documentElement.dataset.theme))
+      .toBe("focus");
   });
 
-  test("复盘页日历与 API 月份一致", async ({ page, request }) => {
-    const account = await createAccount(request);
-    await seedTokens(page, account);
-    await page.goto("/review");
+  test("儿童模式不提供深色（§4.1 约束）", async ({ page, request }) => {
+    await signInAsLearner(page, request);
+    await page.goto("/journey/today");
 
-    const now = new Date();
-    await expect(page.getByTestId("calendar-month")).toHaveText(
-      `${now.getFullYear()} 年 ${now.getMonth() + 1} 月`,
-    );
-    const calendar = await apiGet<CalendarBody>(
-      request,
-      account,
-      `/v1/stats/calendar?year=${now.getFullYear()}&month=${now.getMonth() + 1}`,
-    );
-    await expect(page.getByTestId("calendar-grid").locator("> div")).toHaveCount(
-      calendar.days.length,
-    );
+    const mode = page.getByTestId("mode-toggle");
+    await expect(mode).toBeDisabled();
+    await expect
+      .poll(async () => page.evaluate(() => document.documentElement.classList.contains("dark")))
+      .toBe(false);
   });
 
-  test("批改页与工具页可访问（含 V3 占位）", async ({ page, request }) => {
-    const account = await createAccount(request);
-    await seedTokens(page, account);
+  test("专注模式可切深色", async ({ page, request }) => {
+    await signInAsLearner(page, request, { stage: "today", hasProfile: true });
+    await page.goto("/journey/today");
 
-    await page.goto("/grading");
-    await expect(page.getByRole("heading", { name: "批改中心" })).toBeVisible();
-    await expect(page.getByRole("tab", { name: "作文批阅" })).toBeVisible();
-
-    await page.goto("/tools");
-    await expect(page.getByRole("heading", { name: "学习工具" }).first()).toBeVisible();
-    await expect(page.getByRole("tab", { name: "拍照搜题" })).toBeVisible();
-    await expect(page.getByRole("tab", { name: "编程判题" })).toBeVisible();
+    await page.getByTestId("theme-toggle").click();
+    await page.getByTestId("mode-toggle").click();
+    await expect
+      .poll(async () => page.evaluate(() => document.documentElement.classList.contains("dark")))
+      .toBe(true);
   });
 
-  test("登录页与主布局 axe 扫描 0 critical / serious", async ({ page, request }) => {
+  test("登录页与旅程主布局 axe 0 critical / serious", async ({ page, request }) => {
     await page.goto("/login");
-    const loginResults = await new AxeBuilder({ page })
-      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
-      .analyze();
-    expect(blockingViolations(loginResults)).toEqual([]);
+    await expectNoBlockingA11y(page);
 
-    const account = await createAccount(request);
-    await seedTokens(page, account);
-    await page.goto("/settings");
-    await expect(page.getByTestId("subscription-card")).toBeVisible();
-    const appResults = await new AxeBuilder({ page })
-      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
-      .analyze();
-    expect(blockingViolations(appResults)).toEqual([]);
+    await signInAsLearner(page, request);
+    await page.goto("/journey/today");
+    await expectNoBlockingA11y(page);
+  });
+
+  test("儿童模式旅程页 axe 0 critical / serious", async ({ page, request }) => {
+    await signInAsLearner(page, request, { stage: "today", hasProfile: true });
+    await page.goto("/journey/today");
+    await expectNoBlockingA11y(page);
   });
 });

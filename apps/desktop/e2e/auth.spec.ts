@@ -1,47 +1,67 @@
 import { expect, test } from "@playwright/test";
 
-import { randomPhone } from "./helpers";
+import { signInAsLearner, signInWithProgress } from "./journey-helpers";
 
-test.describe("T5.1 应用骨架与路由守卫", () => {
-  test("未登录访问受限页跳转登录页", async ({ page }) => {
-    await page.goto("/tutor");
+/** T5.1 应用骨架与路由守卫 → 旅程制骨架 */
+test.describe("P0 旅程骨架与路由守卫", () => {
+  test("未登录访问旅程页跳转登录页", async ({ page }) => {
+    await page.goto("/journey/today");
     await expect(page).toHaveURL(/\/login$/);
-    await expect(page.getByRole("heading", { name: "登录" })).toBeVisible();
   });
 
-  test("注册新账号 → 进入主布局（侧边栏 8 项 + 当前用户）", async ({ page }) => {
-    const phone = randomPhone();
-    await page.goto("/login");
-    await page.getByRole("tab", { name: "注册" }).click();
-    await page.getByLabel("手机号").fill(phone);
-    await page.getByLabel("密码").fill("E2e-pass-1234");
-    await page.getByLabel("昵称（选填）").fill("桌面端 E2E");
-    await page.getByRole("button", { name: "注册并登录" }).click();
+  test("注册后进入旅程首站（6 站导航 + 当前用户）", async ({ page, request }) => {
+    await signInAsLearner(page, request);
+    await page.goto("/journey/today");
 
-    await expect(page).toHaveURL(/\/diagnosis$/);
-    const nav = page.getByRole("navigation", { name: "功能导航" });
+    const nav = page.getByRole("navigation", { name: "学习旅程" });
     await expect(nav).toBeVisible();
-    for (const label of ["诊断", "规划", "讲解", "练习", "批改", "复盘", "工具", "设置"]) {
-      await expect(nav.getByRole("link", { name: new RegExp(label) })).toBeVisible();
+    for (const label of ["今日任务", "诊断", "规划", "学习单元", "错题复习", "复盘"]) {
+      await expect(nav.getByText(label, { exact: true })).toBeVisible();
     }
-    await expect(page.getByTestId("current-user")).toHaveText("桌面端 E2E");
+    await expect(page.getByTestId("current-user")).toBeVisible();
+    await expect(page.getByTestId("stage-today")).toBeVisible();
   });
 
-  test("侧边栏可切换页面", async ({ page }) => {
-    await page.goto("/login");
-    const phone = randomPhone();
-    await page.getByRole("tab", { name: "注册" }).click();
-    await page.getByLabel("手机号").fill(phone);
-    await page.getByLabel("密码").fill("E2e-pass-1234");
-    await page.getByRole("button", { name: "注册并登录" }).click();
-    await expect(page).toHaveURL(/\/diagnosis$/);
+  test("旅程导航按状态机推进：今日任务 → 诊断 → 规划", async ({ page, request }) => {
+    await signInWithProgress(page, request, "today");
+    await page.goto("/journey/today");
 
-    await page.getByRole("navigation", { name: "功能导航" }).getByRole("link", { name: /规划/ }).click();
-    await expect(page).toHaveURL(/\/plan$/);
-    await expect(page.getByRole("heading", { name: "学习规划" })).toBeVisible();
+    await page.getByTestId("journey-advance").click();
+    await expect(page.getByTestId("stage-diagnosis")).toBeVisible();
 
-    await page.getByRole("navigation", { name: "功能导航" }).getByRole("link", { name: /设置/ }).click();
-    await expect(page).toHaveURL(/\/settings$/);
-    await expect(page.getByTestId("subscription-card")).toBeVisible();
+    await page.getByTestId("journey-advance").click();
+    await expect(page.getByTestId("stage-plan")).toBeVisible();
+  });
+
+  test("未满足前置条件的阶段被禁用（禁止孤立跳转）", async ({ page, request }) => {
+    await signInAsLearner(page, request, { stage: "today", hasProfile: true });
+    await page.goto("/journey/today");
+
+    const nav = page.getByRole("navigation", { name: "学习旅程" });
+    await expect(nav.getByText("需先完成：完成首次诊断")).toBeVisible();
+  });
+});
+
+/** P0 onboarding：选学段 → 自动切主题 → 首次诊断 */
+test.describe("P0 onboarding 选学段", () => {
+  test("选择小学学段自动切到儿童模式并进入诊断", async ({ page, request }) => {
+    await signInAsLearner(page, request, { stage: "today" });
+    await page.goto("/onboarding");
+
+    await expect(page.getByTestId("onboarding")).toBeVisible();
+    await page.getByTestId("onboarding-choose-primary").click();
+
+    await expect(page.getByTestId("onboarding-theme")).toHaveText("儿童模式");
+    await expect(page).toHaveURL(/\/journey\/diagnosis$/);
+    expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe("kids");
+  });
+
+  test("选择高中学段保持专注模式", async ({ page, request }) => {
+    await signInAsLearner(page, request, { stage: "today" });
+    await page.goto("/onboarding");
+
+    await page.getByTestId("onboarding-choose-senior").click();
+    await expect(page.getByTestId("onboarding-theme")).toHaveText("专注模式");
+    expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe("focus");
   });
 });

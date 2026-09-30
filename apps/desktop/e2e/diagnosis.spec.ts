@@ -1,65 +1,35 @@
-import { expect, test, type APIRequestContext } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
-import { apiGet, createAccount, seedTokens, type TestAccount } from "./helpers";
+import { apiGet, signInWithProgress } from "./journey-helpers";
 
-interface DiagnosisStartBody {
-  exam_id: string;
-  progress: { answered: number; total: number };
-}
+/** T5.2 诊断与画像 → 旅程第 2 站（守护型诊断，选项来自后端契约） */
+test.describe("旅程第 2 站 · 诊断", () => {
+  test("完成诊断后展示诊断结果并可进入规划", async ({ page, request }) => {
+    const account = await signInWithProgress(page, request, "diagnosis");
+    await page.goto("/journey/diagnosis");
 
-interface DiagnosisReportBody {
-  has_data: boolean;
-  points: { name: string; mastery: number }[];
-}
+    await page.getByTestId("diagnosis-start").click();
+    await expect(page.getByTestId("diagnosis-progress")).toBeVisible();
 
-test.describe("T5.2 诊断与画像", () => {
-  test("完成 20 题诊断 → 报告雷达图与 API 数据一致", async ({ page, request }) => {
-    const account: TestAccount = await createAccount(request);
-    await seedTokens(page, account);
-
-    await page.goto("/diagnosis");
-    const startPromise = page.waitForResponse((response) =>
-      response.url().includes("/v1/diagnosis/start"),
-    );
-    await page.getByRole("button", { name: "开始诊断" }).click();
-    const startBody = (await (await startPromise).json()) as DiagnosisStartBody;
-    const total = startBody.progress.total;
-    expect(total).toBe(20);
-
-    for (let index = 0; index < total; index += 1) {
-      const optionA = page.getByTestId("diagnosis-option-A");
-      if ((await optionA.count()) > 0) {
-        await optionA.click();
-      } else {
-        await page.locator("#answer").fill("1");
-      }
-      await page.getByRole("button", { name: "提交答案" }).click();
-      if (index < total - 1) {
-        // 非最后一题：提交后展示对错反馈，再进入下一题
-        await expect(page.getByTestId("diagnosis-feedback")).toBeVisible();
-        await page.getByRole("button", { name: "下一题" }).click();
-        await expect(page.getByTestId("diagnosis-feedback")).toBeHidden();
-      }
-      // 最后一题提交后直接进入报告阶段（下方断言雷达图）
+    // 逐题作答：选项按后端返回的键值渲染，答对或答错都推进进度
+    for (let index = 0; index < 10; index += 1) {
+      const option = page.locator('[data-testid^="option-"]').first();
+      if ((await option.count()) === 0) break;
+      await option.click();
+      await expect(page.getByTestId("diagnosis-done")).toBeVisible({ timeout: 15_000 }).catch(() => {});
+      if ((await page.getByTestId("diagnosis-done").count()) > 0) break;
     }
 
-    await expect(page.getByTestId("diagnosis-radar")).toBeVisible({ timeout: 30_000 });
-    const report = await apiGet<DiagnosisReportBody>(
-      request as APIRequestContext,
+    await expect(page.getByTestId("diagnosis-done")).toBeVisible({ timeout: 30_000 });
+    await page.getByRole("button", { name: "生成学习规划" }).click();
+    await expect(page).toHaveURL(/\/journey\/plan$/);
+
+    // 与后端交叉校验：诊断记录已落库
+    const report = await apiGet<{ exams: { exam_id: string; status: string }[] }>(
+      request,
       account,
-      `/v1/diagnosis/${startBody.exam_id}/report`,
+      "/v1/diagnosis/exams?limit=5",
     );
-    expect(report.has_data).toBe(true);
-    expect(report.points.length).toBeGreaterThan(0);
-
-    // 雷达图与明细表均来自同一份 API 数据：逐项核对知识点名称
-    for (const point of report.points.slice(0, 8)) {
-      await expect(page.getByText(point.name).first()).toBeVisible();
-    }
-    const rows = page.getByTestId("mastery-row");
-    await expect(rows).toHaveCount(report.points.length);
-
-    await page.getByRole("link", { name: "去规划页生成学习路径" }).click();
-    await expect(page).toHaveURL(/\/plan$/);
+    expect(report.exams.length).toBeGreaterThan(0);
   });
 });

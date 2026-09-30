@@ -1,10 +1,8 @@
 import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 
-const API_ORIGIN =
-  process.env.PLAYWRIGHT_API_ORIGIN ??
-  `http://127.0.0.1:${process.env.PLAYWRIGHT_API_PORT ?? (process.platform === "win32" ? "8091" : "8000")}`;
+import { API_ORIGIN, signInAsLearner } from "./journey-helpers";
 
-interface Account {
+interface GuardianAccount {
   id: string;
   phone: string;
   password: string;
@@ -21,7 +19,7 @@ function randomPhone(): string {
 async function register(
   request: APIRequestContext,
   role: "student" | "parent",
-): Promise<Account> {
+): Promise<GuardianAccount> {
   const phone = randomPhone();
   const password = "E2e-pass-1234";
   const response = await request.post(`${API_ORIGIN}/v1/auth/register`, {
@@ -44,7 +42,7 @@ async function register(
 
 async function setControls(
   request: APIRequestContext,
-  parent: Account,
+  parent: GuardianAccount,
   childId: string,
   options: { limit: number; enabled: boolean },
 ): Promise<void> {
@@ -61,7 +59,11 @@ async function setControls(
   if (!response.ok()) throw new Error(`设置防沉迷失败：${await response.text()}`);
 }
 
-async function reportUsage(request: APIRequestContext, child: Account, seconds: number): Promise<void> {
+async function reportUsage(
+  request: APIRequestContext,
+  child: GuardianAccount,
+  seconds: number,
+): Promise<void> {
   const response = await request.post(`${API_ORIGIN}/v1/analytics/events`, {
     headers: { Authorization: `Bearer ${child.accessToken}` },
     data: { events: [{ name: "study.time", payload: { seconds } }] },
@@ -69,7 +71,7 @@ async function reportUsage(request: APIRequestContext, child: Account, seconds: 
   if (!response.ok()) throw new Error(`上报时长失败：${await response.text()}`);
 }
 
-async function seedTokens(page: Page, account: Account): Promise<void> {
+async function seedTokens(page: Page, account: GuardianAccount): Promise<void> {
   await page.addInitScript(
     (tokens: { access: string; refresh: string }) => {
       window.localStorage.setItem("xueban.desktop.access_token", tokens.access);
@@ -79,8 +81,12 @@ async function seedTokens(page: Page, account: Account): Promise<void> {
   );
 }
 
-test.describe("T7.2 防沉迷生效链（服务端判定 → 桌面锁屏）", () => {
-  test("超过每日上限后桌面端锁屏，放宽后解锁", async ({ page, request }) => {
+/**
+ * T7.2 防沉迷生效链（服务端判定 → 桌面锁屏）。
+ * §8 约束 2：一至五年级默认每次 20 分钟强制休息，故旅程页同样受守护门控约束。
+ */
+test.describe("T7.2 防沉迷生效链（旅程页同样受守护门控）", () => {
+  test("超过每日上限后锁屏，放宽后解锁", async ({ page, request }) => {
     const parent = await register(request, "parent");
     const child = await register(request, "student");
     const bind = await request.post(`${API_ORIGIN}/v1/auth/parents/children`, {
@@ -93,16 +99,21 @@ test.describe("T7.2 防沉迷生效链（服务端判定 → 桌面锁屏）", (
     await reportUsage(request, child, 1800);
 
     await seedTokens(page, child);
-    await page.goto("/diagnosis");
+    await page.addInitScript(() => {
+      window.localStorage.setItem(
+        "xueban.journey",
+        JSON.stringify({ stage: "today", hasProfile: true }),
+      );
+    });
+    await page.goto("/journey/today");
     await expect(page.getByTestId("guardian-lock")).toBeVisible({ timeout: 30_000 });
     await expect(page.getByText("今日学习时长已达上限")).toBeVisible();
     await expect(page.getByTestId("guardian-usage")).toContainText("30 分钟 / 上限 30 分钟");
 
-    // 家长放宽上限后，客户端重新检查即解锁（服务端判定为准）
     await setControls(request, parent, child.id, { limit: 120, enabled: true });
     await page.getByRole("button", { name: "我休息好了，重新检查" }).click();
     await expect(page.getByTestId("guardian-lock")).toHaveCount(0);
-    await expect(page.getByRole("heading", { name: "学情诊断" })).toBeVisible();
+    await expect(page.getByTestId("stage-today")).toBeVisible();
   });
 
   test("关闭防沉迷后不受时长影响", async ({ page, request }) => {
@@ -115,9 +126,9 @@ test.describe("T7.2 防沉迷生效链（服务端判定 → 桌面锁屏）", (
     await setControls(request, parent, child.id, { limit: 30, enabled: false });
     await reportUsage(request, child, 3600);
 
-    await seedTokens(page, child);
-    await page.goto("/diagnosis");
-    await expect(page.getByRole("heading", { name: "学情诊断" })).toBeVisible({ timeout: 30_000 });
+    await signInAsLearner(page, request);
+    await page.goto("/journey/today");
+    await expect(page.getByTestId("stage-today")).toBeVisible({ timeout: 30_000 });
     await expect(page.getByTestId("guardian-lock")).toHaveCount(0);
   });
 });
