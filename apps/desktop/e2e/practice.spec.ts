@@ -25,7 +25,7 @@ test.describe("旅程第 4 站 · 练习作答", () => {
 
     const feedback = page.getByTestId("unit-feedback");
     await expect(feedback).toBeVisible({ timeout: 20_000 });
-    await expect(feedback).toContainText(/答对了|还没掌握/);
+    await expect(feedback).toContainText(/回答正确|还没掌握/);
   });
 });
 
