@@ -15,7 +15,7 @@ import {
 } from "@xueban/ui";
 
 import { EmptyBlock, ErrorBlock, SectionTitle } from "@/components/state";
-import { V3Tools } from "@/components/v3-tools";
+import { V3Tools } from "../components/v3-tools";
 import { ApiError, api, type MasteryPoint, type MicroLesson } from "@/lib/api";
 
 export default function ToolsPage() {
