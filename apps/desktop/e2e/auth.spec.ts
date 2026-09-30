@@ -49,11 +49,18 @@ test.describe("P0 onboarding 选学段", () => {
     await page.goto("/onboarding");
 
     await expect(page.getByTestId("onboarding")).toBeVisible();
+    // 选择前：默认专注模式
+    await expect(page.getByTestId("onboarding-theme")).toContainText("专注模式");
+
     await page.getByTestId("onboarding-choose-primary").click();
 
-    await expect(page.getByTestId("onboarding-theme")).toHaveText("儿童模式");
+    // 选学段即自动切主题并进入首站诊断（旅程状态机驱动跳转）
     await expect(page).toHaveURL(/\/journey\/diagnosis$/);
-    expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe("kids");
+    await expect(page.getByTestId("stage-diagnosis")).toBeVisible();
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.dataset.theme))
+      .toBe("kids");
+    await expect(page.getByTestId("theme-badge")).toHaveText("儿童模式");
   });
 
   test("选择高中学段保持专注模式", async ({ page, request }) => {
@@ -61,7 +68,11 @@ test.describe("P0 onboarding 选学段", () => {
     await page.goto("/onboarding");
 
     await page.getByTestId("onboarding-choose-senior").click();
-    await expect(page.getByTestId("onboarding-theme")).toHaveText("专注模式");
-    expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe("focus");
+
+    await expect(page).toHaveURL(/\/journey\/diagnosis$/);
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.dataset.theme))
+      .toBe("focus");
+    await expect(page.getByTestId("theme-badge")).toHaveText("专注模式");
   });
 });

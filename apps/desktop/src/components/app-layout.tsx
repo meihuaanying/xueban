@@ -27,7 +27,10 @@ export function AppLayout() {
           <h1 className="text-app text-muted-foreground">学伴学习旅程</h1>
           <div className="flex items-center gap-xs">
             <SyncIndicator />
-            <Badge variant={theme === "kids" ? "warning" : "outline"}>
+            <Badge
+              variant={theme === "kids" ? "warning" : "outline"}
+              data-testid="theme-badge"
+            >
               {SKIN_LABEL[theme]}
             </Badge>
             <Button

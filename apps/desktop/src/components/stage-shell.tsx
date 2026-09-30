@@ -2,7 +2,7 @@
  * 旅程阶段通用页壳：标题、说明、动作区。
  * 让每个阶段页保持 ≤150 行，复杂区块下沉到 components/。
  */
-import type { ReactNode } from "react";
+import type { HTMLAttributes, ReactNode } from "react";
 
 import { AudioButton } from "@xueban/ui";
 import { cn } from "@xueban/ui";
@@ -10,7 +10,7 @@ import { cn } from "@xueban/ui";
 import { useJourney } from "../journey/journey-context";
 import { stageDefinition, type JourneyStage } from "../journey/stages";
 
-export interface StageShellProps {
+export interface StageShellProps extends HTMLAttributes<HTMLElement> {
   stage: JourneyStage;
   /** 覆盖默认标题 */
   title?: string;
@@ -20,7 +20,6 @@ export interface StageShellProps {
   speakable?: boolean;
   actions?: ReactNode;
   children: ReactNode;
-  className?: string;
 }
 
 export function StageShell({
@@ -31,6 +30,7 @@ export function StageShell({
   actions,
   children,
   className,
+  ...props
 }: StageShellProps) {
   const def = stageDefinition(stage);
   const { theme } = useJourney();
@@ -41,6 +41,7 @@ export function StageShell({
     <section
       aria-label={heading}
       className={cn("flex min-w-0 flex-1 flex-col gap-md p-lg text-foreground", className)}
+      {...props}
     >
       <header className="flex flex-wrap items-start justify-between gap-sm">
         <div className="flex min-w-0 flex-col gap-hair">
