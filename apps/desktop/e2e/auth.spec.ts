@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { signInAsLearner, signInWithProgress } from "./journey-helpers";
+import { signInAsLearner } from "./journey-helpers";
 
 /** T5.1 应用骨架与路由守卫 → 旅程制骨架 */
 test.describe("P0 旅程骨架与路由守卫", () => {
@@ -22,15 +22,15 @@ test.describe("P0 旅程骨架与路由守卫", () => {
     await expect(page.getByTestId("stage-today")).toBeVisible();
   });
 
-  test("旅程导航按状态机推进：今日任务 → 诊断 → 规划", async ({ page, request }) => {
-    await signInWithProgress(page, request, "today");
+  test("旅程导航按状态机推进：今日任务 → 诊断", async ({ page, request }) => {
+    // 只置「已建立档案」，diagnosisDone 仍为 false ⇒ nextStage 返回 diagnosis。
+    // 若用 signInWithProgress（6 个布尔全 true），today 的下一站是 unit 而非 diagnosis。
+    await signInAsLearner(page, request, { stage: "today", hasProfile: true });
     await page.goto("/journey/today");
 
     await page.getByTestId("journey-advance").click();
     await expect(page.getByTestId("stage-diagnosis")).toBeVisible();
-
-    await page.getByTestId("journey-advance").click();
-    await expect(page.getByTestId("stage-plan")).toBeVisible();
+    await expect(page).toHaveURL(/\/journey\/diagnosis$/);
   });
 
   test("未满足前置条件的阶段被禁用（禁止孤立跳转）", async ({ page, request }) => {

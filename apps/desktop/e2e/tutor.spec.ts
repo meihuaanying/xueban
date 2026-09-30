@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { signInWithProgress } from "./journey-helpers";
+import { answerQuestionCard, signInWithProgress } from "./journey-helpers";
 
 /**
  * T5.4 守护型讲解 → 旅程第 4 站（学习单元）内的 HintStack。
@@ -11,21 +11,19 @@ test.describe("旅程第 4 站 · 守护型三层提示", () => {
     await signInWithProgress(page, request, "unit");
     await page.goto("/journey/unit");
 
-    // 出一组题并作答
-    const generate = page.getByRole("button", { name: /出题|生成/ });
-    if ((await generate.count()) > 0) await generate.first().click();
-    const option = page.locator('[data-testid^="option-"]').first();
-    await expect(option).toBeVisible({ timeout: 20_000 });
-    await option.click();
+    // 出一组题并作答（选择题点选项，填空题走输入框）
+    await page.getByTestId("unit-generate").click();
+    const how = await answerQuestionCard(page);
+    expect(how).not.toBe("none");
 
-    // 打开讲解
-    const explain = page.getByRole("button", { name: "看讲解" });
+    // 打开讲解：必须先有作答反馈，讲解入口才会出现
+    const explain = page.getByTestId("unit-open-tutor");
     await expect(explain).toBeVisible({ timeout: 20_000 });
     await explain.click();
 
     const stack = page.getByTestId("unit-tutor");
     await expect(stack).toBeVisible();
-    await expect(stack.getByText("一层·轻推")).toBeVisible();
+    await expect(stack.getByText("一层·轻推")).toBeVisible({ timeout: 20_000 });
     await expect(stack.getByText("二层·举一反三")).toBeHidden();
 
     // 逐层索取

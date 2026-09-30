@@ -73,16 +73,49 @@ export async function signInWithProgress(
   page: Page,
   request: APIRequestContext,
   stage: JourneyFlags["stage"],
+  band?: LearnerBand,
 ): Promise<TestAccount> {
-  return signInAsLearner(page, request, {
-    stage,
-    hasProfile: true,
-    diagnosisDone: true,
-    planReady: true,
-    unitVisited: true,
-    mistakesLogged: true,
-    reviewDone: true,
-  });
+  return signInAsLearner(
+    page,
+    request,
+    {
+      stage,
+      hasProfile: true,
+      diagnosisDone: true,
+      planReady: true,
+      unitVisited: true,
+      mistakesLogged: true,
+      reviewDone: true,
+    },
+    band,
+  );
+}
+
+/**
+ * 在题卡上作答一题（兼容选择题与填空题）。
+ *
+ * 后端 seed 的题库 choice 与 fill 混排（`practice/generate` 实测第 2 题起 `options: null`），
+ * 因此用例不能只找 `[data-testid^="option-"]`：遇到填空题必须走 `fill-input` + `fill-submit`。
+ * 返回实际作答方式，供用例断言分支。
+ */
+export async function answerQuestionCard(
+  page: Page,
+  fillText = "17",
+): Promise<"option" | "fill" | "none"> {
+  const option = page.locator('[data-testid^="option-"]').first();
+  if ((await option.count()) > 0 && (await option.isVisible().catch(() => false))) {
+    await option.click();
+    return "option";
+  }
+
+  const fillInput = page.getByTestId("fill-input");
+  if ((await fillInput.count()) > 0 && (await fillInput.isVisible().catch(() => false))) {
+    await fillInput.fill(fillText);
+    await page.getByTestId("fill-submit").click();
+    return "fill";
+  }
+
+  return "none";
 }
 
 /**

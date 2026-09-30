@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { signInAsLearner, signInWithProgress } from "./journey-helpers";
+import { SEEDED_BAND, seedJourneyData, signInAsLearner } from "./journey-helpers";
 
 /**
  * T9.1 多端同步 / T9.3 三态 / T9.4 新手引导 → 旅程化重写。
@@ -20,10 +20,21 @@ test.describe("旅程三态与加载反馈", () => {
     });
   });
 
-  test("错题复习页加载后展示错题本或空态", async ({ page, request }) => {
-    await signInWithProgress(page, request, "mistakes");
+  test("错题复习页加载后展示已收录的错题", async ({ page, request }) => {
+    // 方案 A：先用真实 API 造出错题，再断言页面呈现（三态中的「有数据」态）
+    const account = await signInAsLearner(
+      page,
+      request,
+      { stage: "mistakes", hasProfile: true, diagnosisDone: true },
+      SEEDED_BAND,
+    );
+    const seeded = await seedJourneyData(request, account);
+    expect(seeded.mistakesCollected).toBeGreaterThan(0);
+
     await page.goto("/journey/mistakes");
-    await expect(page.getByTestId("mistake-list")).toBeVisible({ timeout: 20_000 });
+    const list = page.getByTestId("mistake-list");
+    await expect(list).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator('[data-testid^="mistake-"]').first()).toBeVisible({ timeout: 20_000 });
   });
 });
 

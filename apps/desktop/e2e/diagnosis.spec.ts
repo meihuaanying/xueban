@@ -1,35 +1,43 @@
 import { expect, test } from "@playwright/test";
 
-import { apiGet, signInWithProgress } from "./journey-helpers";
+import {
+  SEEDED_BAND,
+  answerQuestionCard,
+  apiGet,
+  signInAsLearner,
+} from "./journey-helpers";
 
-/** T5.2 诊断与画像 → 旅程第 2 站（守护型诊断，选项来自后端契约） */
 test.describe("旅程第 2 站 · 诊断", () => {
   test("完成诊断后展示诊断结果并可进入规划", async ({ page, request }) => {
-    const account = await signInWithProgress(page, request, "diagnosis");
-    await page.goto("/journey/diagnosis");
+    // 诊断链路要真跑 20 题（后端 MIN_TARGET_COUNT=20），且题库仅有 math/junior，
+    // 因此用 SEEDED_BAND 登录；旅程状态停在「未完成诊断」，由用例在 UI 上推进。
+    const account = await signInAsLearner(
+      page,
+      request,
+      { stage: "diagnosis", hasProfile: true, diagnosisDone: false },
+      SEEDED_BAND,
+    );
 
+    await page.goto("/journey/diagnosis");
     await page.getByTestId("diagnosis-start").click();
     await expect(page.getByTestId("diagnosis-progress")).toBeVisible();
 
-    // 逐题作答：选项按后端返回的键值渲染，答对或答错都推进进度
-    for (let index = 0; index < 10; index += 1) {
-      const option = page.locator('[data-testid^="option-"]').first();
-      if ((await option.count()) === 0) break;
-      await option.click();
-      await expect(page.getByTestId("diagnosis-done")).toBeVisible({ timeout: 15_000 }).catch(() => {});
-      if ((await page.getByTestId("diagnosis-done").count()) > 0) break;
+    const done = page.getByTestId("diagnosis-done");
+    for (let index = 0; index < 25 && (await done.count()) === 0; index += 1) {
+      const how = await answerQuestionCard(page);
+      expect(how, "题卡应提供选项或填空输入").not.toBe("none");
+      await page.waitForTimeout(150);
     }
+    await expect(done).toBeVisible({ timeout: 30_000 });
 
-    await expect(page.getByTestId("diagnosis-done")).toBeVisible({ timeout: 30_000 });
     await page.getByRole("button", { name: "生成学习规划" }).click();
     await expect(page).toHaveURL(/\/journey\/plan$/);
 
-    // 与后端交叉校验：诊断记录已落库
-    const report = await apiGet<{ exams: { exam_id: string; status: string }[] }>(
+    const exams = await apiGet<{ exams: { exam_id: string; status: string }[] }>(
       request,
       account,
       "/v1/diagnosis/exams?limit=5",
     );
-    expect(report.exams.length).toBeGreaterThan(0);
+    expect(exams.exams.length).toBeGreaterThan(0);
   });
 });
