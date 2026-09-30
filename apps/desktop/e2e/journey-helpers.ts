@@ -27,21 +27,44 @@ export interface JourneyFlags {
   reviewDone?: boolean;
 }
 
+/**
+ * 测试用学段。当前题库实况（psql 实测 questions 表）只有 `math/junior` 有 PUBLISHED 题，
+ * `primary` / `senior` 会命中 409 DIAGNOSIS_NO_QUESTIONS（走题库建设中空态）。
+ * 需要「诊断/规划」真实跑通链路的用例必须用 `junior`。
+ */
+export type LearnerBand = "primary" | "junior" | "senior";
+
+const BAND_THEME: Record<LearnerBand, string> = {
+  primary: "kids",
+  junior: "focus",
+  senior: "focus",
+};
+
+/** 有题库的学段：诊断与规划链路用它 */
+export const SEEDED_BAND: LearnerBand = "junior";
+/** 诊断题量，与后端 diagnosis_service.MIN_TARGET_COUNT 下限一致 */
+const DIAGNOSIS_TARGET = 20;
+
 /** 注入登录态 + 旅程进度，让用例直接从指定阶段开始 */
 export async function signInAsLearner(
   page: Page,
   request: APIRequestContext,
   flags?: JourneyFlags,
+  band?: LearnerBand,
 ): Promise<TestAccount> {
   const account = await createAccount(request);
   await seedTokens(page, account);
   const state: JourneyFlags = flags ?? { stage: "today", hasProfile: true };
-  await page.addInitScript((injected: { journey: JourneyFlags; theme: string }) => {
-    window.localStorage.setItem("xueban.journey", JSON.stringify(injected.journey));
-    window.localStorage.setItem("xueban.gradeBand", "primary");
-    window.localStorage.setItem("xueban.theme", injected.theme);
-    window.localStorage.setItem("xueban.mode", "light");
-  }, { journey: state, theme: "kids" });
+  const skin = band ?? "primary";
+  await page.addInitScript(
+    (injected: { journey: JourneyFlags; band: string; theme: string }) => {
+      window.localStorage.setItem("xueban.journey", JSON.stringify(injected.journey));
+      window.localStorage.setItem("xueban.gradeBand", injected.band);
+      window.localStorage.setItem("xueban.theme", injected.theme);
+      window.localStorage.setItem("xueban.mode", "light");
+    },
+    { journey: state, band: skin, theme: BAND_THEME[skin] },
+  );
   return account;
 }
 
@@ -60,6 +83,111 @@ export async function signInWithProgress(
     mistakesLogged: true,
     reviewDone: true,
   });
+}
+
+/**
+ * 造真实学习数据（方案 A）：调真实 API 跑通诊断与练习，让 UI 断言有真实数据可断言。
+ * 不用 mock，也不写死返回；数据全部由后端产生，再与页面交叉校验。
+ *
+ * 注意：错题产生的 FSRS 卡按 `Again` 档设 `due_at = now + 10 分钟`（fsrs_service.AGAIN_MINUTES），
+ * 因此**刚答错后 `/v1/review/due` 必然为 0**，到期复习卡的交互无法用造数得到；
+ * 用例应对 `review-due` 断言「空态 + 容器存在」，到期卡评分交互另行覆盖。
+ */
+export interface SeededData {
+  examId: string;
+  diagnosisFinished: boolean;
+  answered: number;
+  mistakesCollected: number;
+}
+
+export async function seedJourneyData(
+  request: APIRequestContext,
+  account: TestAccount,
+): Promise<SeededData> {
+  let examId = "";
+  let answered = 0;
+  let diagnosisFinished = false;
+
+  const start = await apiPost<DiagnosisStartBody>(
+    request,
+    account,
+    "/v1/diagnosis/start",
+    { subject: "math", stage: "junior", target_count: DIAGNOSIS_TARGET },
+  );
+  examId = start.exam_id;
+  let question = start.question ?? null;
+
+  while (question && answered < DIAGNOSIS_TARGET + 5) {
+    const answer = pickAnswer(question.options, question.qtype, answered);
+    const result = await apiPost<DiagnosisAnswerBody>(
+      request,
+      account,
+      `/v1/diagnosis/${examId}/answer`,
+      { question_id: question.id, answer },
+    );
+    answered += 1;
+    diagnosisFinished = Boolean(result.finished);
+    question = result.next_question ?? null;
+    if (diagnosisFinished) break;
+  }
+
+  // 练习：故意选最后一个选项 / 填空填 0，制造错题供错题本断言
+  let mistakesCollected = 0;
+  for (let round = 0; round < 3 && mistakesCollected === 0; round += 1) {
+    const generated = await apiPost<PracticeGenerateBody>(
+      request,
+      account,
+      "/v1/practice/generate",
+      { subject: "math", count: 5 },
+    );
+    for (const item of generated.questions ?? []) {
+      const answer = pickAnswer(item.options, item.qtype, answered);
+      const result = await apiPost<PracticeAnswerBody>(
+        request,
+        account,
+        "/v1/practice/answer",
+        { question_id: item.id, answer, source: "practice" },
+      );
+      if (result.mistake_collected) mistakesCollected += 1;
+    }
+  }
+
+  return { examId, diagnosisFinished, answered, mistakesCollected };
+}
+
+/** 选择题取最后一个选项、填空题填 0：与实测 seed 数据一致，稳定制造错题 */
+function pickAnswer(
+  options: Record<string, string> | null | undefined,
+  qtype: string | undefined,
+  salt: number,
+): string {
+  if (!options || Object.keys(options).length === 0) return "0";
+  const keys = Object.keys(options).sort();
+  return keys[(keys.length - 1 + salt) % keys.length] ?? keys[0] ?? "0";
+}
+
+interface DiagnosisStartBody {
+  exam_id: string;
+  question?: DiagnosisQuestionBody | null;
+}
+
+interface DiagnosisQuestionBody {
+  id: string;
+  qtype?: string;
+  options?: Record<string, string> | null;
+}
+
+interface DiagnosisAnswerBody {
+  finished: boolean;
+  next_question?: DiagnosisQuestionBody | null;
+}
+
+interface PracticeGenerateBody {
+  questions?: DiagnosisQuestionBody[];
+}
+
+interface PracticeAnswerBody {
+  mistake_collected: boolean;
 }
 
 /** 阻断 a11y 门禁：critical / serious 视为不通过 */
