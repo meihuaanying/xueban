@@ -16,7 +16,7 @@ function uniquePhone(): string {
 }
 
 test.describe("官网转化链路（T4.3）", () => {
-  test("首页 → 注册 → 试用开通 → 学习中心可见状态", async ({ page }) => {
+  test("首页 → 注册 → 试用开通 → 引导下载客户端", async ({ page }) => {
     ensureEvidenceDir();
 
     await page.goto("/");
@@ -40,20 +40,22 @@ test.describe("官网转化链路（T4.3）", () => {
     await page.getByRole("checkbox", { name: /我已阅读并同意/ }).check();
     await page.getByRole("button", { name: "注册并开通试用" }).click();
 
-    await expect(page).toHaveURL(/\/app$/, { timeout: 30_000 });
-    await expect(page.getByText("试用中").first()).toBeVisible();
-    await expect(page.getByText("到期时间")).toBeVisible();
-    await expect(page.getByText("剩余天数")).toBeVisible();
-    await expect(page.getByText(/^\d+ 天$/).first()).toBeVisible();
+    // P0 / D4：Web 收缩为官网 + 下载页，注册成功后引导下载桌面客户端
+    await expect(page).toHaveURL(/\/download$/, { timeout: 30_000 });
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("下载学伴");
+    await expect(page.getByRole("link", { name: "XueBan-Setup-x64.exe" })).toBeVisible();
     await page.screenshot({
-      path: path.join(EVIDENCE_DIR, "m4-04-app-trial.png"),
+      path: path.join(EVIDENCE_DIR, "m4-04-download-after-register.png"),
       fullPage: false,
     });
   });
 
-  test("未登录访问学习中心引导注册", async ({ page }) => {
-    await page.goto("/app");
-    await expect(page.getByText("尚未登录")).toBeVisible();
-    await expect(page.getByRole("link", { name: "免费注册并开通试用" })).toBeVisible();
+  test("下载页提供 Web 版注册入口（未登录亦可浏览）", async ({ page }) => {
+    await page.goto("/download");
+    await expect(page.getByRole("link", { name: "使用 Web 版学习" })).toHaveAttribute(
+      "href",
+      "/register",
+    );
+    await expect(page.getByRole("link", { name: /XueBan-/ }).first()).toBeVisible();
   });
 });

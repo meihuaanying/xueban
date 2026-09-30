@@ -33,8 +33,8 @@ export function SiteHeader() {
         </nav>
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
-          <Link href="/app" className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}>
-            登录
+          <Link href="/download" className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}>
+            下载客户端
           </Link>
           <Link href="/register" className={cn(buttonVariants({ size: "sm" }))}>
             免费注册

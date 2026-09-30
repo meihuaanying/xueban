@@ -9,7 +9,7 @@ const TARGETS = [
   { path: "/privacy", name: "隐私政策" },
   { path: "/minor-protection", name: "未成年人保护声明" },
   { path: "/register", name: "注册页" },
-  { path: "/app", name: "学习中心（未登录态）" },
+  // P0 / D4：学习中心页面已归档至 src/app/_archived（原 /app），官网只保留官网 + 下载页
 ];
 
 test.describe("无障碍扫描（T4.2，axe-core）", () => {

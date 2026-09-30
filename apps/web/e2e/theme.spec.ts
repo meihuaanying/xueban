@@ -1,8 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-import { registerAccount, seedTokens } from "./parents-helpers";
-
 function blockingViolations(results: Awaited<ReturnType<AxeBuilder["analyze"]>>) {
   return results.violations
     .filter((violation) => violation.impact === "critical" || violation.impact === "serious")
@@ -29,22 +27,8 @@ test.describe("T9.3 暗色模式与无障碍收口", () => {
     await expect(html).not.toHaveClass(/dark/);
   });
 
-  test("家长端与后台页暗色下 axe 0 critical / serious", async ({ page, request }) => {
-    const parent = await registerAccount(request, { role: "parent" });
-    await seedTokens(page, parent);
-    await page.goto("/parents");
-    await expect(async () => {
-      await page.getByTestId("theme-toggle").click();
-      await expect(page.locator("html")).toHaveClass(/dark/, { timeout: 1000 });
-    }).toPass({ timeout: 15_000 });
-    // 等待主题变量与 transition-colors（150ms）过渡结束，避免 axe 采样到中间态
-    await page.waitForTimeout(300);
-    const results = await new AxeBuilder({ page })
-      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
-      .analyze();
-    expect(blockingViolations(results)).toEqual([]);
-  });
-
+  // P0 / D4：家长端与运营后台页面已归档至 src/app/_archived（原 /parents、/admin），
+  // 官网只保留官网 + 下载页；对应的暗色 axe 用例随之下线。
   test("注册页与帮助页暗色下 axe 0 critical / serious", async ({ page }) => {
     for (const path of ["/register", "/help"]) {
       await page.goto(path);

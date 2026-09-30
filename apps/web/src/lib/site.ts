@@ -38,7 +38,8 @@ export const FOOTER_LINKS: { title: string; links: NavLink[] }[] = [
     links: [
       { href: "/help", label: "帮助中心" },
       { href: "/register", label: "免费注册" },
-      { href: "/app", label: "我的学习中心" },
+      // P0 / D4：Web 收缩为官网 + 下载页，学习中心由桌面端承载（见 src/app/_archived）
+      { href: "/download", label: "客户端下载" },
     ],
   },
   {
