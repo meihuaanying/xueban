@@ -5,7 +5,7 @@ import { Spinner } from "@xueban/ui";
 
 import { AppLayout } from "@/components/app-layout";
 import { JourneyProvider } from "@/journey/journey-context";
-import { stagePath, STAGES } from "@/journey/stages";
+import { type JourneyStage, stagePath, STAGES } from "@/journey/stages";
 import { AuthProvider, useAuth } from "@/lib/auth";
 import DiagnosisStagePage from "@/routes/journey/diagnosis";
 import LoginPage from "@/routes/login";
@@ -16,6 +16,16 @@ import ReviewStagePage from "@/routes/journey/review";
 import SettingsPage from "@/routes/settings";
 import TodayStagePage from "@/routes/journey/today";
 import UnitStagePage from "@/routes/journey/unit";
+
+/** stage id → 阶段页组件（避免在 JSX 里写六段三元） */
+const STAGE_VIEWS: Record<JourneyStage, React.ComponentType> = {
+  today: TodayStagePage,
+  diagnosis: DiagnosisStagePage,
+  plan: PlanStagePage,
+  unit: UnitStagePage,
+  mistakes: MistakesStagePage,
+  review: ReviewStagePage,
+};
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { status } = useAuth();
@@ -70,12 +80,7 @@ export default function App() {
               path={stage.id}
               element={
                 <RouteView stageId={stage.id}>
-                  {stage.id === "today" ? <TodayStagePage /> : null}
-                  {stage.id === "diagnosis" ? <DiagnosisStagePage /> : null}
-                  {stage.id === "plan" ? <PlanStagePage /> : null}
-                  {stage.id === "unit" ? <UnitStagePage /> : null}
-                  {stage.id === "mistakes" ? <MistakesStagePage /> : null}
-                  {stage.id === "review" ? <ReviewStagePage /> : null}
+                  <StageView stage={stage.id} />
                 </RouteView>
               }
             />
@@ -83,13 +88,14 @@ export default function App() {
           <Route index element={<Navigate to={stagePath("today")} replace />} />
         </Route>
         <Route
+          path="/settings"
           element={
             <RequireAuth>
-              <AppLayout />
+              <JourneyShell />
             </RequireAuth>
           }
         >
-          <Route path="/settings" element={<SettingsPage />} />
+          <Route index element={<SettingsPage />} />
         </Route>
         <Route path="/" element={<Navigate to="/journey/today" replace />} />
         <Route path="*" element={<Navigate to="/journey/today" replace />} />
@@ -98,7 +104,13 @@ export default function App() {
   );
 }
 
-/** 阶段页懒加载占位：Suspense 边界在 AppLayout 之上，此处仅做引入 */
+/** 按 stage id 渲染对应阶段页 */
+function StageView({ stage }: { stage: JourneyStage }) {
+  const View = STAGE_VIEWS[stage];
+  return <View />;
+}
+
+/** 阶段页容器：挂 data-journey-stage 便于 E2E 定位当前站点 */
 function RouteView({ stageId, children }: { stageId: string; children: React.ReactNode }) {
   return <div data-journey-stage={stageId}>{children}</div>;
 }
