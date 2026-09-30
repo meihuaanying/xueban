@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { AppLayout } from "./app-layout";
 import { EmptyBlock, ErrorBlock, LoadingBlock, SectionTitle } from "./state";
+import { JourneyProvider } from "@/journey/journey-context";
 import { api } from "@/lib/api";
 import { AuthProvider } from "@/lib/auth";
 import { SyncProvider } from "@/lib/sync";
@@ -21,14 +22,16 @@ const mockedApi = vi.mocked(api);
 
 function renderLayout() {
   return render(
-    <MemoryRouter initialEntries={["/plan"]}>
+    <MemoryRouter initialEntries={["/journey/plan"]}>
       <AuthProvider>
         <SyncProvider>
-          <Routes>
-            <Route element={<AppLayout />}>
-              <Route path="/plan" element={<p>计划内容</p>} />
-            </Route>
-          </Routes>
+          <JourneyProvider>
+            <Routes>
+              <Route element={<AppLayout />}>
+                <Route path="/journey/plan" element={<p>计划内容</p>} />
+              </Route>
+            </Routes>
+          </JourneyProvider>
         </SyncProvider>
       </AuthProvider>
     </MemoryRouter>,
@@ -62,13 +65,13 @@ describe("三态组件（T9.3）", () => {
 });
 
 describe("主布局（T5.1 / T9.3）", () => {
-  it("渲染 9 项导航与主题切换，匿名时无退出按钮", async () => {
+  it("渲染 6 站学习旅程导航与双主题切换，匿名时无退出按钮", async () => {
     mockedApi.syncState.mockRejectedValue(new Error("offline"));
     renderLayout();
     await waitFor(() => expect(screen.queryByText("计划内容")).toBeTruthy());
 
-    const nav = screen.getByRole("navigation", { name: "功能导航" });
-    for (const label of ["诊断", "规划", "讲解", "陪练", "练习", "批改", "复盘", "工具", "设置"]) {
+    const nav = screen.getByRole("navigation", { name: "学习旅程" });
+    for (const label of ["今日任务", "诊断", "规划", "学习单元", "错题复习", "复盘"]) {
       expect(nav.textContent).toContain(label);
     }
     expect(screen.getByTestId("theme-toggle")).toBeTruthy();
@@ -97,8 +100,18 @@ describe("主布局（T5.1 / T9.3）", () => {
     expect(screen.getByText("K12 保护")).toBeTruthy();
     expect(screen.getByTestId("sync-indicator").textContent).toContain("今日 0/0");
 
+    // 双主题：focus ↔ kids（P0 §4.1）
     fireEvent.click(screen.getByTestId("theme-toggle"));
-    expect(document.documentElement.classList.contains("dark")).toBe(true);
+    await waitFor(() =>
+      expect(document.documentElement.dataset.theme).toBe("kids"),
+    );
+    // 儿童模式不提供深色，故用 mode-toggle 前先切回 focus
+    fireEvent.click(screen.getByTestId("theme-toggle"));
+    await waitFor(() =>
+      expect(document.documentElement.dataset.theme).toBe("focus"),
+    );
+    fireEvent.click(screen.getByTestId("mode-toggle"));
+    await waitFor(() => expect(document.documentElement.classList.contains("dark")).toBe(true));
     window.localStorage.clear();
   });
 });
