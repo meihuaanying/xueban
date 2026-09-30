@@ -320,6 +320,8 @@
   --kmap-node: 52px;
   --mastery-bar-height: 8px;
   --tap-min: 32px;
+  --scrim: rgb(15 23 42 / 45%);
+  --color-scrim: var(--scrim);
 }
 
 /* -- 皮肤 A 深色（仅 focus；.dark 为旧调用兼容） -- */
@@ -374,6 +376,8 @@
 
   --elevation-card: 0 1px 2px rgb(0 0 0 / 40%);
   --elevation-pop: 0 8px 24px rgb(0 0 0 / 50%);
+  --scrim: rgb(2 6 23 / 66%);
+  --color-scrim: var(--scrim);
 }
 
 /* -- 皮肤 B kids：儿童，明黄/天蓝/草绿，大字号大圆角，无深色（置于最后以覆盖 .dark） -- */
@@ -539,6 +543,8 @@
   --kmap-node: 64px;
   --mastery-bar-height: 14px;
   --tap-min: 48px;
+  --scrim: rgb(58 47 20 / 40%);
+  --color-scrim: var(--scrim);
 }
 
 /* ============================================================
