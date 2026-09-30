@@ -106,14 +106,18 @@ export async function answerQuestionCard(
   const option = page.locator('[data-testid^="option-"]').first();
   const fillInput = page.getByTestId("fill-input");
 
-  // 出题与作答都是异步往返：这里等「可作答控件本身」出现且解禁，
-  // 而不是等外层容器（unit-question / diagnosis-progress 只是外壳，
-  // 两者之间会跨一次渲染往返，卡片可能在 count() 前就被卸载）。
-  const detect = async (): Promise<"option" | "fill" | "none"> => {
-    if ((await option.count()) > 0 && (await option.isEnabled())) return "option";
-    if ((await fillInput.count()) > 0 && (await fillInput.isEnabled())) return "fill";
-    return "none";
-  };
+  // 出题与作答都是异步往返：等「可作答控件本身」出现且解禁，
+  // 而不是等外层容器（unit-question / diagnosis-progress 只是外壳）。
+  // 这里用 evaluate 做原子判定：locator 的 count()/isEnabled() 都带自动等待，
+  // 题目切换时旧控件已卸载、新控件尚未挂载，会一直挂到测试级超时（flaky 根因）。
+  const detect = async (): Promise<"option" | "fill" | "none"> =>
+    page.evaluate(() => {
+      const option = document.querySelector<HTMLButtonElement>('[data-testid^="option-"]');
+      if (option && !option.disabled) return "option";
+      const fill = document.querySelector<HTMLInputElement>('[data-testid="fill-input"]');
+      if (fill && !fill.disabled) return "fill";
+      return "none";
+    });
 
   const deadline = Date.now() + 20_000;
   let ready: "option" | "fill" | "none" = "none";
