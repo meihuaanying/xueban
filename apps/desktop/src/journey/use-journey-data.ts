@@ -7,6 +7,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import {
+  ApiError,
   api,
   type DiagnosisAnswer,
   type DiagnosisStart,
@@ -89,15 +90,24 @@ export function useDiagnosis() {
   const [last, setLast] = useState<DiagnosisAnswer | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorCode, setErrorCode] = useState<string | null>(null);
 
-  const begin = useCallback(async (subject: string, stage: string, count = 10) => {
+  const begin = useCallback(async (subject: string, stage: string, count = 20) => {
     setBusy(true);
     setError(null);
+    setErrorCode(null);
     setLast(null);
     try {
       setStart(await api.startDiagnosis({ subject, stage, target_count: count }));
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "诊断启动失败。");
+      // 409 题库暂无可用题目属正常空态（该学段题库待补），需与真故障区分
+      if (caught instanceof ApiError) {
+        setError(caught.message);
+        setErrorCode(caught.code);
+      } else {
+        setError(caught instanceof Error ? caught.message : "诊断启动失败。");
+        setErrorCode(null);
+      }
     } finally {
       setBusy(false);
     }
@@ -125,7 +135,7 @@ export function useDiagnosis() {
     }
   }, [start]);
 
-  return { start, last, busy, error, begin, answer, examId: start?.exam_id ?? null };
+  return { start, last, busy, error, errorCode, begin, answer, examId: start?.exam_id ?? null };
 }
 
 /* ---------- 掌握度 / 规划 ---------- */

@@ -13,6 +13,8 @@ export default function DiagnosisStagePage() {
   const { band, theme, mark, goTo } = useJourney();
   const diag = useDiagnosis();
   const preset = band ? GRADE_BANDS[band] : GRADE_BANDS.primary;
+  // 该学段题库尚未覆盖：后端返回 409 DIAGNOSIS_NO_QUESTIONS，按空态而非错误处理
+  const noBank = diag.errorCode === "DIAGNOSIS_NO_QUESTIONS";
   const question = diag.start?.question ?? null;
   const options = question?.options ?? null;
   const finished = diag.start ? !diag.start.question || Boolean(diag.last?.finished) : false;
@@ -33,14 +35,21 @@ export default function DiagnosisStagePage() {
             </CardHeader>
             <CardContent className="flex flex-col items-start gap-sm">
               <p className="text-app-sm text-muted-foreground">
-                共 10 题，答错也没关系——诊断只是为了定位你的薄弱点。
+                共 20 题，答错也没关系——诊断只是为了定位你的薄弱点。
               </p>
-              {diag.error ? <p className="text-app-sm text-destructive">{diag.error}</p> : null}
+              {noBank ? (
+                <p className="text-app-sm text-muted-foreground" data-testid="diagnosis-empty">
+                  {preset.label}题库正在建设中，先用已有学段的题练一练，规划与练习不受影响。
+                </p>
+              ) : null}
+              {diag.error && !noBank ? (
+                <p className="text-app-sm text-destructive">{diag.error}</p>
+              ) : null}
               <Button
                 type="button"
                 data-testid="diagnosis-start"
                 disabled={diag.busy}
-                onClick={() => void diag.begin(preset.subject, preset.grade)}
+                onClick={() => void diag.begin(preset.subject, preset.stage)}
               >
                 {diag.busy ? "准备中…" : "开始诊断"}
               </Button>

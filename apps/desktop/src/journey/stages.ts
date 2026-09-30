@@ -137,14 +137,21 @@ export function nextStage(state: JourneyState): JourneyStage {
   return "today";
 }
 
-/** 学段 → 主题皮肤与默认学科（onboarding 选学段后自动切主题） */
+/**
+ * 学段 → 主题皮肤、默认学科与题库学段（onboarding 选学段后自动切主题）
+ *
+ * `stage` 必须与后端 `Question.stage` 的取值一致：诊断选题按
+ * `subject + stage + PUBLISHED` 精确筛选并强制 join 知识点关联，没有模糊匹配。
+ * 当前题库实况：仅 `math/junior` 有题；`primary`/`senior` 暂无题库，
+ * 对应页面走「题库建设中」空态（P1 §6.1 补一二年级题库、P3 补高中题库）。
+ */
 export const GRADE_BANDS: Record<
   GradeBand,
-  { label: string; theme: "kids" | "focus"; subject: string; grade: string }
+  { label: string; theme: "kids" | "focus"; subject: string; grade: string; stage: string }
 > = {
-  primary: { label: "小学低年级", theme: "kids", subject: "math", grade: "grade1" },
-  junior: { label: "初中", theme: "focus", subject: "math", grade: "grade7" },
-  senior: { label: "高中", theme: "focus", subject: "math", grade: "grade10" },
+  primary: { label: "小学低年级", theme: "kids", subject: "math", grade: "grade1", stage: "primary" },
+  junior: { label: "初中", theme: "focus", subject: "math", grade: "grade7", stage: "junior" },
+  senior: { label: "高中", theme: "focus", subject: "math", grade: "grade10", stage: "senior" },
 };
 
 export function defaultJourneyState(overrides: Partial<JourneyState> = {}): JourneyState {
