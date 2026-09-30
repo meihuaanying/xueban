@@ -1,5 +1,6 @@
 ﻿import type { Story } from "@ladle/react";
 
+import { currentTheme } from "../src/stories/design/theme-params";
 import "../src/styles.css";
 
 /**
@@ -23,22 +24,8 @@ const THEME_LABELS: Record<string, string> = {
   kids: "kids · 儿童（暖纸底 + 明黄/天蓝/草绿，大字号大圆角）",
 };
 
-type ThemeName = "focus" | "kids";
-
-function readParam(name: string): string | null {
-  if (typeof window === "undefined") return null;
-  return new URLSearchParams(window.location.search).get(name);
-}
-
-/** 解析 URL 查询参数：?theme=kids&mode=dark */
-const resolveTheme = (): { theme: ThemeName; mode: "light" | "dark" } => {
-  const theme: ThemeName = readParam("theme") === "kids" ? "kids" : "focus";
-  const mode = readParam("mode") === "dark" ? "dark" : "light";
-  return { theme, mode };
-};
-
 export const Global: Story = ({ children }: { children?: React.ReactNode }) => {
-  const { theme, mode } = resolveTheme();
+  const { theme, mode } = currentTheme();
   return (
     <div
       data-theme={theme}

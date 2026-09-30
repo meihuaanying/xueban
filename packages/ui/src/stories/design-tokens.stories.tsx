@@ -4,7 +4,23 @@
  */
 import type { Story } from "@ladle/react";
 
-import { Row, Swatches, ThemePair } from "./design/frame";
+import { Px, Row, Swatches, ThemePair } from "./design/frame";
+
+/**
+ * 读取一个 CSS 变量的实际计算值并渲染成像素标注。
+ * 走查门禁要求「差异肉眼可辨或直接标注像素值」，此组件让两种证据同时成立。
+ */
+function MeasuredFontSize({ size }: { size: string }) {
+  if (typeof window === "undefined") return null;
+  const probe = document.createElement("span");
+  probe.style.position = "absolute";
+  probe.style.visibility = "hidden";
+  probe.style.fontSize = size;
+  document.body.appendChild(probe);
+  const px = Math.round(Number.parseFloat(getComputedStyle(probe).fontSize) * 100) / 100;
+  probe.remove();
+  return <Px>{px}px</Px>;
+}
 
 const SURFACE = [
   { name: "background", varName: "--background" },
@@ -21,6 +37,9 @@ const ACCENT = [
   { name: "accent", varName: "--accent" },
   { name: "ring", varName: "--ring" },
   { name: "border", varName: "--border" },
+  { name: "border-strong", varName: "--border-strong" },
+  { name: "input", varName: "--input" },
+  { name: "muted", varName: "--muted" },
 ];
 
 const STATUS = [
@@ -129,13 +148,14 @@ function HintStack() {
   );
 }
 
-function QuestionCard() {
+function QuestionCard({ theme }: { theme: "focus" | "kids" }) {
+  const tapMin = theme === "kids" ? "48px" : "32px";
   return (
     <div
       style={{
         background: "var(--card)",
-        border: "1px solid var(--border)",
-        borderRadius: "var(--radius-card)",
+        border: "var(--card-border)",
+        borderRadius: "var(--card-radius)",
         boxShadow: "var(--shadow-card)",
         padding: "var(--space-sm)",
         display: "grid",
@@ -151,12 +171,13 @@ function QuestionCard() {
           <div
             key={label}
             style={{
+              height: "var(--tap-min)",
               minHeight: "var(--tap-min)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               borderRadius: "var(--radius-control)",
-              border: `1px solid ${index === 2 ? "var(--primary)" : "var(--border)"}`,
+              border: `1px solid ${index === 2 ? "var(--primary)" : "var(--border-strong)"}`,
               background: index === 2 ? "var(--primary-soft)" : "transparent",
               fontSize: "var(--text-app)",
               fontWeight: 500,
@@ -165,6 +186,19 @@ function QuestionCard() {
             {label}
           </div>
         ))}
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+          fontSize: 11,
+          color: "var(--muted-foreground)",
+        }}
+      >
+        <span>选项热区 --tap-min</span>
+        <Px>{tapMin}</Px>
+        <span>· 7 岁可用性门槛 ≥48px：{theme === "kids" ? "达标" : "不适用（成人高密度）"}</span>
       </div>
     </div>
   );
@@ -306,22 +340,36 @@ export const Palette: Story = () => (
 
 export const Typography: Story = () => (
   <ThemePair>
-    {() => (
-      <Row title="字阶（同一套语义类，主题仅改旋钮）">
+    {(theme) => (
+      <Row title="字阶（同一套语义类，主题仅改 --font-scale 旋钮）">
+        <div
+          style={{
+            fontSize: "var(--text-app-xs)",
+            color: "var(--muted-foreground)",
+            marginBottom: 6,
+          }}
+        >
+          --font-scale = {theme === "kids" ? "1.2857" : "1"} · 正文基准{" "}
+          <Px>{theme === "kids" ? "18px" : "14px"}</Px> · 行高{" "}
+          <Px>{theme === "kids" ? "1.7" : "1.55"}</Px>
+        </div>
         <div style={{ display: "grid", gap: 6 }}>
-          {[
-            ["app-xs · 12/16", "var(--text-app-xs)"],
-            ["app-sm · 13/16", "var(--text-app-sm)"],
-            ["app · 14/16（基准）", "var(--text-app)"],
-            ["app-md · 15/16", "var(--text-app-md)"],
-            ["app-lg · 18/16", "var(--text-app-lg)"],
-            ["app-xl · 22/16", "var(--text-app-xl)"],
-            ["app-2xl · 28/16", "var(--text-app-2xl)"],
-            ["app-3xl · 36/16", "var(--text-app-3xl)"],
-          ].map(([label, size]) => (
+          {(
+            [
+              ["app-xs", "var(--text-app-xs)"],
+              ["app-sm", "var(--text-app-sm)"],
+              ["app（正文基准）", "var(--text-app)"],
+              ["app-md", "var(--text-app-md)"],
+              ["app-lg", "var(--text-app-lg)"],
+              ["app-xl", "var(--text-app-xl)"],
+              ["app-2xl", "var(--text-app-2xl)"],
+              ["app-3xl", "var(--text-app-3xl)"],
+            ] as const
+          ).map(([label, size]) => (
             <div key={label} style={{ display: "grid", gap: 2 }}>
-              <span style={{ fontSize: "var(--text-app-xs)", color: "var(--muted-foreground)" }}>
-                {label}
+              <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 11, color: "var(--muted-foreground)" }}>{label}</span>
+                <MeasuredFontSize size={size} />
               </span>
               <span style={{ fontSize: size, fontWeight: 500 }}>20 以内加减法</span>
             </div>
@@ -393,19 +441,70 @@ export const SpacingAndRadius: Story = () => (
 
 export const LearningBits: Story = () => (
   <ThemePair>
-    {() => (
+    {(theme) => (
       <div>
         <Row title="题卡 QuestionCard">
-          <QuestionCard />
+          <QuestionCard theme={theme} />
         </Row>
         <Row title="知识地图节点 KnowledgeMap">
           <KnowledgeMap />
+          <div
+            style={{
+              marginTop: 6,
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              fontSize: 11,
+              color: "var(--muted-foreground)",
+            }}
+          >
+            <span>节点 --kmap-node</span>
+            <Px>{theme === "kids" ? "64px" : "52px"}</Px>
+          </div>
         </Row>
         <Row title="掌握度条 MasteryBar">
           <MasteryStack />
+          <div
+            style={{
+              marginTop: 6,
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              fontSize: 11,
+              color: "var(--muted-foreground)",
+            }}
+          >
+            <span>条高 --mastery-bar-height</span>
+            <Px>{theme === "kids" ? "14px" : "8px"}</Px>
+          </div>
         </Row>
-        <Row title="三层提示 HintStack">
+        <Row title="三层提示 HintStack（守护型红线）">
           <HintStack />
+        </Row>
+        <Row title="表面三层对比（background / card / surface-sunken）">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
+            {(
+              [
+                ["background", "var(--background)"],
+                ["card", "var(--card)"],
+                ["surface-sunken", "var(--surface-sunken)"],
+              ] as const
+            ).map(([label, bg]) => (
+              <div
+                key={label}
+                style={{
+                  background: bg,
+                  border: "var(--card-border)",
+                  borderRadius: "var(--card-radius)",
+                  padding: "var(--space-xs)",
+                  fontSize: 11,
+                  color: "var(--muted-foreground)",
+                }}
+              >
+                {label}
+              </div>
+            ))}
+          </div>
         </Row>
       </div>
     )}

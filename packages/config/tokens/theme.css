@@ -155,11 +155,34 @@
 /* -- 皮肤 A（默认）focus：少年/成人，中性灰底 + 靛蓝，高密度 -- */
 :root,
 [data-theme="focus"] {
-  /* 主题旋钮 */
+  /* 主题旋钮（仅供 JS/图表参考：CSS 侧字阶圆角落为具体像素）
+   * ⚠️ 不可写成 calc(... * var(--font-scale))：自定义属性的 var() 在「声明处」求值，
+   * 放在 :root 上会永远使用 root 的旋钮值，子主题（kids）拿不到自己的比例。 */
   --font-scale: 1;
   --radius-scale: 1;
   --control-scale: 1;
-  --leading-app: 1.55;
+  --leading: 1.55;
+  --leading-app: var(--leading);
+
+  /* 字阶（正文基准 14px） */
+  --type-xs: 0.75rem; /* 12px */
+  --type-sm: 0.8125rem; /* 13px */
+  --type-base: 0.875rem; /* 14px ← 基准 */
+  --type-md: 0.9375rem; /* 15px */
+  --type-lg: 1.125rem; /* 18px */
+  --type-xl: 1.375rem; /* 22px */
+  --type-2xl: 1.75rem; /* 28px */
+  --type-3xl: 2.25rem; /* 36px */
+
+  /* 圆角（控制档 8px / 卡片档 12px） */
+  --r-xs: 0.25rem; /* 4px */
+  --r-sm: 0.375rem; /* 6px */
+  --r-md: 0.5rem; /* 8px */
+  --r-lg: 0.75rem; /* 12px */
+  --r-xl: 1rem; /* 16px */
+  --r-2xl: 1.25rem; /* 20px */
+  --r-card: 0.75rem; /* 12px */
+  --r-control: 0.5rem; /* 8px */
 
   /* 语义 · 表面 */
   --background: #f7f8fa;
@@ -167,7 +190,7 @@
   --card: #ffffff;
   --card-foreground: #0f172a;
   --surface-raised: #ffffff;
-  --surface-sunken: #f1f5f9;
+  --surface-sunken: #eaeff6;
   --sidebar: #ffffff;
   --sidebar-foreground: #0f172a;
   --sidebar-border: #e2e8f0;
@@ -198,6 +221,7 @@
 
   /* 语义 · 结构 */
   --border: #e2e8f0;
+  --border-strong: #cbd5e1;
   --input: #e2e8f0;
   --ring: #6366f1;
 
@@ -213,13 +237,83 @@
   --hint-2: #d97706; /* 二层：举一反三 */
   --hint-3: #16a34a; /* 三层：微支架（最后一步，仍不给答案） */
 
+
+  /* -- Tailwind utility 别名（在本块内解析，随皮肤换肤） -- */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-mastery-1: var(--mastery-1);
+  --color-mastery-2: var(--mastery-2);
+  --color-mastery-3: var(--mastery-3);
+  --color-mastery-4: var(--mastery-4);
+  --color-mastery-5: var(--mastery-5);
+  --color-hint-1: var(--hint-1);
+  --color-hint-2: var(--hint-2);
+  --color-hint-3: var(--hint-3);
+  --radius-xs: var(--r-xs);
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  --radius-xl: var(--r-xl);
+  --radius-2xl: var(--r-2xl);
+  --radius-card: var(--r-card);
+  --radius-control: var(--r-control);
+  --radius-pill: 999px;
+  --text-app-xs: var(--type-xs);
+  --text-app-xs--line-height: var(--leading);
+  --text-app-sm: var(--type-sm);
+  --text-app-sm--line-height: var(--leading);
+  --text-app: var(--type-base);
+  --text-app--line-height: var(--leading);
+  --text-app-md: var(--type-md);
+  --text-app-md--line-height: var(--leading);
+  --text-app-lg: var(--type-lg);
+  --text-app-lg--line-height: 1.4;
+  --text-app-xl: var(--type-xl);
+  --text-app-xl--line-height: 1.35;
+  --text-app-2xl: var(--type-2xl);
+  --text-app-2xl--line-height: 1.3;
+  --text-app-3xl: var(--type-3xl);
+  --text-app-3xl--line-height: 1.25;
   /* 组件层 */
-  --button-radius: calc(var(--radius-unit) * 1 * var(--radius-scale));
+  --button-radius: var(--r-control);
   --button-height: calc(2.25rem * var(--control-scale));
-  --input-radius: calc(var(--radius-unit) * 0.875 * var(--radius-scale));
+  --input-radius: var(--r-sm);
   --input-height: calc(2.125rem * var(--control-scale));
-  --card-radius: calc(var(--radius-unit) * 1.5 * var(--radius-scale));
+  --card-radius: var(--r-card);
   --card-padding: var(--space-sm);
+  /* 卡片描边：表面三层（background / card / surface-sunken）需靠它拉开层次 */
+  --card-border: 1px solid var(--border-strong);
   --elevation-card: var(--elevation-sm);
   --elevation-pop: var(--elevation-md);
   --sidebar-width: 264px;
@@ -236,7 +330,7 @@
   --card: #121a2b;
   --card-foreground: #e8eefc;
   --surface-raised: #16203a;
-  --surface-sunken: #0d1524;
+  --surface-sunken: #0a1120;
   --sidebar: #0f1729;
   --sidebar-foreground: #e8eefc;
   --sidebar-border: #24304a;
@@ -264,6 +358,7 @@
   --info-soft: #14243d;
 
   --border: #24304a;
+  --border-strong: #334155;
   --input: #24304a;
   --ring: #818cf8;
 
@@ -283,11 +378,32 @@
 
 /* -- 皮肤 B kids：儿童，明黄/天蓝/草绿，大字号大圆角，无深色（置于最后以覆盖 .dark） -- */
 [data-theme="kids"] {
-  /* 主题旋钮：14px → 18px 基准；圆角 ×1.6；控件 ×1.18 */
+  /* 主题旋钮（14px → 18px 基准；圆角 ×1.6；控件 ×1.18） */
   --font-scale: 1.2857;
   --radius-scale: 1.6;
   --control-scale: 1.18;
-  --leading-app: 1.7;
+  --leading: 1.7;
+  --leading-app: var(--leading);
+
+  /* 字阶（正文基准 18px，= 14px × 1.2857） */
+  --type-xs: 0.96rem; /* 15.4px */
+  --type-sm: 1.045rem; /* 16.7px */
+  --type-base: 1.125rem; /* 18px ← 基准 */
+  --type-md: 1.205rem; /* 19.3px */
+  --type-lg: 1.445rem; /* 23.1px */
+  --type-xl: 1.768rem; /* 28.3px */
+  --type-2xl: 2.25rem; /* 36px */
+  --type-3xl: 2.9rem; /* 46.4px */
+
+  /* 圆角（×1.6；控制档 12.8px，满足 §4「圆角 ≥12px」） */
+  --r-xs: 0.4rem; /* 6.4px */
+  --r-sm: 0.6rem; /* 9.6px */
+  --r-md: 0.8rem; /* 12.8px */
+  --r-lg: 1.2rem; /* 19.2px */
+  --r-xl: 1.6rem; /* 25.6px */
+  --r-2xl: 2rem; /* 32px */
+  --r-card: 1.2rem; /* 19.2px */
+  --r-control: 0.8rem; /* 12.8px */
 
   /* 语义 · 表面 */
   --background: #fffcf2;
@@ -295,7 +411,7 @@
   --card: #ffffff;
   --card-foreground: #3a2f14;
   --surface-raised: #ffffff;
-  --surface-sunken: #fff4d6;
+  --surface-sunken: #fbe9bd;
   --sidebar: #fffdf5;
   --sidebar-foreground: #3a2f14;
   --sidebar-border: #ffe4a3;
@@ -326,6 +442,7 @@
 
   /* 语义 · 结构 */
   --border: #f0dfae;
+  --border-strong: #e6cb85;
   --input: #f0dfae;
   --ring: #38aef5;
 
@@ -341,7 +458,81 @@
   --hint-2: #f2a81d;
   --hint-3: #22c55e;
 
+
+  /* -- Tailwind utility 别名（在本块内解析，随皮肤换肤） -- */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-mastery-1: var(--mastery-1);
+  --color-mastery-2: var(--mastery-2);
+  --color-mastery-3: var(--mastery-3);
+  --color-mastery-4: var(--mastery-4);
+  --color-mastery-5: var(--mastery-5);
+  --color-hint-1: var(--hint-1);
+  --color-hint-2: var(--hint-2);
+  --color-hint-3: var(--hint-3);
+  --radius-xs: var(--r-xs);
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  --radius-xl: var(--r-xl);
+  --radius-2xl: var(--r-2xl);
+  --radius-card: var(--r-card);
+  --radius-control: var(--r-control);
+  --radius-pill: 999px;
+  --text-app-xs: var(--type-xs);
+  --text-app-xs--line-height: var(--leading);
+  --text-app-sm: var(--type-sm);
+  --text-app-sm--line-height: var(--leading);
+  --text-app: var(--type-base);
+  --text-app--line-height: var(--leading);
+  --text-app-md: var(--type-md);
+  --text-app-md--line-height: var(--leading);
+  --text-app-lg: var(--type-lg);
+  --text-app-lg--line-height: 1.4;
+  --text-app-xl: var(--type-xl);
+  --text-app-xl--line-height: 1.35;
+  --text-app-2xl: var(--type-2xl);
+  --text-app-2xl--line-height: 1.3;
+  --text-app-3xl: var(--type-3xl);
+  --text-app-3xl--line-height: 1.25;
   /* 组件层：7 岁可用性——热区 ≥48px、控件更高、圆角更大 */
+  --button-radius: var(--r-control);
+  --button-height: calc(2.25rem * var(--control-scale));
+  --input-radius: var(--r-sm);
+  --input-height: calc(2.125rem * var(--control-scale));
+  --card-radius: var(--r-card);
+  --card-padding: var(--space-sm);
   --elevation-card: 0 3px 0 rgb(224 199 138 / 35%);
   --elevation-pop: 0 8px 24px rgb(180 140 60 / 22%);
   --sidebar-width: 240px;
@@ -353,7 +544,11 @@
 /* ============================================================
  * Tailwind 主题映射
  * ============================================================ */
-@theme {
+/* static：强制输出全部 theme 变量。
+ * 原因：Tailwind v4 默认只输出「被 utility 引用」的 theme 变量，
+ * 而本设计系统大量令牌是通过 var() 被组件样式 / 图表 JS / 内联样式消费的，
+ * 不加 static 会被整棵裁掉（字阶/圆角等在示例页表现为未生效）。 */
+@theme static {
   --font-sans:
     "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, -apple-system,
     "Segoe UI", sans-serif;
@@ -370,7 +565,7 @@
   --spacing-4xl: var(--space-4xl);
 }
 
-@theme inline {
+@theme static inline {
   /* -- 原有 17 项语义映射（保持不变以兼容既有类名） -- */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -387,6 +582,7 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
 
@@ -419,33 +615,33 @@
   --color-hint-2: var(--hint-2);
   --color-hint-3: var(--hint-3);
 
-  /* -- 圆角：随主题旋钮整体换肤（focus 数值与历史保持一致） -- */
-  --radius-xs: calc(var(--radius-unit) * 0.5 * var(--radius-scale));
-  --radius-sm: calc(var(--radius-unit) * 0.75 * var(--radius-scale));
-  --radius-md: calc(var(--radius-unit) * 1 * var(--radius-scale));
-  --radius-lg: calc(var(--radius-unit) * 1.5 * var(--radius-scale));
-  --radius-xl: calc(var(--radius-unit) * 2 * var(--radius-scale));
-  --radius-2xl: calc(var(--radius-unit) * 2.5 * var(--radius-scale));
-  --radius-card: calc(var(--radius-unit) * 1.5 * var(--radius-scale));
-  --radius-control: calc(var(--radius-unit) * 1 * var(--radius-scale));
+  /* -- 圆角：映射到各主题块内的具体像素（focus 6/8/12/16/20px；kids ×1.6） -- */
+  --radius-xs: var(--r-xs);
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  --radius-xl: var(--r-xl);
+  --radius-2xl: var(--r-2xl);
+  --radius-card: var(--r-card);
+  --radius-control: var(--r-control);
   --radius-pill: 999px;
 
-  /* -- 字阶：14px 基准 × 主题旋钮（kids → 18px 基准） -- */
-  --text-app-xs: calc(0.75rem * var(--font-scale));
-  --text-app-xs--line-height: var(--leading-app);
-  --text-app-sm: calc(0.8125rem * var(--font-scale));
-  --text-app-sm--line-height: var(--leading-app);
-  --text-app: calc(0.875rem * var(--font-scale));
-  --text-app--line-height: var(--leading-app);
-  --text-app-md: calc(0.9375rem * var(--font-scale));
-  --text-app-md--line-height: var(--leading-app);
-  --text-app-lg: calc(1.125rem * var(--font-scale));
+  /* -- 字阶：映射到各主题块内的具体像素（focus 14px 基准；kids 18px 基准） -- */
+  --text-app-xs: var(--type-xs);
+  --text-app-xs--line-height: var(--leading);
+  --text-app-sm: var(--type-sm);
+  --text-app-sm--line-height: var(--leading);
+  --text-app: var(--type-base);
+  --text-app--line-height: var(--leading);
+  --text-app-md: var(--type-md);
+  --text-app-md--line-height: var(--leading);
+  --text-app-lg: var(--type-lg);
   --text-app-lg--line-height: 1.4;
-  --text-app-xl: calc(1.375rem * var(--font-scale));
+  --text-app-xl: var(--type-xl);
   --text-app-xl--line-height: 1.35;
-  --text-app-2xl: calc(1.75rem * var(--font-scale));
+  --text-app-2xl: var(--type-2xl);
   --text-app-2xl--line-height: 1.3;
-  --text-app-3xl: calc(2.25rem * var(--font-scale));
+  --text-app-3xl: var(--type-3xl);
   --text-app-3xl--line-height: 1.25;
 
   /* -- 阴影 -- */

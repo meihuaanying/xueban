@@ -5,6 +5,8 @@
  */
 import type { ReactNode } from "react";
 
+import { currentTheme } from "./theme-params";
+
 export const THEME_LABELS: Record<string, string> = {
   focus: "focus · 少年/成人（中性灰 + 靛蓝，高密度）",
   kids: "kids · 儿童（暖纸底 + 明黄/天蓝/草绿，大字号大圆角）",
@@ -56,24 +58,46 @@ function ThemeBox({
   );
 }
 
+/** 读取走查参数（对 Ladle 全屏重写 URL 免疫，见 theme-params.ts） */
+export { currentTheme, readParam } from "./theme-params";
+
+/** 像素标注：走查证据要求「差异肉眼可辨或直接标注像素值」 */
+export function Px({ children }: { children: ReactNode }) {
+  return (
+    <span
+      style={{
+        fontSize: 11,
+        fontWeight: 600,
+        color: "var(--muted-foreground)",
+        border: "1px solid var(--border-strong)",
+        borderRadius: "var(--radius-sm)",
+        padding: "1px 5px",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
 /** 双主题并排容器 */
 export function ThemePair({
   children,
   width = 560,
   gap = "var(--space-lg)",
-  modes = { focus: "light", kids: "light" },
 }: {
   children: (theme: "focus" | "kids") => ReactNode;
   width?: number;
   gap?: string;
-  modes?: { focus?: "light" | "dark"; kids?: "light" | "dark" };
 }) {
+  const { theme, mode } = currentTheme();
+  // kids 恒亮色（§4 无深色）；focus 跟随 ?mode=dark
   return (
     <div style={{ display: "flex", gap, alignItems: "flex-start", flexWrap: "wrap" }}>
-      <ThemeBox theme="focus" mode={modes.focus} width={width}>
+      <ThemeBox theme="focus" mode={theme === "focus" ? mode : "light"} width={width}>
         {children("focus")}
       </ThemeBox>
-      <ThemeBox theme="kids" mode={modes.kids} width={width}>
+      <ThemeBox theme="kids" mode="light" width={width}>
         {children("kids")}
       </ThemeBox>
     </div>
