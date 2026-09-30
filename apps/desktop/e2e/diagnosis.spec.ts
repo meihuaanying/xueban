@@ -23,10 +23,11 @@ test.describe("旅程第 2 站 · 诊断", () => {
     await expect(page.getByTestId("diagnosis-progress")).toBeVisible();
 
     const done = page.getByTestId("diagnosis-done");
-    for (let index = 0; index < 25 && (await done.count()) === 0; index += 1) {
-      // 诊断页的题卡容器是 diagnosis-progress（练习页才是 unit-question）
-      const how = await answerQuestionCard(page, { cardTestId: "diagnosis-progress" });
-      expect(how, "题卡应提供选项或填空输入").not.toBe("none");
+    for (let index = 0; index < 25; index += 1) {
+      if ((await done.count()) > 0) break;
+      // required:false —— 最后一题提交后题卡会卸载（无题可答）＝卷面结束，由下方 done 断言兜底
+      const how = await answerQuestionCard(page, { required: false });
+      if (how === "none") break;
       await page.waitForTimeout(150);
     }
     await expect(done).toBeVisible({ timeout: 30_000 });
@@ -34,11 +35,15 @@ test.describe("旅程第 2 站 · 诊断", () => {
     await page.getByRole("button", { name: "生成学习规划" }).click();
     await expect(page).toHaveURL(/\/journey\/plan$/);
 
-    const exams = await apiGet<{ exams: { exam_id: string; status: string }[] }>(
+    // 与后端交叉校验：诊断结果已落库（掌握度从 has_data=false 变为 true）
+    // 注意：不存在「诊断列表」端点（/v1/exams 是 POST 创建限时模考），
+    // 诊断 exam_id 只在 React state 内，故用 profile/mastery 做落库校验。
+    const mastery = await apiGet<{ has_data: boolean; points: unknown[] }>(
       request,
       account,
-      "/v1/diagnosis/exams?limit=5",
+      "/v1/profile/mastery?subject=math",
     );
-    expect(exams.exams.length).toBeGreaterThan(0);
+    expect(mastery.has_data).toBe(true);
+    expect(mastery.points.length).toBeGreaterThan(0);
   });
 });

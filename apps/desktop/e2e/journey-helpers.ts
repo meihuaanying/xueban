@@ -100,31 +100,46 @@ export async function signInWithProgress(
  */
 export async function answerQuestionCard(
   page: Page,
-  options: { fillText?: string; cardTestId?: string } = {},
+  options: { fillText?: string; required?: boolean } = {},
 ): Promise<"option" | "fill" | "none"> {
-  const { fillText = "17", cardTestId = "unit-question" } = options;
-  // 出题是异步的（generate → practice/generate 往返），必须等题目渲染出来再找可作答控件，
-  // 否则元素尚未挂载，count() 为 0 会误判成「无题可答」。
-  // 注意：诊断页的题卡容器是 diagnosis-progress，练习页才是 unit-question，调用方需按页传入。
-  const card = page.getByTestId(cardTestId);
-  await expect(card).toBeVisible({ timeout: 20_000 });
-
+  const { fillText = "17", required = true } = options;
   const option = page.locator('[data-testid^="option-"]').first();
-  if ((await option.count()) > 0) {
-    await expect(option).toBeVisible();
+  const fillInput = page.getByTestId("fill-input");
+
+  // 出题与作答都是异步往返：这里等「可作答控件本身」出现且解禁，
+  // 而不是等外层容器（unit-question / diagnosis-progress 只是外壳，
+  // 两者之间会跨一次渲染往返，卡片可能在 count() 前就被卸载）。
+  const detect = async (): Promise<"option" | "fill" | "none"> => {
+    if ((await option.count()) > 0 && (await option.isEnabled())) return "option";
+    if ((await fillInput.count()) > 0 && (await fillInput.isEnabled())) return "fill";
+    return "none";
+  };
+
+  const deadline = Date.now() + 20_000;
+  let ready: "option" | "fill" | "none" = "none";
+  while (ready === "none" && Date.now() < deadline) {
+    ready = await detect();
+    if (ready === "none") await page.waitForTimeout(100);
+  }
+
+  if (ready === "none") {
+    if (required) {
+      throw new Error("题卡应提供选项或填空输入（20 秒内未出现可作答控件）");
+    }
+    return "none";
+  }
+
+  if (ready === "option") {
+    // 作答往返期间整卡 `disabled={busy}`，上面的轮询已确认解禁
     await option.click();
     return "option";
   }
 
-  const fillInput = page.getByTestId("fill-input");
-  if ((await fillInput.count()) > 0) {
-    await expect(fillInput).toBeVisible();
-    await fillInput.fill(fillText);
-    await page.getByTestId("fill-submit").click();
-    return "fill";
-  }
-
-  return "none";
+  await fillInput.fill(fillText);
+  const submit = page.getByTestId("fill-submit");
+  await expect(submit).toBeEnabled({ timeout: 20_000 });
+  await submit.click();
+  return "fill";
 }
 
 /**
