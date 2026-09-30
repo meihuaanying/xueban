@@ -97,6 +97,32 @@ describe("QuestionCard", () => {
     expect(screen.getByLabelText("拼音 kàn tú")).toBeInTheDocument();
     expect(container.querySelector(".katex")).not.toBeNull();
   });
+
+  // 填空题此前既无选项也无输入框，诊断与练习两条链会卡死（详见 REBUILD §6.2 题型清单）
+  it("填空题给出输入框，输入过程不触发提交", () => {
+    const onSelect = vi.fn();
+    render(<QuestionCard stem="3 + 14 = ？" kind="fill" onSelect={onSelect} />);
+    const input = screen.getByTestId("fill-input");
+    fireEvent.change(input, { target: { value: "1" } });
+    fireEvent.change(input, { target: { value: "17" } });
+    expect(onSelect).not.toHaveBeenCalled();
+    expect(input).toHaveValue("17");
+  });
+
+  it("填空题显式点提交才回传答案（并去空白）", () => {
+    const onSelect = vi.fn();
+    render(<QuestionCard stem="3 + 14 = ？" kind="fill" onSelect={onSelect} />);
+    const submit = screen.getByTestId("fill-submit");
+    expect(submit).toBeDisabled();
+    fireEvent.change(screen.getByTestId("fill-input"), { target: { value: " 17 " } });
+    fireEvent.click(submit);
+    expect(onSelect).toHaveBeenCalledWith("17");
+  });
+
+  it("有选项时不渲染填空输入框", () => {
+    render(<QuestionCard stem="x" options={[{ key: "A", label: "1" }]} />);
+    expect(screen.queryByTestId("fill-input")).toBeNull();
+  });
 });
 
 describe("HintStack（守护型红线）", () => {

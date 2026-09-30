@@ -1,6 +1,6 @@
 "use client";
 
-import type { HTMLAttributes, ReactNode } from "react";
+import { useEffect, useId, useState, type HTMLAttributes, type ReactNode } from "react";
 
 import { cn } from "../cn";
 import { AudioButton } from "./audio-button";
@@ -56,6 +56,12 @@ export function QuestionCard({
   disabled,
   ...props
 }: QuestionCardProps) {
+  const fillId = useId();
+  // 填空题草稿自持：选项题的 onSelect 语义是「点选即提交」，
+  // 若直接绑到输入框的 onChange 会每次按键都提交一次，因此这里只存草稿，
+  // 由「提交答案」按钮显式触发 onSelect。
+  const [draft, setDraft] = useState("");
+  useEffect(() => setDraft(""), [stem]);
   return (
     <section
       aria-label={stem}
@@ -119,6 +125,43 @@ export function QuestionCard({
           })}
         </ul>
       ) : null}
+
+      {options?.length ? null : (
+        <div className="mt-sm flex flex-col gap-xs">
+          <label className="text-app-sm text-muted-foreground" htmlFor={fillId}>
+            你的答案
+          </label>
+          <input
+            id={fillId}
+            data-testid="fill-input"
+            type="text"
+            value={draft}
+            disabled={disabled}
+            onChange={(event) => setDraft(event.target.value)}
+            placeholder="请输入答案"
+            className={cn(
+              "min-h-[var(--input-height)] w-full rounded-control",
+              "border border-border-strong bg-card px-sm text-app text-foreground",
+              "placeholder:text-muted-foreground",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              disabled && "cursor-not-allowed opacity-60",
+            )}
+          />
+          <button
+            type="button"
+            data-testid="fill-submit"
+            disabled={disabled || draft.trim().length === 0}
+            onClick={() => onSelect?.(draft.trim())}
+            className={cn(
+              "min-h-[var(--tap-min)] w-full rounded-control border border-primary",
+              "bg-primary px-sm text-app-md text-primary-foreground",
+              "disabled:cursor-not-allowed disabled:opacity-60",
+            )}
+          >
+            提交答案
+          </button>
+        </div>
+      )}
 
       {tian ? (
         <div
