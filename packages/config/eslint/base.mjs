@@ -16,6 +16,9 @@ const GLOBAL_IGNORES = {
     "**/*.config.js",
     "**/*.config.cjs",
     "**/*.config.mjs",
+    // Playwright 产物（含内联压缩脚本，非源码）
+    "**/playwright-report/**",
+    "**/test-results/**",
   ],
 };
 

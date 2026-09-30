@@ -14,7 +14,7 @@ test.describe("旅程第 1 站 · 今日任务与连续打卡", () => {
     const before = await apiGet<{ completed_count: number; streak_days: number }>(
       request,
       account,
-      "/v1/behavior/today",
+      "/v1/plan/today",
     );
 
     const pending = list.locator('[data-testid^="today-complete-"]').first();
@@ -25,7 +25,7 @@ test.describe("旅程第 1 站 · 今日任务与连续打卡", () => {
           const after = await apiGet<{ completed_count: number }>(
             request,
             account,
-            "/v1/behavior/today",
+            "/v1/plan/today",
           );
           return after.completed_count;
         }, { timeout: 15_000 })
@@ -43,7 +43,7 @@ test.describe("旅程第 3 站 · 学习规划", () => {
     const plan = await apiGet<{ has_path: boolean; phases: unknown[] }>(
       request,
       account,
-      "/v1/behavior/path",
+      "/v1/plan/path",
     );
 
     if (plan.has_path && plan.phases.length > 0) {

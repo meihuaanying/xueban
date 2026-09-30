@@ -100,6 +100,7 @@ export function QuestionCard({
                   type="button"
                   disabled={disabled}
                   aria-pressed={selected}
+                  data-testid={"option-" + option.key}
                   onClick={() => onSelect?.(option.key)}
                   className={cn(
                     "flex min-h-[var(--tap-min)] w-full items-center justify-center gap-xs",

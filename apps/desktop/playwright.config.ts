@@ -52,13 +52,16 @@ export default defineConfig({
     },
   ],
   // 桌面端 E2E：Vite 生产构建预览（4173） + 本机 API（8090/8000，LLM 走 mock 保证确定性）。
+  // Vite 只在 build 阶段内联 import.meta.env.VITE_API_BASE_URL，因此必须带着 API 基址重新构建，
+  // 否则前端会退回 lib/api.ts 的默认值 http://localhost:8000（本机 8000 在 Hyper-V 保留段不可监听）。
   webServer: [
     {
-      command: "pnpm --filter @xueban/desktop preview",
+      command: "pnpm --filter @xueban/desktop preview:e2e",
       url: "http://127.0.0.1:4173",
       cwd: rootDir,
+      env: { VITE_API_BASE_URL: apiOrigin },
       reuseExistingServer: !process.env.CI,
-      timeout: 120_000,
+      timeout: 300_000,
     },
     {
       command: `"${apiPython}" -m uvicorn app.main:app --port ${apiPort}`,

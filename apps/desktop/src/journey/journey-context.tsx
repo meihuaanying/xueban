@@ -8,9 +8,11 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   GRADE_BANDS,
@@ -116,6 +118,16 @@ export function JourneyProvider({
   useEffect(() => {
     writeString(STATE_KEY, JSON.stringify(state));
   }, [state]);
+
+  // 旅程状态机驱动路由：stage 变化即跳转（挂载时不跳，避免覆盖用户直接访问的 URL）。
+  // 用 effect 而不是 goTo 里直接 navigate，mark()/goTo() 同一批次的顺序才不会影响跳转目标。
+  const navigate = useNavigate();
+  const lastStage = useRef(state.stage);
+  useEffect(() => {
+    if (state.stage === lastStage.current) return;
+    lastStage.current = state.stage;
+    navigate(stagePath(state.stage));
+  }, [navigate, state.stage]);
 
   const goTo = useCallback((stage: JourneyStage) => {
     setState((prev) => (canEnter(stage, prev) ? { ...prev, stage } : prev));
