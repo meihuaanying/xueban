@@ -9,9 +9,9 @@ import { AudioButton } from "./audio-button";
 export type HintLevel = 1 | 2 | 3;
 
 export const HINT_TITLES: Record<HintLevel, string> = {
-  1: "一层 · 轻推",
-  2: "二层 · 举一反三",
-  3: "三层 · 微支架",
+  1: "一层·轻推",
+  2: "二层·举一反三",
+  3: "三层·微支架",
 };
 
 export interface HintItem {
