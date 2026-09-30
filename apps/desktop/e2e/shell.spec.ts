@@ -9,8 +9,11 @@ test.describe("旅程第 6 站 · 复盘", () => {
     await page.goto("/journey/review");
 
     await expect(page.getByTestId("stage-review")).toBeVisible();
+    // 周报区块常驻（无数据时指标显示「—」并提示「本周暂无数据」）
+    await expect(page.getByTestId("weekly-report")).toBeVisible({ timeout: 20_000 });
+    // 点击「完成今天的学习」后会 mark(reviewDone) + advance() 跳转下一站，元素随即卸载
     await page.getByTestId("review-finish").click();
-    await expect(page.getByTestId("review-finish")).toBeVisible();
+    await expect(page).not.toHaveURL(/\/journey\/review$/);
   });
 });
 

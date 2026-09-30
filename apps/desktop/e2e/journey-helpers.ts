@@ -102,14 +102,21 @@ export async function answerQuestionCard(
   page: Page,
   fillText = "17",
 ): Promise<"option" | "fill" | "none"> {
+  // 出题是异步的（generate → practice/generate 往返），必须等题目渲染出来再找可作答控件，
+  // 否则元素尚未挂载，count() 为 0 会误判成「无题可答」。
+  const card = page.getByTestId("unit-question");
+  await expect(card).toBeVisible({ timeout: 20_000 });
+
   const option = page.locator('[data-testid^="option-"]').first();
-  if ((await option.count()) > 0 && (await option.isVisible().catch(() => false))) {
+  if ((await option.count()) > 0) {
+    await expect(option).toBeVisible();
     await option.click();
     return "option";
   }
 
   const fillInput = page.getByTestId("fill-input");
-  if ((await fillInput.count()) > 0 && (await fillInput.isVisible().catch(() => false))) {
+  if ((await fillInput.count()) > 0) {
+    await expect(fillInput).toBeVisible();
     await fillInput.fill(fillText);
     await page.getByTestId("fill-submit").click();
     return "fill";

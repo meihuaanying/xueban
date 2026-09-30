@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { answerQuestionCard, signInWithProgress } from "./journey-helpers";
+import { SEEDED_BAND, answerQuestionCard, signInWithProgress } from "./journey-helpers";
 
 /**
  * T5.4 守护型讲解 → 旅程第 4 站（学习单元）内的 HintStack。
@@ -8,7 +8,8 @@ import { answerQuestionCard, signInWithProgress } from "./journey-helpers";
  */
 test.describe("旅程第 4 站 · 守护型三层提示", () => {
   test("默认只显示一层提示，逐层解锁到三层仍不给答案", async ({ page, request }) => {
-    await signInWithProgress(page, request, "unit");
+    // 用有题库的 band（math/junior），否则 primary/kids 学段无题可出
+    await signInWithProgress(page, request, "unit", SEEDED_BAND);
     await page.goto("/journey/unit");
 
     // 出一组题并作答（选择题点选项，填空题走输入框）

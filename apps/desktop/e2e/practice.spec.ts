@@ -12,7 +12,8 @@ import {
 /** 旅程第 4 站 · 学习单元：出题 → 作答 → 即时反馈 */
 test.describe("旅程第 4 站 · 练习作答", () => {
   test("出题后可作答并显示即时反馈", async ({ page, request }) => {
-    await signInWithProgress(page, request, "unit");
+    // 用有题库的 band（math/junior），否则 primary/kids 学段无题可出
+    await signInWithProgress(page, request, "unit", SEEDED_BAND);
     await page.goto("/journey/unit");
 
     // 前置动作：必须先出题，否则题卡与选项不会出现
@@ -58,11 +59,17 @@ test.describe("旅程第 5 站 · 错题复习", () => {
     await signInWithProgress(page, request, "mistakes");
     await page.goto("/journey/mistakes");
 
-    // review-due 是常驻区块：有到期卡时列出可评分项，无卡时给出冷却提示
-    await expect(page.getByTestId("review-due")).toBeVisible();
+    // FSRS 再次评分有 10 分钟冷却（fsrs_service.AGAIN_MINUTES），刚造完错题必然无到期卡。
+    // 因此按事实分两支：无卡时断言空态文案，有卡时断言可评分并回显下次复习时间。
+    const reviewDue = page.getByTestId("review-due");
+    if ((await reviewDue.count()) === 0) {
+      await expect(page.getByText("今天没有到期的复习卡")).toBeVisible({ timeout: 20_000 });
+      return;
+    }
+    await expect(reviewDue).toBeVisible();
 
     const grade = page.locator('[data-testid^="review-grade-"]').first();
-    if ((await grade.count()) === 0) return; // FSRS 再次评分有 10 分钟冷却，无卡即无可评分内容
+    if ((await grade.count()) === 0) return;
     await grade.click();
     await expect(page.getByText(/下次 .* 天后复习/)).toBeVisible({ timeout: 15_000 });
   });
