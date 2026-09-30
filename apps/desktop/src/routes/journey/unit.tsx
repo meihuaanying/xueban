@@ -29,14 +29,16 @@ export default function UnitStagePage() {
   const [hints, setHints] = useState<TutorHint[]>([]);
   const [revealed, setRevealed] = useState(1);
 
-  const openTutor = useCallback(
-    async (questionId: string) => {
-      setHints([]);
-      setRevealed(1);
-      setSession(await api.createTutorSession(questionId));
-    },
-    [],
-  );
+  const openTutor = useCallback(async (questionId: string) => {
+    setHints([]);
+    setRevealed(1);
+    const created = await api.createTutorSession(questionId);
+    setSession(created);
+    // 守护型红线：进入讲解即给第 1 层提示，后续层由学生主动索取
+    const first = await api.tutorHint(created.session_id);
+    setHints([first]);
+    setRevealed(first.level ?? 1);
+  }, []);
 
   const askHint = useCallback(
     async (level?: number) => {
