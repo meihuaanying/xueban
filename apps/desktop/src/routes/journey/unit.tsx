@@ -28,26 +28,41 @@ export default function UnitStagePage() {
   const [session, setSession] = useState<TutorSession | null>(null);
   const [hints, setHints] = useState<TutorHint[]>([]);
   const [revealed, setRevealed] = useState(1);
+  const [tutorError, setTutorError] = useState<string | null>(null);
 
   const openTutor = useCallback(async (questionId: string) => {
     setHints([]);
     setRevealed(1);
-    const created = await api.createTutorSession(questionId);
-    setSession(created);
-    // 守护型红线：进入讲解即给第 1 层提示，后续层由学生主动索取
-    const first = await api.tutorHint(created.session_id);
-    setHints([first]);
-    setRevealed(first.level ?? 1);
+    setTutorError(null);
+    try {
+      const created = await api.createTutorSession(questionId);
+      setSession(created);
+      // 守护型红线：进入讲解即给第 1 层提示，后续层由学生主动索取
+      const first = await api.tutorHint(created.session_id);
+      setHints([first]);
+      setRevealed(first.level ?? 1);
+    } catch (caught) {
+      // 不静默失败：LLM 不可用时也要明确告知，而不是留下空白提示区
+      setTutorError(
+        caught instanceof Error ? caught.message : "讲解加载失败，请稍后重试。",
+      );
+    }
   }, []);
 
   const askHint = useCallback(
     async (level?: number) => {
       if (!session) return;
-      const next = await api.tutorHint(session.session_id, level);
-      setHints((prev) =>
-        prev.some((item) => item.level === next.level) ? prev : [...prev, next],
-      );
-      if (next.level) setRevealed(next.level);
+      try {
+        const next = await api.tutorHint(session.session_id, level);
+        setHints((prev) =>
+          prev.some((item) => item.level === next.level) ? prev : [...prev, next],
+        );
+        if (next.level) setRevealed(next.level);
+      } catch (caught) {
+        setTutorError(
+          caught instanceof Error ? caught.message : "提示加载失败，请稍后重试。",
+        );
+      }
     },
     [session],
   );
@@ -136,6 +151,14 @@ export default function UnitStagePage() {
               <CardTitle>讲解 · 守护型三层提示</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-sm">
+              {tutorError ? (
+                <p
+                  className="text-app-sm text-destructive"
+                  data-testid="unit-tutor-error"
+                >
+                  {tutorError}
+                </p>
+              ) : null}
               <HintStack
                 hints={hints.map((item) => ({
                   level: Math.min(Math.max(item.level, 1), 3) as HintLevel,
