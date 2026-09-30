@@ -1,0 +1,6 @@
+/* 学伴 UI 包样式入口（Ladle 示例页 / 组件视觉走查）
+ * 与 apps/desktop/src/index.css 保持同样的引入顺序：
+ *   Tailwind v4 先建立 @theme/@custom-variant 上下文，再引入三层令牌。
+ */
+@import "tailwindcss";
+@import "@xueban/config/tokens/theme.css";
