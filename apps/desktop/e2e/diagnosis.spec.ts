@@ -24,7 +24,8 @@ test.describe("旅程第 2 站 · 诊断", () => {
 
     const done = page.getByTestId("diagnosis-done");
     for (let index = 0; index < 25 && (await done.count()) === 0; index += 1) {
-      const how = await answerQuestionCard(page);
+      // 诊断页的题卡容器是 diagnosis-progress（练习页才是 unit-question）
+      const how = await answerQuestionCard(page, { cardTestId: "diagnosis-progress" });
       expect(how, "题卡应提供选项或填空输入").not.toBe("none");
       await page.waitForTimeout(150);
     }

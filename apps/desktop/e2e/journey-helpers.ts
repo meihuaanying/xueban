@@ -100,11 +100,13 @@ export async function signInWithProgress(
  */
 export async function answerQuestionCard(
   page: Page,
-  fillText = "17",
+  options: { fillText?: string; cardTestId?: string } = {},
 ): Promise<"option" | "fill" | "none"> {
+  const { fillText = "17", cardTestId = "unit-question" } = options;
   // 出题是异步的（generate → practice/generate 往返），必须等题目渲染出来再找可作答控件，
   // 否则元素尚未挂载，count() 为 0 会误判成「无题可答」。
-  const card = page.getByTestId("unit-question");
+  // 注意：诊断页的题卡容器是 diagnosis-progress，练习页才是 unit-question，调用方需按页传入。
+  const card = page.getByTestId(cardTestId);
   await expect(card).toBeVisible({ timeout: 20_000 });
 
   const option = page.locator('[data-testid^="option-"]').first();
@@ -230,9 +232,30 @@ interface PracticeAnswerBody {
   mistake_collected: boolean;
 }
 
-/** 阻断 a11y 门禁：critical / serious 视为不通过 */
+/**
+ * 阻断 a11y 门禁：critical / serious 视为不通过。
+ *
+ * 扫描前必须先冻结 CSS 过渡/动画：组件类名带 `transition-colors`，
+ * 主题（focus ⇄ kids）切换后的首帧里背景色仍在插值，axe 会采到中间色
+ * 并误判 color-contrast（实测曾采到 `#4f46e5`→`#ffc53d` 约 3.4% 的混合色，
+ * 报出 2.03:1，而两端的真实对比度分别为 8.5:1 与 7.9:1）。
+ * 这是扫描时序问题，不是配色缺陷，所以修正落在测试夹具而非设计 token。
+ */
 export async function expectNoBlockingA11y(page: Page) {
   const { AxeBuilder } = await import("@axe-core/playwright");
+  await page.addStyleTag({
+    content: `*, *::before, *::after {
+      transition: none !important;
+      animation: none !important;
+    }`,
+  });
+  // 等两帧，确保样式与过渡彻底落定
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+      }),
+  );
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
     .analyze();

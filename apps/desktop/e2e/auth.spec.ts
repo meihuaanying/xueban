@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { signInAsLearner } from "./journey-helpers";
+import { SEEDED_BAND, signInAsLearner } from "./journey-helpers";
 
 /** T5.1 应用骨架与路由守卫 → 旅程制骨架 */
 test.describe("P0 旅程骨架与路由守卫", () => {
@@ -45,11 +45,13 @@ test.describe("P0 旅程骨架与路由守卫", () => {
 /** P0 onboarding：选学段 → 自动切主题 → 首次诊断 */
 test.describe("P0 onboarding 选学段", () => {
   test("选择小学学段自动切到儿童模式并进入诊断", async ({ page, request }) => {
-    await signInAsLearner(page, request, { stage: "today" });
+    // 初始学段显式用 focus 主题（SEEDED_BAND），否则 helper 缺省 primary 会预置 kids，
+    // 「选择前是专注模式」就无从验证——这条用例要证明的是「切换」而不是「恰好已是」。
+    await signInAsLearner(page, request, { stage: "today" }, SEEDED_BAND);
     await page.goto("/onboarding");
 
     await expect(page.getByTestId("onboarding")).toBeVisible();
-    // 选择前：默认专注模式
+    // 选择前：专注模式
     await expect(page.getByTestId("onboarding-theme")).toContainText("专注模式");
 
     await page.getByTestId("onboarding-choose-primary").click();
@@ -64,7 +66,8 @@ test.describe("P0 onboarding 选学段", () => {
   });
 
   test("选择高中学段保持专注模式", async ({ page, request }) => {
-    await signInAsLearner(page, request, { stage: "today" });
+    // 同样从 focus 主题起步，验证选高中学段不会切走
+    await signInAsLearner(page, request, { stage: "today" }, SEEDED_BAND);
     await page.goto("/onboarding");
 
     await page.getByTestId("onboarding-choose-senior").click();
