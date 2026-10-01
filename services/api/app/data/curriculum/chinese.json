@@ -1,0 +1,288 @@
+{
+  "schema_version": "1.0",
+  "subject": "chinese",
+  "subject_name": "语文",
+  "curriculum_standard": "人教版小学语文",
+  "description": "一年级至二年级知识点树。以人教版教材目录为基准，按「单元 → 知识点」两级组织；prerequisites 为知识点 id 列表，构成先修关系；difficulty_band 为难度档（1=入门 2=基础 3=进阶）。",
+  "difficulty_bands": {
+    "1": "入门：直接感知与模仿",
+    "2": "基础：理解规则并能独立运用",
+    "3": "进阶：综合辨析与迁移运用"
+  },
+  "stages": [
+    {
+      "grade": "grade1",
+      "grade_name": "一年级",
+      "units": [
+        {
+          "code": "g1c-u1",
+          "name": "拼音",
+          "knowledge_points": [
+            {
+              "id": "g1c-pinyin-initials",
+              "name": "声母（23 个）",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "准确认读 23 个声母，能区分易混声母如 b/d、p/q。",
+              "question_types": ["choice", "match", "fill"]
+            },
+            {
+              "id": "g1c-pinyin-finals",
+              "name": "韵母（24 个）",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "准确认读单韵母与复韵母。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g1c-pinyin-whole",
+              "name": "整体认读音节（16 个）",
+              "difficulty_band": 1,
+              "prerequisites": ["g1c-pinyin-finals"],
+              "objective": "直接认读 16 个整体认读音节，不用拼读。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g1c-pinyin-tone",
+              "name": "四声调号",
+              "difficulty_band": 2,
+              "prerequisites": ["g1c-pinyin-whole"],
+              "objective": "正确标出声调符号，区分一声平、二声扬、三声拐弯、四声降。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g1c-pinyin-blend",
+              "name": "两拼音节与三拼音节拼读",
+              "difficulty_band": 3,
+              "prerequisites": ["g1c-pinyin-initials", "g1c-pinyin-finals", "g1c-pinyin-tone"],
+              "objective": "能正确拼读两拼音节与三拼音节并读准声调。",
+              "question_types": ["fill", "choice"]
+            }
+          ]
+        },
+        {
+          "code": "g1c-u2",
+          "name": "识字（一）常用字",
+          "knowledge_points": [
+            {
+              "id": "g1c-hanzi-basic",
+              "name": "基本笔画与独体字",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "认识基本笔画，能书写简单独体字。",
+              "question_types": ["choice", "match", "fill"]
+            },
+            {
+              "id": "g1c-hanzi-body",
+              "name": "偏旁部首与间架结构",
+              "difficulty_band": 2,
+              "prerequisites": ["g1c-hanzi-basic"],
+              "objective": "认识常见偏旁，能说出字的结构类型。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g1c-hanzi-body-parts",
+              "name": "简单合体字",
+              "difficulty_band": 2,
+              "prerequisites": ["g1c-hanzi-body"],
+              "objective": "能由两个或多个部件组成合体字。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g1c-hanzi-pictogram",
+              "name": "象形字与指事字",
+              "difficulty_band": 2,
+              "prerequisites": ["g1c-hanzi-basic"],
+              "objective": "能说出象形字、指事字的造字特点。",
+              "question_types": ["choice", "match"]
+            }
+          ]
+        },
+        {
+          "code": "g1c-u3",
+          "name": "笔画顺序",
+          "knowledge_points": [
+            {
+              "id": "g1c-stroke-rules",
+              "name": "书写规则（先横后竖、先撇后捺、从上到下、从左到右、先外后内）",
+              "difficulty_band": 2,
+              "prerequisites": ["g1c-hanzi-basic"],
+              "objective": "掌握汉字的基本笔顺规则。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g1c-stroke-order-identify",
+              "name": "判断字的具体笔顺",
+              "difficulty_band": 3,
+              "prerequisites": ["g1c-stroke-rules", "g1c-hanzi-body"],
+              "objective": "能逐笔说出指定汉字的书写顺序。",
+              "question_types": ["fill", "choice", "match"]
+            }
+          ]
+        },
+        {
+          "code": "g1c-u4",
+          "name": "词语积累",
+          "knowledge_points": [
+            {
+              "id": "g1c-word-group",
+              "name": "组词与扩词",
+              "difficulty_band": 1,
+              "prerequisites": ["g1c-hanzi-basic"],
+              "objective": "能给单字组两个以上词语。",
+              "question_types": ["fill", "choice"]
+            },
+            {
+              "id": "g1c-word-opposite",
+              "name": "反义词与近义词",
+              "difficulty_band": 2,
+              "prerequisites": ["g1c-word-group"],
+              "objective": "能说出简单词语的反义词和近义词。",
+              "question_types": ["match", "fill", "choice"]
+            }
+          ]
+        },
+        {
+          "code": "g1c-u5",
+          "name": "简单的阅读",
+          "knowledge_points": [
+            {
+              "id": "g1c-read-short",
+              "name": "朗读短文",
+              "difficulty_band": 1,
+              "prerequisites": ["g1c-pinyin-blend"],
+              "objective": "能正确、流利地朗读简短课文，不加字漏字。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g1c-read-answer",
+              "name": "读文回答问题",
+              "difficulty_band": 2,
+              "prerequisites": ["g1c-read-short"],
+              "objective": "能在短文中找到答案并用完整句子回答。",
+              "question_types": ["fill", "choice"]
+            },
+            {
+              "id": "g1c-sentence-basic",
+              "name": "认识句子与句号问号",
+              "difficulty_band": 2,
+              "prerequisites": ["g1c-read-short"],
+              "objective": "知道句号、问号的基本用法，能判断句子类型。",
+              "question_types": ["choice", "fill", "match"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade2",
+      "grade_name": "二年级",
+      "units": [
+        {
+          "code": "g2c-u1",
+          "name": "识字（二）常用字进阶",
+          "knowledge_points": [
+            {
+              "id": "g2c-hanzi-accumulate",
+              "name": "二年级识字量累积",
+              "difficulty_band": 2,
+              "prerequisites": ["g1c-hanzi-body-parts"],
+              "objective": "认识并会写本册生字，能在语境中运用。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g2c-radical-meaning",
+              "name": "偏旁表意与形声字",
+              "difficulty_band": 3,
+              "prerequisites": ["g1c-hanzi-body", "g2c-hanzi-accumulate"],
+              "objective": "能说出形声字的形旁表意、声旁表音特点。",
+              "question_types": ["choice", "match", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g2c-u2",
+          "name": "笔画与笔顺进阶",
+          "knowledge_points": [
+            {
+              "id": "g2c-stroke-new-rules",
+              "name": "先中间后两边、先里头后封口等新规则",
+              "difficulty_band": 3,
+              "prerequisites": ["g1c-stroke-order-identify"],
+              "objective": "掌握二年级新增笔顺规则并能正确书写。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g2c-stroke-write-quality",
+              "name": "写字姿势与间架结构书写",
+              "difficulty_band": 3,
+              "prerequisites": ["g2c-stroke-new-rules"],
+              "objective": "保持正确姿势，写出结构匀称的字。",
+              "question_types": ["choice", "match"]
+            }
+          ]
+        },
+        {
+          "code": "g2c-u3",
+          "name": "词语与句子",
+          "knowledge_points": [
+            {
+              "id": "g2c-word-emotion",
+              "name": "近义词辨析",
+              "difficulty_band": 3,
+              "prerequisites": ["g1c-word-opposite"],
+              "objective": "能辨析意思相近但用法不同的词。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g2c-idiom",
+              "name": "成语入门与四字词语",
+              "difficulty_band": 3,
+              "prerequisites": ["g1c-word-group"],
+              "objective": "能理解并运用简单的四字词语和成语。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g2c-sentence-expand",
+              "name": "把句子写具体",
+              "difficulty_band": 3,
+              "prerequisites": ["g1c-sentence-basic"],
+              "objective": "能用形容词把简单句子写得更具体。",
+              "question_types": ["fill", "choice"]
+            }
+          ]
+        },
+        {
+          "code": "g2c-u4",
+          "name": "简单的阅读理解",
+          "knowledge_points": [
+            {
+              "id": "g2c-read-passage",
+              "name": "读懂短文的中心意思",
+              "difficulty_band": 2,
+              "prerequisites": ["g1c-read-answer"],
+              "objective": "能概括短文主要讲了什么。",
+              "question_types": ["fill", "choice"]
+            },
+            {
+              "id": "g2c-read-infer",
+              "name": "联系上下文理解词语",
+              "difficulty_band": 3,
+              "prerequisites": ["g2c-read-passage", "g2c-word-emotion"],
+              "objective": "能借助上下文推断词语在文中的意思。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g2c-read-sequence",
+              "name": "按顺序复述故事",
+              "difficulty_band": 3,
+              "prerequisites": ["g2c-read-passage"],
+              "objective": "能按事情发展顺序完整复述简单故事。",
+              "question_types": ["fill", "match"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

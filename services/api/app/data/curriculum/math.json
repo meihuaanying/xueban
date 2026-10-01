@@ -1,0 +1,408 @@
+{
+  "schema_version": "1.0",
+  "subject": "math",
+  "subject_name": "数学",
+  "curriculum_standard": "人教版小学数学",
+  "description": "一年级至二年级知识点树。以人教版教材目录为基准，按「单元 → 知识点」两级组织；prerequisites 为知识点 id 列表，构成先修关系；difficulty_band 为难度档（1=入门 2=基础 3=进阶）。",
+  "difficulty_bands": {
+    "1": "入门：单一步骤，直接套用",
+    "2": "基础：一到两步思考，需理解概念",
+    "3": "进阶：多步推理或易混淆辨析"
+  },
+  "stages": [
+    {
+      "grade": "grade1",
+      "grade_name": "一年级",
+      "units": [
+        {
+          "code": "g1m-u1",
+          "name": "准备课与数一数",
+          "knowledge_points": [
+            {
+              "id": "g1m-count-to-20",
+              "name": "20 以内数的认识",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "能按顺序数出 20 以内物体个数，会读、会写 1~20 各数。",
+              "question_types": ["choice", "fill", "oral"]
+            },
+            {
+              "id": "g1m-compare-20",
+              "name": "20 以内数的大小比较",
+              "difficulty_band": 1,
+              "prerequisites": ["g1m-count-to-20"],
+              "objective": "会用 >、<、= 比较 20 以内两数大小。",
+              "question_types": ["choice", "fill", "oral"]
+            }
+          ]
+        },
+        {
+          "code": "g1m-u2",
+          "name": "20 以内的进位加法与退位减法",
+          "knowledge_points": [
+            {
+              "id": "g1m-add-within-10",
+              "name": "10 以内加法",
+              "difficulty_band": 1,
+              "prerequisites": ["g1m-count-to-20"],
+              "objective": "理解加法含义，会口算 10 以内加法。",
+              "question_types": ["oral", "fill", "choice"]
+            },
+            {
+              "id": "g1m-sub-within-10",
+              "name": "10 以内减法",
+              "difficulty_band": 1,
+              "prerequisites": ["g1m-add-within-10"],
+              "objective": "理解减法含义，会口算 10 以内减法。",
+              "question_types": ["oral", "fill", "choice"]
+            },
+            {
+              "id": "g1m-add-within-20-carry",
+              "name": "20 以内进位加法（凑十法）",
+              "difficulty_band": 2,
+              "prerequisites": ["g1m-add-within-10"],
+              "objective": "掌握凑十法：把一个数拆开，先凑成 10 再加剩下的。",
+              "question_types": ["choice", "fill", "oral"]
+            },
+            {
+              "id": "g1m-sub-within-20-borrow",
+              "name": "20 以内退位减法（破十法）",
+              "difficulty_band": 3,
+              "prerequisites": ["g1m-sub-within-10", "g1m-add-within-20-carry"],
+              "objective": "掌握破十法：先用 10 减，再与个位合起来减。",
+              "question_types": ["choice", "fill", "oral"]
+            },
+            {
+              "id": "g1m-add-sub-mix-20",
+              "name": "20 以内加减法混合运算",
+              "difficulty_band": 3,
+              "prerequisites": ["g1m-add-within-20-carry", "g1m-sub-within-20-borrow"],
+              "objective": "会按从左到右顺序计算 20 以内加减法混合式。",
+              "question_types": ["fill", "choice"]
+            }
+          ]
+        },
+        {
+          "code": "g1m-u3",
+          "name": "认识立体图形",
+          "knowledge_points": [
+            {
+              "id": "g1m-solid-shapes",
+              "name": "长方体、正方体、圆柱、球的认识",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "能辨认四种立体图形，并能把实物与图形对应起来。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g1m-shape-classify",
+              "name": "按形状给物体分类",
+              "difficulty_band": 2,
+              "prerequisites": ["g1m-solid-shapes"],
+              "objective": "能按形状把一堆物体分成不同类。",
+              "question_types": ["match", "choice"]
+            }
+          ]
+        },
+        {
+          "code": "g1m-u4",
+          "name": "认识钟表",
+          "knowledge_points": [
+            {
+              "id": "g1m-clock-parts",
+              "name": "钟面的组成与时针分针",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "认识钟面上时针和分针，知道时针短而粗、分针长而细。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g1m-tell-time-hour",
+              "name": "认识整时",
+              "difficulty_band": 1,
+              "prerequisites": ["g1m-clock-parts"],
+              "objective": "能读出钟表上的整时，并说出时针指向几、分针指向 12。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g1m-tell-time-half",
+              "name": "认识半时",
+              "difficulty_band": 2,
+              "prerequisites": ["g1m-tell-time-hour"],
+              "objective": "能读出钟表上的半时（分针指向 6）。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g1m-u5",
+          "name": "认识人民币",
+          "knowledge_points": [
+            {
+              "id": "g1m-money-recognize",
+              "name": "认识 1 元、5 元、10 元纸币与 1 角、5 角硬币",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "能辨认常见人民币面值。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g1m-money-pay",
+              "name": "简单的付钱与找零",
+              "difficulty_band": 2,
+              "prerequisites": ["g1m-money-recognize"],
+              "objective": "能用 1 元、5 元、10 元组合出需要的钱数。",
+              "question_types": ["fill", "choice"]
+            }
+          ]
+        },
+        {
+          "code": "g1m-u6",
+          "name": "认识图形（二）",
+          "knowledge_points": [
+            {
+              "id": "g1m-plane-shapes",
+              "name": "长方形、正方形、三角形、圆的平面图形",
+              "difficulty_band": 1,
+              "prerequisites": ["g1m-solid-shapes"],
+              "objective": "能辨认四种平面图形，并说出它们的边和角。",
+              "question_types": ["choice", "match"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade2",
+      "grade_name": "二年级",
+      "units": [
+        {
+          "code": "g2m-u1",
+          "name": "100 以内的加法和减法（一）",
+          "knowledge_points": [
+            {
+              "id": "g2m-count-to-100",
+              "name": "100 以内数的认识与数位",
+              "difficulty_band": 1,
+              "prerequisites": ["g1m-count-to-20"],
+              "objective": "认识个位、十位、百位，知道各数位表示的大小关系。",
+              "question_types": ["fill", "choice", "oral"]
+            },
+            {
+              "id": "g2m-place-value",
+              "name": "数位与计数单位（十进制）",
+              "difficulty_band": 2,
+              "prerequisites": ["g2m-count-to-100"],
+              "objective": "理解 10 个一是十、10 个十是一百的十进位制。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g2m-read-write-100",
+              "name": "100 以内数的读写",
+              "difficulty_band": 2,
+              "prerequisites": ["g2m-place-value"],
+              "objective": "会正确读出和写出 100 以内的数。",
+              "question_types": ["fill", "choice"]
+            },
+            {
+              "id": "g2m-compare-100",
+              "name": "100 以内数的大小比较",
+              "difficulty_band": 2,
+              "prerequisites": ["g2m-read-write-100"],
+              "objective": "先比十位、十位相同再比个位来比较大小。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g2m-single-digit-add",
+              "name": "整十数加减与两位数加整十数",
+              "difficulty_band": 2,
+              "prerequisites": ["g2m-place-value"],
+              "objective": "掌握整十数加减法与两位数加整十数的口算。",
+              "question_types": ["oral", "fill"]
+            },
+            {
+              "id": "g2m-carry-add-100",
+              "name": "100 以内两位数加两位数（进位）",
+              "difficulty_band": 3,
+              "prerequisites": ["g2m-single-digit-add", "g1m-add-within-20-carry"],
+              "objective": "掌握竖式进位加法：个位满十向十位进 1。",
+              "question_types": ["fill", "choice", "oral"]
+            },
+            {
+              "id": "g2m-borrow-sub-100",
+              "name": "100 以内两位数减两位数（退位）",
+              "difficulty_band": 3,
+              "prerequisites": ["g2m-single-digit-add", "g1m-sub-within-20-borrow"],
+              "objective": "掌握竖式退位减法：个位不够减向十位借 1 当 10。",
+              "question_types": ["fill", "choice", "oral"]
+            }
+          ]
+        },
+        {
+          "code": "g2m-u2",
+          "name": "表内乘法",
+          "knowledge_points": [
+            {
+              "id": "g2m-mult-meaning",
+              "name": "乘法的初步认识",
+              "difficulty_band": 2,
+              "prerequisites": ["g1m-add-within-10"],
+              "objective": "理解乘法是求几个相同加数的和的简便运算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g2m-mult-sign",
+              "name": "乘法算式的读写",
+              "difficulty_band": 2,
+              "prerequisites": ["g2m-mult-meaning"],
+              "objective": "会读写乘法算式，认识乘号与各部分名称。",
+              "question_types": ["fill", "choice"]
+            },
+            {
+              "id": "g2m-table-1-9",
+              "name": "1~9 的乘法口诀",
+              "difficulty_band": 2,
+              "prerequisites": ["g2m-mult-sign"],
+              "objective": "熟记 1~9 的乘法口诀并能正确计算表内乘法。",
+              "question_types": ["oral", "fill", "choice"]
+            },
+            {
+              "id": "g2m-table-app",
+              "name": "用乘法口诀解决简单问题",
+              "difficulty_band": 3,
+              "prerequisites": ["g2m-table-1-9"],
+              "objective": "能用乘法解决「每份几个、有几份、求总数」的简单问题。",
+              "question_types": ["fill", "choice"]
+            }
+          ]
+        },
+        {
+          "code": "g2m-u3",
+          "name": "100 以内的加法和减法（二）",
+          "knowledge_points": [
+            {
+              "id": "g2m-carry-mixed-100",
+              "name": "100 以内加减法混合运算",
+              "difficulty_band": 3,
+              "prerequisites": ["g2m-carry-add-100", "g2m-borrow-sub-100"],
+              "objective": "会按从左到右顺序计算 100 以内加减法混合式。",
+              "question_types": ["fill", "choice"]
+            },
+            {
+              "id": "g2m-vertical-add-sub",
+              "name": "连加、连减与加减混合",
+              "difficulty_band": 3,
+              "prerequisites": ["g2m-carry-mixed-100"],
+              "objective": "会熟练计算连加、连减和加减混合式，注意运算顺序。",
+              "question_types": ["fill", "oral"]
+            },
+            {
+              "id": "g2m-estimate",
+              "name": "加减法的估算",
+              "difficulty_band": 3,
+              "prerequisites": ["g2m-carry-add-100"],
+              "objective": "能先把加数或减数看成整十数再估算结果范围。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g2m-u4",
+          "name": "表内除法",
+          "knowledge_points": [
+            {
+              "id": "g2m-div-meaning",
+              "name": "平均分与除法的初步认识",
+              "difficulty_band": 2,
+              "prerequisites": ["g2m-mult-meaning"],
+              "objective": "理解除法是把总数按每份几个平均分。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g2m-div-sign",
+              "name": "除法算式的读写",
+              "difficulty_band": 2,
+              "prerequisites": ["g2m-div-meaning"],
+              "objective": "会读写除法算式，认识除号与各部分名称。",
+              "question_types": ["fill", "choice"]
+            },
+            {
+              "id": "g2m-div-use-table",
+              "name": "用乘法口诀求商",
+              "difficulty_band": 2,
+              "prerequisites": ["g2m-div-sign", "g2m-table-1-9"],
+              "objective": "会用乘法口诀求商，正确计算表内除法。",
+              "question_types": ["oral", "fill", "choice"]
+            },
+            {
+              "id": "g2m-div-app",
+              "name": "用除法解决平均分问题",
+              "difficulty_band": 3,
+              "prerequisites": ["g2m-div-use-table"],
+              "objective": "能用除法解决「总数÷每份数=份数」的问题。",
+              "question_types": ["fill", "choice"]
+            }
+          ]
+        },
+        {
+          "code": "g2m-u5",
+          "name": "认识时间",
+          "knowledge_points": [
+            {
+              "id": "g2m-time-minute",
+              "name": "5 分 5 分地认读时间",
+              "difficulty_band": 2,
+              "prerequisites": ["g1m-tell-time-half"],
+              "objective": "会认读 5 分、5 分整刻到整时的所有时刻。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g2m-time-relationship",
+              "name": "时间与时刻的加减",
+              "difficulty_band": 3,
+              "prerequisites": ["g2m-time-minute"],
+              "objective": "能计算经过时间，如 8:20 到 9:00 经过多久。",
+              "question_types": ["fill", "choice"]
+            }
+          ]
+        },
+        {
+          "code": "g2m-u6",
+          "name": "角的初步认识",
+          "knowledge_points": [
+            {
+              "id": "g2m-angle-recognize",
+              "name": "角与直角、锐角、钝角",
+              "difficulty_band": 2,
+              "prerequisites": ["g1m-plane-shapes"],
+              "objective": "认识角的组成，能辨认直角、锐角、钝角。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g2m-angle-compare",
+              "name": "比较角的大小",
+              "difficulty_band": 3,
+              "prerequisites": ["g2m-angle-recognize"],
+              "objective": "会用三角尺或重叠法比较角的大小。",
+              "question_types": ["choice", "match"]
+            }
+          ]
+        },
+        {
+          "code": "g2m-u7",
+          "name": "观察物体",
+          "knowledge_points": [
+            {
+              "id": "g2m-observe-views",
+              "name": "从不同位置观察物体",
+              "difficulty_band": 2,
+              "prerequisites": ["g1m-solid-shapes"],
+              "objective": "知道从不同位置看到的物体形状可能不同。",
+              "question_types": ["choice", "match"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

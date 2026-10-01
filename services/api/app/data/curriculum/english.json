@@ -1,0 +1,202 @@
+{
+  "schema_version": "1.0",
+  "subject": "english",
+  "subject_name": "英语",
+  "curriculum_standard": "人教版 PEP 小学英语起点",
+  "description": "一年级至二年级知识点树。以字母、自然拼读入门、高频词为主线，按「单元 → 知识点」两级组织；prerequisites 为知识点 id 列表，构成先修关系；difficulty_band 为难度档（1=入门 2=基础 3=进阶）。",
+  "difficulty_bands": {
+    "1": "入门：听音辨形，直接指认",
+    "2": "基础：理解规则并能拼读",
+    "3": "进阶：在语境中综合运用"
+  },
+  "stages": [
+    {
+      "grade": "grade1",
+      "grade_name": "一年级",
+      "units": [
+        {
+          "code": "g1e-u1",
+          "name": "26 个字母",
+          "knowledge_points": [
+            {
+              "id": "g1e-letter-a-g",
+              "name": "字母 A~G 的认读",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "能听音认形，读出 A 到 G 七个字母。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g1e-letter-h-n",
+              "name": "字母 H~N 的认读",
+              "difficulty_band": 1,
+              "prerequisites": ["g1e-letter-a-g"],
+              "objective": "能听音认形，读出 H 到 N 七个字母。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g1e-letter-o-u",
+              "name": "字母 O~U 的认读",
+              "difficulty_band": 1,
+              "prerequisites": ["g1e-letter-h-n"],
+              "objective": "能听音认形，读出 O 到 U 六个字母。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g1e-letter-v-z",
+              "name": "字母 V~Z 的认读",
+              "difficulty_band": 1,
+              "prerequisites": ["g1e-letter-o-u"],
+              "objective": "能听音认形，读出 V 到 Z 五个字母。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g1e-letter-case",
+              "name": "字母大小写书写",
+              "difficulty_band": 2,
+              "prerequisites": ["g1e-letter-v-z"],
+              "objective": "能正确书写 26 个字母的大写与小写形式。",
+              "question_types": ["fill", "match", "choice"]
+            },
+            {
+              "id": "g1e-letter-order",
+              "name": "字母表顺序",
+              "difficulty_band": 2,
+              "prerequisites": ["g1e-letter-case"],
+              "objective": "能按 A 到 Z 的顺序背诵并找出指定字母的位置。",
+              "question_types": ["fill", "choice"]
+            }
+          ]
+        },
+        {
+          "code": "g1e-u2",
+          "name": "高频词入门",
+          "knowledge_points": [
+            {
+              "id": "g1e-word-greeting",
+              "name": "问候语（hello, hi, goodbye, bye）",
+              "difficulty_band": 1,
+              "prerequisites": ["g1e-letter-v-z"],
+              "objective": "能听懂并使用基本问候语。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g1e-word-color-number",
+              "name": "颜色词与数字词",
+              "difficulty_band": 1,
+              "prerequisites": ["g1e-letter-v-z"],
+              "objective": "能认读常见颜色词与 1~10 的数字词。",
+              "question_types": ["choice", "match", "fill"]
+            },
+            {
+              "id": "g1e-word-body",
+              "name": "身体部位词",
+              "difficulty_band": 2,
+              "prerequisites": ["g1e-word-color-number"],
+              "objective": "能认读 head、face、eye、nose、mouth、hand 等身体部位词。",
+              "question_types": ["choice", "match", "fill"]
+            },
+            {
+              "id": "g1e-word-family",
+              "name": "家庭成员词",
+              "difficulty_band": 2,
+              "prerequisites": ["g1e-word-body"],
+              "objective": "能认读 father、mother、brother、sister 等家庭成员词。",
+              "question_types": ["choice", "match", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade2",
+      "grade_name": "二年级",
+      "units": [
+        {
+          "code": "g2e-u1",
+          "name": "自然拼读入门",
+          "knowledge_points": [
+            {
+              "id": "g2e-phonics-vowels-short",
+              "name": "短元音 a/i/u",
+              "difficulty_band": 2,
+              "prerequisites": ["g1e-letter-order"],
+              "objective": "能拼读含短元音 a、i、u 的简单单词（如 cat、pig、sun）。",
+              "question_types": ["fill", "choice"]
+            },
+            {
+              "id": "g2e-phonics-vowels-long",
+              "name": "长元音 a_e/i_e",
+              "difficulty_band": 2,
+              "prerequisites": ["g2e-phonics-vowels-short"],
+              "objective": "能拼读含长元音的单词并理解元音字母发音变化。",
+              "question_types": ["fill", "choice"]
+            },
+            {
+              "id": "g2e-phonics-consonants",
+              "name": "常见辅音字母发音",
+              "difficulty_band": 3,
+              "prerequisites": ["g1e-letter-order"],
+              "objective": "能说出常见辅音字母的基本发音。",
+              "question_types": ["choice", "match", "fill"]
+            },
+            {
+              "id": "g2e-phonics-blend",
+              "name": "辅音+元音连缀拼读（CVC）",
+              "difficulty_band": 3,
+              "prerequisites": ["g2e-phonics-vowels-short", "g2e-phonics-consonants"],
+              "objective": "能独立拼读辅音-元音-辅音结构的单词。",
+              "question_types": ["fill", "choice", "match"]
+            }
+          ]
+        },
+        {
+          "code": "g2e-u2",
+          "name": "高频词进阶",
+          "knowledge_points": [
+            {
+              "id": "g2e-word-daily",
+              "name": "日常活动词",
+              "difficulty_band": 2,
+              "prerequisites": ["g1e-word-family"],
+              "objective": "能认读 eat、drink、sleep、read、play 等日常活动词。",
+              "question_types": ["choice", "match", "fill"]
+            },
+            {
+              "id": "g2e-word-animal",
+              "name": "动物词",
+              "difficulty_band": 2,
+              "prerequisites": ["g1e-word-color-number"],
+              "objective": "能认读 cat、dog、bird、fish、panda 等动物词。",
+              "question_types": ["choice", "match", "fill"]
+            },
+            {
+              "id": "g2e-word-school",
+              "name": "学习用品与食物词",
+              "difficulty_band": 2,
+              "prerequisites": ["g1e-word-color-number"],
+              "objective": "能认读 pencil、book、bag、apple、milk 等词。",
+              "question_types": ["choice", "match", "fill"]
+            },
+            {
+              "id": "g2e-sentence-be",
+              "name": "be 动词句型",
+              "difficulty_band": 3,
+              "prerequisites": ["g1e-word-family", "g2e-word-animal"],
+              "objective": "能用 I am / You are / It is 说出简单句子。",
+              "question_types": ["fill", "choice"]
+            },
+            {
+              "id": "g2e-sentence-this-is",
+              "name": "This is 介绍句型",
+              "difficulty_band": 3,
+              "prerequisites": ["g2e-sentence-be", "g2e-word-school"],
+              "objective": "能用 This is... 介绍物品。",
+              "question_types": ["fill", "choice", "match"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
