@@ -180,6 +180,30 @@ def test_allowed_qtypes_match_model_enum() -> None:
     assert {member.value for member in QuestionType} >= ALLOWED_QTYPES
 
 
+async def test_generator_token_budget_scales_with_count() -> None:
+    """推理预算必须随题量增长：固定值会让大批量出题时正文被截断成非法 JSON。"""
+    seen: list[dict[str, Any]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(json.loads(request.content.decode("utf-8")))
+        return chat_body(json.dumps({"questions": [question_payload()]}))
+
+    settings = make_settings()
+    generator = QuestionGenerator(make_client(handler), settings)
+    for count in (1, 10, 30):
+        seen.clear()
+        await generator.generate(CHINESE_POINT, count=count, max_rounds=1)
+        assert seen, f"count={count} 未发出请求"
+        budget = seen[0]["max_tokens"]
+        # 有上限保护：不会无限增长
+        assert budget <= settings.content_max_tokens
+    # 单题预算必须小于十题预算，否则说明没随题量放大
+    generator_small = QuestionGenerator(
+        make_client(handler), make_settings(content_tokens_per_question=1200)
+    )
+    assert generator_small._token_budget(1) < generator_small._token_budget(10)
+
+
 async def test_generator_binds_session_per_point() -> None:
     """出题会话要按知识点绑定，同一知识点重试才能命中网关提示缓存。"""
     seen: list[str] = []

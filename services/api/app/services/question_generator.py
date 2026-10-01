@@ -175,6 +175,19 @@ class QuestionGenerator:
             },
         ]
 
+    def _token_budget(self, count: int) -> int:
+        """按题量给 token 预算。
+
+        推理模型的 reasoning 开销随题量线性增长，固定值不可靠：题量一大就
+        会把预算全花在推理上、正文被截断成非法 JSON。这里按每题预留再留出
+        余量，并受 content_max_tokens 兜底。
+        """
+        per_question = self._settings.content_tokens_per_question
+        return min(
+            self._settings.content_max_tokens,
+            per_question * max(1, count) + per_question * 2,
+        )
+
     async def generate(
         self, point: KnowledgePoint, *, count: int, max_rounds: int = 3
     ) -> tuple[list[GeneratedQuestion], GenerationReport]:
@@ -195,7 +208,7 @@ class QuestionGenerator:
                     messages,
                     model=self._settings.content_generation_model,
                     temperature=0.85,
-                    max_tokens=self._settings.content_max_tokens,
+                    max_tokens=self._token_budget(remaining),
                     name=f"content.generate.{point.subject}",
                 )
             except LlmError as exc:

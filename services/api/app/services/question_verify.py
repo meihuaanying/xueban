@@ -317,7 +317,12 @@ class QuestionVerifier:
             messages,
             model=self._settings.content_judge_model,
             temperature=0.1,
-            max_tokens=self._settings.content_max_tokens,
+            # judge 一次只判一题，输出很短；但推理模型仍要先花 reasoning 预算，
+            # 给太少会拿到空正文，所以至少按单题预留下限。
+            max_tokens=max(
+                self._settings.content_tokens_per_question * 2,
+                self._settings.content_max_tokens // 8,
+            ),
             name=f"content.judge.{point.subject}",
         )
         parsed = _parse_judge_payload(result.content)

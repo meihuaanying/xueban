@@ -84,11 +84,13 @@ class Settings(BaseSettings):
     content_judge_model: str = "deepseek-v4-flash"
     # 单次请求出多少道题（Go 的用量窗口按请求计费，批量越大越省额度）
     content_batch_size: int = 10
-    # 推理模型（kimi-k3 / glm-5.3 等）会先产出 reasoning 再给正文，
-    # max_tokens 给小了会把预算全花在推理上，正文 content 返回 null。
-    # 实测 kimi-k3 出 1 道题：max_tokens=16/300 → content=null，
-    # 2000 → 正常返回。因此内容生成类请求必须给足。
-    content_max_tokens: int = 4000
+    # 推理模型（kimi-k3 / glm-5.3 等）会先产出 reasoning 再给正文，max_tokens
+    # 给小了会把预算全花在推理上、正文 content 返回 null。实测 kimi-k3 出 10 道
+    # 带三层提示的题：max_tokens=4000 → 4000 token 全进 reasoning、正文长度 0；
+    # 12000 → reasoning 2653 + 正文 3609 字符，10 道题全部解析成功。
+    # 推理开销随题量增长，所以按「每题预留」而不是拍一个固定值。
+    content_max_tokens: int = 16000
+    content_tokens_per_question: int = 1200
     # 判重阈值（§6.2：相似度 >0.95 判重）与 5% 人审抽样率，
     # 写成配置是为了让「调阈值」有明确入口，而不是散落在代码里的字面量。
     dedup_threshold: float = 0.95
