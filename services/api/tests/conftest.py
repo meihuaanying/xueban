@@ -32,6 +32,11 @@ TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL", DEFAULT_TEST_URL)
 # 必须在导入 app.* 之前覆盖环境变量（Settings 为进程级单例）
 os.environ["DATABASE_URL"] = TEST_DATABASE_URL
 os.environ["ENVIRONMENT"] = "testing"
+# Settings 会读仓库根的 .env（其中 CORS_ALLOW_ORIGINS 是生产验证端口），
+# 所以测试必须在导入 app.* 之前显式覆盖，否则 CORS 用例会被生产配置影响。
+os.environ["CORS_ALLOW_ORIGINS"] = "http://localhost:3000"
+# 同理：本地 .env 把 OCR 设为 mock，而 OCR 契约用例要求走 service 分支
+os.environ["OCR_PROVIDER"] = "service"
 
 from app.db import Base  # noqa: E402
 from app.main import create_app, init_app_state  # noqa: E402

@@ -1,17 +1,28 @@
 """应用配置：统一从环境变量读取（含 .env 兜底）。"""
 
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # 向量维度（bge-m3：1024）
 EMBEDDING_DIMS = 1024
 
+# 仓库根的 .env（唯一存放密钥的地方，gitignored）。
+# 不能只写 env_file=".env"：pydantic-settings 按**当前工作目录**解析相对路径，
+# 而 scripts/ 与 uvicorn 的启动目录并不一致——从 services/api 跑脚本时会去找
+# services/api/.env（不存在），于是静默回落到默认值（base_url 变回
+# localhost:4000、密钥变回 sk-xueban-dev），表现为「连接失败」而非「配置缺失」。
+# 这里同时给出仓库根与 CWD 两个候选，后者优先，便于本地临时覆盖。
+# app/config.py → app → api → services → 仓库根，共 4 层
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_ENV_FILES = (_REPO_ROOT / ".env", Path(".env"))
+
 
 class Settings(BaseSettings):
     """运行期配置项。"""
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(env_file=_ENV_FILES, extra="ignore")
 
     # ----- 基础 -----
     app_name: str = "xueban-api"
@@ -73,6 +84,11 @@ class Settings(BaseSettings):
     content_judge_model: str = "deepseek-v4-flash"
     # 单次请求出多少道题（Go 的用量窗口按请求计费，批量越大越省额度）
     content_batch_size: int = 10
+    # 推理模型（kimi-k3 / glm-5.3 等）会先产出 reasoning 再给正文，
+    # max_tokens 给小了会把预算全花在推理上，正文 content 返回 null。
+    # 实测 kimi-k3 出 1 道题：max_tokens=16/300 → content=null，
+    # 2000 → 正常返回。因此内容生成类请求必须给足。
+    content_max_tokens: int = 4000
     # 每知识点首批最少题量（§6.1 红线：禁止硬编码题目充数）
     content_min_per_point: int = 30
 

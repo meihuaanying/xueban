@@ -34,6 +34,11 @@ class QuestionType(enum.StrEnum):
     SHORT_ANSWER = "short_answer"
     ESSAY = "essay"
     PROGRAMMING = "programming"
+    # P1 / §6.2 小学题型
+    JUDGE = "judge"
+    MATCH = "match"
+    ORAL = "oral"
+    PICK_HANZI = "pick_hanzi"
 
 
 class QuestionStatus(enum.StrEnum):

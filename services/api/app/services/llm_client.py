@@ -103,8 +103,16 @@ class LlmClient:
     ) -> None:
         self._settings = settings
         self._observability = observability
+        # base_url 允许带路径（OpenCode Go 是 https://opencode.ai/zen/go/v1）。
+        # httpx 的 URL 合并规则是「以 / 开头的相对路径会丢弃 base_url 的路径部分」，
+        # 所以这里把末尾的 /v1 剥成上游根，再用具相对路径 "v1/chat/completions" 请求；
+        # 否则会打到 https://opencode.ai/v1/... 拿到站点首页的 404 HTML。
+        # 对 LiteLLM 这类 base_url 不含路径的服务，两种写法结果一致。
+        base_url = settings.litellm_base_url.rstrip("/")
+        if base_url.endswith("/v1"):
+            base_url = base_url[: -len("/v1")]
         self._client = httpx.AsyncClient(
-            base_url=settings.litellm_base_url.rstrip("/"),
+            base_url=base_url,
             timeout=settings.llm_timeout_seconds,
             headers={
                 "Authorization": f"Bearer {settings.litellm_master_key}",
@@ -173,7 +181,7 @@ class LlmClient:
         for attempt in range(attempts):
             started = time.perf_counter()
             try:
-                response = await self._client.post("/v1/chat/completions", json=payload)
+                response = await self._client.post("v1/chat/completions", json=payload)
             except (httpx.TimeoutException, httpx.TransportError) as exc:
                 last_error = exc
                 logger.warning("LLM 网络异常（第 %s 次）：%s", attempt + 1, exc)
@@ -478,7 +486,7 @@ class LlmClient:
         """单次流式请求；增量写入 collected，供上层判断是否还能安全重试。"""
         try:
             async with self._client.stream(
-                "POST", "/v1/chat/completions", json=payload
+                "POST", "v1/chat/completions", json=payload
             ) as response:
                 if response.status_code == 429:
                     raise LlmError(
