@@ -254,6 +254,14 @@ class QuestionPipeline:
             outcome.generated += len(batch)
             outcome.errors.extend(report.errors)
             generated.extend(batch)
+            if not batch:
+                # 出题整体失败（网络/限流/网关）：退避后再试，避免空转烧额度。
+                # 空转到 max_rounds 也不会让本知识点"假装成功"，它会以 0 题入库、
+                # 下次断点续跑时重新处理。
+                outcome.errors.append(f"{point.id} 第 {rounds} 轮未产出任何题目")
+                if rounds < max_rounds:
+                    await asyncio.sleep(max(self._interval, 5.0 * rounds))
+                continue
             if rounds < max_rounds:
                 await asyncio.sleep(self._interval)
 

@@ -166,6 +166,64 @@ async def test_auth_error_has_clear_message() -> None:
     await client.aclose()
 
 
+async def test_empty_content_retries_then_fails_with_clear_code() -> None:
+    """推理模型偶发把预算耗在 reasoning 上、正文为空；应退避重试并给明确错误码。"""
+    observability, _ = make_observability()
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        payload = success_payload()
+        payload["choices"][0]["message"]["content"] = None
+        return httpx.Response(200, json=payload)
+
+    client = client_with_handler(
+        handler, observability, llm_max_retries=2, llm_rate_limit_retries=2
+    )
+    with pytest.raises(LlmError) as excinfo:
+        await client.complete([{"role": "user", "content": "hi"}])
+    assert excinfo.value.code == "LLM_EMPTY_CONTENT"
+    assert calls["n"] == 3
+    await client.aclose()
+
+
+async def test_empty_content_recovers_on_retry() -> None:
+    """第一次空内容、第二次正常时，不应把整次调用判失败。"""
+    observability, _ = make_observability()
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        if calls["n"] == 1:
+            payload = success_payload()
+            payload["choices"][0]["message"]["content"] = ""
+            return httpx.Response(200, json=payload)
+        return httpx.Response(200, json=success_payload())
+
+    client = client_with_handler(handler, observability)
+    result = await client.complete([{"role": "user", "content": "hi"}])
+    assert result.content.startswith("你好")
+    assert calls["n"] == 2
+    await client.aclose()
+
+
+async def test_empty_content_is_not_retried_for_tool_only_reply() -> None:
+    """结构异常（连 choices 都没有）不该被当成空内容无限重试。"""
+    observability, _ = make_observability()
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        return httpx.Response(200, json={"unexpected": "shape"})
+
+    client = client_with_handler(handler, observability)
+    with pytest.raises(LlmError) as excinfo:
+        await client.complete([{"role": "user", "content": "hi"}])
+    assert excinfo.value.code == "LLM_BAD_RESPONSE"
+    assert calls["n"] == 1
+    await client.aclose()
+
+
 async def test_model_not_found() -> None:
     observability, _ = make_observability()
     client = client_with_handler(

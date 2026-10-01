@@ -805,7 +805,40 @@ async def test_pipeline_deduplicates_against_existing(
         assert outcome.inserted == 1
 
 
-async def test_pipeline_report_rates() -> None:
+async def test_pipeline_backs_off_instead_of_spinning_when_generation_fails(
+    sessionmaker: async_sessionmaker[AsyncSession],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """出题整体失败时要退避重试，不能空转把额度烧光，也不能假装成功。"""
+    sleeps: list[float] = []
+
+    async def fake_sleep(seconds: float) -> None:
+        sleeps.append(seconds)
+
+    monkeypatch.setattr("app.services.question_pipeline.asyncio.sleep", fake_sleep)
+
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        return chat_body(json.dumps({"questions": []}))
+
+    pipeline = QuestionPipeline(
+        make_client(handler), make_settings(), request_interval_seconds=1.5
+    )
+    async with sessionmaker() as session:
+        outcome = await pipeline.process_point(session, CHINESE_POINT, target=5)
+
+    assert outcome.inserted == 0
+    assert outcome.generated == 0
+    assert calls["n"] > 1, "失败后应重试而不是只试一次"
+    assert sleeps, "重试之间必须有退避，否则会空转"
+    assert all(value > 0 for value in sleeps)
+    assert any(value >= 5.0 for value in sleeps), "失败后的退避应显著长于正常请求间隔"
+    assert any("未产出任何题目" in message for message in outcome.errors)
+
+
+async def test_pipeline_record_rates_are_consistent() -> None:
     """统计字段要能支撑简报：生成量/验证通过率/去重剔除率/学科汇总。"""
     from app.services.question_pipeline import PipelineReport, PointOutcome
 

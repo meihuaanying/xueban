@@ -38,6 +38,15 @@ def _visible_messages(messages: list[dict[str, str]]) -> list[dict[str, str]]:
     ]
 
 
+def _is_empty_content(data: dict[str, Any]) -> bool:
+    """响应正文是否为空（推理模型把预算耗在 reasoning 上时会这样）。"""
+    try:
+        content = data["choices"][0]["message"]["content"]
+    except (KeyError, IndexError, TypeError):
+        return False
+    return not isinstance(content, str) or not content.strip()
+
+
 # mock 提供商的确定性讲解文本（按三层提示口径，供离线开发/E2E/CI 使用）
 MOCK_HINT_TEXTS: dict[int, str] = {
     1: (
@@ -225,6 +234,18 @@ class LlmClient:
                 raise error
 
             data: dict[str, Any] = response.json()
+            # 推理模型（kimi-k3 / glm-5.3 等）偶发把 max_tokens 预算全花在
+            # reasoning 上，正文 content 返回 null。这种情况是可重试的软失败，
+            # 直接抛错会让整批内容生产卡死，所以先退避重试一轮。
+            if _is_empty_content(data):
+                last_error = LlmError(
+                    "模型返回内容为空（推理预算耗尽）", code="LLM_EMPTY_CONTENT", status_code=502
+                )
+                logger.warning("LLM 返回空内容（第 %s 次）", attempt + 1)
+                if attempt < attempts - 1:
+                    await self._sleep_backoff(attempt, rate_limited=False)
+                    continue
+                raise last_error
             content = self._extract_content(data)
             usage = self._extract_usage(data)
             result = LlmResult(
