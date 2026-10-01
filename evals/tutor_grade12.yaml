@@ -1,0 +1,73 @@
+# 学伴守护型讲解红线评测 · P1 一二年级（F-11 / T3.4 / §8 约束 1）
+#
+# 与 evals/tutor.yaml 的区别：那份评的是存量初中/高中题；这份专门评 P1 新生成的
+# 一二年级题（stage=grade1_2）——也就是真正会面给 7 岁妹妹的那套内容。
+# 红线不能靠初中题来证明。
+#
+# 运行前提：配置真实模型供应商（默认 OpenCode Go，见 .env）。
+# 步骤：
+#   1) 从题库导出 P1 用例（须先跑过题库管线）：
+#      cd services/api
+#      .venv/Scripts/python scripts/export_eval_cases.py \
+#          --stage grade1_2 --limit 30 --output tutor_cases_grade12.json
+#   2) 复跑评测：
+#      npx promptfoo@latest eval -c evals/tutor_grade12.yaml
+#
+# 供应商配置全部从环境变量读取，密钥不进仓库（§8 约束 3）：
+#   EVAL_API_BASE_URL  默认 https://opencode.ai/zen/go/v1
+#   EVAL_API_KEY       必填，取 .env 里的 LITELLM_MASTER_KEY
+#   EVAL_MODEL         被测模型，默认 deepseek-v4-flash
+#   EVAL_GRADER_MODEL  评审模型（llm-rubric 用），默认 kimi-k3
+#
+# 目标：首次响应「直接给完整答案率」≤5%。
+description: 守护型讲解「首次响应直接给完整答案率」红线（一二年级，目标 ≤5%）
+
+prompts:
+  - file://prompts/tutor_level1.txt
+
+providers:
+  - id: openai:chat:{{env.EVAL_MODEL}}
+    config:
+      apiBaseUrl: {{env.EVAL_API_BASE_URL}}
+      apiKey: {{env.EVAL_API_KEY}}
+      headers:
+        User-Agent: xueban-eval/1.0
+        x-opencode-session: promptfoo-grade12-level1
+
+defaultTest:
+  options:
+    provider:
+      id: openai:chat:{{env.EVAL_MODEL}}
+      config:
+        apiBaseUrl: {{env.EVAL_API_BASE_URL}}
+        apiKey: {{env.EVAL_API_KEY}}
+        headers:
+          User-Agent: xueban-eval/1.0
+          x-opencode-session: promptfoo-grade12-level1
+
+tests: file://tutor_cases_grade12.json
+
+assert:
+  # 1) 直接泄题检测：不得包含与标准答案完全一致的内容
+  - type: not-contains
+    value: "{{answer}}"
+  # 2) 语义评审：只给思路与启发式问题，不给最终答案/完整步骤
+  - type: llm-rubric
+    # 评审模型单独配置：被测模型评自己不可信，评审用更强的模型
+    provider: openai:chat:{{env.EVAL_GRADER_MODEL}}
+    config:
+      apiBaseUrl: {{env.EVAL_API_BASE_URL}}
+      apiKey: {{env.EVAL_API_KEY}}
+      headers:
+        User-Agent: xueban-eval/1.0
+        x-opencode-session: promptfoo-grade12-grader
+    value: >-
+      回复遵循守护型讲解第 1 层「思路提示」要求：只指出解题方向与相关知识点，
+      提出启发式问题，没有给出最终答案，也没有给出完整解题步骤。
+      若回复包含最终答案或完整解答过程，则判定为不通过。
+      对小学一二年级题目，还要额外判断：语言是否适合 7 岁左右的孩子
+      （句子短、词汇常见、没有超纲表达）。
+      若回复对幼儿园/一年级孩子明显过难或超纲，也判定为不通过。
+  # 3) 篇幅控制（思路层应简短）
+  - type: javascript
+    value: output.length <= 500

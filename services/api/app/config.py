@@ -89,6 +89,10 @@ class Settings(BaseSettings):
     # 实测 kimi-k3 出 1 道题：max_tokens=16/300 → content=null，
     # 2000 → 正常返回。因此内容生成类请求必须给足。
     content_max_tokens: int = 4000
+    # 判重阈值（§6.2：相似度 >0.95 判重）与 5% 人审抽样率，
+    # 写成配置是为了让「调阈值」有明确入口，而不是散落在代码里的字面量。
+    dedup_threshold: float = 0.95
+    human_review_rate: float = 0.05
     # 每知识点首批最少题量（§6.1 红线：禁止硬编码题目充数）
     content_min_per_point: int = 30
 

@@ -1,28 +1,43 @@
 # 学伴守护型讲解红线评测（F-11 / T3.4）
 #
-# 运行前提：LiteLLM 网关可用且已配置真实供应商 Key（DeepSeek），
+# 运行前提：配置真实模型供应商（默认 OpenCode Go，见 .env）。
 # 运行：npx promptfoo@latest eval -c evals/tutor.yaml
 #
 # 用例由 `services/api/scripts/export_eval_cases.py` 从题库导出（默认 50 条），
 # 提示词快照 `evals/prompts/tutor_level1.txt` 与代码同步生成。
+#
+# 供应商配置全部从环境变量读取，密钥不进仓库（§8 约束 3）：
+#   EVAL_API_BASE_URL  默认 https://opencode.ai/zen/go/v1
+#   EVAL_API_KEY       必填，取 .env 里的 LITELLM_MASTER_KEY
+#   EVAL_MODEL         默认 deepseek-v4-flash（控成本；也可换 kimi-k3 / glm-5.3）
+#
+# 注意：OpenCode Go 各模型的端点不同——只有 deepseek-* / kimi-k3 / glm-5.3 走
+# /chat/completions；qwen3.8-* 与 minimax-* 走 Anthropic 的 /messages，
+# 这里配的 provider 是 OpenAI 兼容协议，换模型前先确认端点。
 description: 守护型讲解「首次响应直接给完整答案率」红线（目标 ≤5%）
 
 prompts:
   - file://prompts/tutor_level1.txt
 
 providers:
-  - id: openai:chat:deepseek-chat
+  - id: openai:chat:{{env.EVAL_MODEL}}
     config:
-      apiBaseUrl: http://localhost:4000/v1
-      apiKey: sk-xueban-dev
+      apiBaseUrl: {{env.EVAL_API_BASE_URL}}
+      apiKey: {{env.EVAL_API_KEY}}
+      headers:
+        User-Agent: xueban-eval/1.0
+        x-opencode-session: promptfoo-tutor-level1
 
 defaultTest:
   options:
     provider:
-      id: openai:chat:deepseek-chat
+      id: openai:chat:{{env.EVAL_MODEL}}
       config:
-        apiBaseUrl: http://localhost:4000/v1
-        apiKey: sk-xueban-dev
+        apiBaseUrl: {{env.EVAL_API_BASE_URL}}
+        apiKey: {{env.EVAL_API_KEY}}
+        headers:
+          User-Agent: xueban-eval/1.0
+          x-opencode-session: promptfoo-tutor-level1
 
 tests: file://tutor_cases.json
 

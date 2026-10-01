@@ -56,8 +56,8 @@ class DedupeResult:
 class QuestionDeduplicator:
     """按向量余弦相似度剔除近重复题目。"""
 
-    def __init__(self, settings: Settings, *, threshold: float = DEDUP_THRESHOLD) -> None:
-        self._threshold = threshold
+    def __init__(self, settings: Settings, *, threshold: float | None = None) -> None:
+        self._threshold = settings.dedup_threshold if threshold is None else threshold
         self._provider = get_embedding_provider(settings)
 
     async def dedupe(

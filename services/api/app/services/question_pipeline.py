@@ -61,7 +61,8 @@ ELEMENTARY_STAGE = "grade1_2"
 # 题库来源标记，便于与存量 self-built 题区分
 PIPELINE_SOURCE = "llm-pipeline-v1"
 
-# 5% 抽样人审
+# 5% 抽样人审（§6.2）：实际取值走 settings.human_review_rate，这里只是文档锚点，
+# 与 config.Settings.human_review_rate 的默认值保持一致。
 HUMAN_REVIEW_RATE = 0.05
 
 
@@ -289,7 +290,7 @@ class QuestionPipeline:
                 source=PIPELINE_SOURCE,
                 status=(
                     QuestionStatus.REVIEW
-                    if self._rng.random() < HUMAN_REVIEW_RATE
+                    if self._rng.random() < self._settings.human_review_rate
                     else QuestionStatus.PUBLISHED
                 ),
             )
