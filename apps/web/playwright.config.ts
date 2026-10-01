@@ -14,6 +14,12 @@ const channel = process.env.PLAYWRIGHT_CHANNEL ?? (isWindows ? "msedge" : undefi
 const apiPort = process.env.PLAYWRIGHT_API_PORT ?? (isWindows ? "8090" : "8000");
 const apiOrigin = `http://127.0.0.1:${apiPort}`;
 
+// 官网端口：Next 默认 3000 常被本机其他服务（本仓库外的应用）抢占；配合
+// reuseExistingServer 会误连到别人的站点，导致 E2E 全打在错误页面上。
+// 与 API 端口同理，Windows 下改用 3100，可用 PLAYWRIGHT_WEB_PORT 覆盖。
+const webPort = process.env.PLAYWRIGHT_WEB_PORT ?? (isWindows ? "3100" : "3000");
+const webOrigin = `http://127.0.0.1:${webPort}`;
+
 // 后端解释器：默认取仓库虚拟环境；CI 无 .venv，通过 PLAYWRIGHT_PYTHON=python 覆盖。
 const apiPython =
   process.env.PLAYWRIGHT_PYTHON ??
@@ -33,7 +39,7 @@ export default defineConfig({
   timeout: 90_000,
   expect: { timeout: 15_000 },
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000",
+    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? webOrigin,
     ...(channel ? { channel } : {}),
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
@@ -53,9 +59,9 @@ export default defineConfig({
   webServer: [
     {
       command: "pnpm --filter @xueban/web start",
-      url: "http://127.0.0.1:3000",
+      url: webOrigin,
       cwd: rootDir,
-      env: { NEXT_PUBLIC_API_BASE_URL: apiOrigin },
+      env: { NEXT_PUBLIC_API_BASE_URL: apiOrigin, PORT: webPort },
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
     },
@@ -68,6 +74,15 @@ export default defineConfig({
         // 开发/CI 环境按配置创建管理员（M7 后台 E2E 登录用）
         DEV_ADMIN_PHONE: process.env.E2E_ADMIN_PHONE ?? "13900000000",
         DEV_ADMIN_PASSWORD: process.env.E2E_ADMIN_PASSWORD ?? "admin-dev-123",
+        // 浏览器 E2E 受同源策略约束：API 必须放行官网 origin，否则注册等请求
+        // 会被 CORS 预检拦掉（请求根本发不出去）。本机 .env 里的 CORS 列表是
+        // 生产验证端口（8088），不含 E2E 端口，故在 webServer 里显式补齐。
+        CORS_ALLOW_ORIGINS: [
+          webOrigin,
+          `http://localhost:${webPort}`,
+          apiOrigin,
+          `http://localhost:${apiPort}`,
+        ].join(","),
       },
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,

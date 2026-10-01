@@ -43,7 +43,9 @@ test.describe("官网转化链路（T4.3）", () => {
     // P0 / D4：Web 收缩为官网 + 下载页，注册成功后引导下载桌面客户端
     await expect(page).toHaveURL(/\/download$/, { timeout: 30_000 });
     await expect(page.getByRole("heading", { level: 1 })).toContainText("下载学伴");
-    await expect(page.getByRole("link", { name: "XueBan-Setup-x64.exe" })).toBeVisible();
+    // 下载卡片里的链接可访问名是「前往 Release 下载」，文件名只是卡片正文，
+    // 因此按 href 断言 Release 资产接线（这才是转化链路的实质）。
+    await expect(page.locator('a[href*="XueBan-Setup-x64.exe"]')).toBeVisible();
     await page.screenshot({
       path: path.join(EVIDENCE_DIR, "m4-04-download-after-register.png"),
       fullPage: false,
@@ -56,6 +58,8 @@ test.describe("官网转化链路（T4.3）", () => {
       "href",
       "/register",
     );
-    await expect(page.getByRole("link", { name: /XueBan-/ }).first()).toBeVisible();
+    // 四张平台卡的下载链接都指向 GitHub Release 稳定资产名
+    await expect(page.locator('a[href*="XueBan-"]')).toHaveCount(3);
+    await expect(page.locator('a[href*="xueban-release.apk"]')).toHaveCount(1);
   });
 });
