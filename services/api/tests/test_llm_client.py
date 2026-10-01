@@ -45,12 +45,14 @@ class FakeLangfuse:
 
 
 def make_settings(**overrides: Any) -> Settings:
-    """测试用配置（重试退避为 0）。"""
+    """测试用配置（重试退避为 0，429 重试次数也压到最小以保证用例确定）。"""
     base: dict[str, Any] = {
         "litellm_base_url": "http://llm.test",
         "litellm_master_key": "sk-test",
         "llm_max_retries": 1,
         "llm_retry_backoff_seconds": 0.0,
+        "llm_rate_limit_retries": 0,
+        "llm_rate_limit_backoff_seconds": 0.0,
         "langfuse_public_key": "",
         "langfuse_secret_key": "",
     }
@@ -183,6 +185,189 @@ async def test_rate_limited() -> None:
     with pytest.raises(LlmError) as excinfo:
         await client.complete([{"role": "user", "content": "hi"}])
     assert excinfo.value.code == "LLM_RATE_LIMITED"
+    await client.aclose()
+
+
+async def test_rate_limited_retries_then_succeeds() -> None:
+    """网关用量窗口限流（429）应退避重试，而不是立刻失败。"""
+    observability, _ = make_observability()
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        if calls["n"] <= 2:
+            return httpx.Response(429, text="usage window exhausted")
+        return httpx.Response(200, json=success_payload())
+
+    client = client_with_handler(handler, observability, llm_rate_limit_retries=2)
+    result = await client.complete([{"role": "user", "content": "hi"}])
+    assert result.content.startswith("你好")
+    assert calls["n"] == 3
+    await client.aclose()
+
+
+async def test_rate_limit_retry_budget_is_independent() -> None:
+    """429 的重试预算独立于普通 5xx，不应被 llm_max_retries 截断。"""
+    observability, _ = make_observability()
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        return httpx.Response(429, text="usage window exhausted")
+
+    client = client_with_handler(
+        handler, observability, llm_max_retries=1, llm_rate_limit_retries=3
+    )
+    with pytest.raises(LlmError) as excinfo:
+        await client.complete([{"role": "user", "content": "hi"}])
+    assert excinfo.value.code == "LLM_RATE_LIMITED"
+    assert calls["n"] == 4, "应有 1 次初始请求 + 3 次 429 退避重试"
+    await client.aclose()
+
+
+async def test_upstream_500_uses_normal_budget() -> None:
+    """5xx 只按 llm_max_retries 重试，不占用 429 的额外预算。"""
+    observability, _ = make_observability()
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        return httpx.Response(503, text="boom")
+
+    client = client_with_handler(
+        handler, observability, llm_max_retries=1, llm_rate_limit_retries=5
+    )
+    with pytest.raises(LlmError) as excinfo:
+        await client.complete([{"role": "user", "content": "hi"}])
+    assert excinfo.value.code == "LLM_UPSTREAM_ERROR"
+    assert calls["n"] == 2
+    await client.aclose()
+
+
+async def test_sends_user_agent_and_session_header() -> None:
+    """网关要求：必须自带 UA 与 x-opencode-session，缺失会被 400 拒。"""
+    observability, _ = make_observability()
+    seen: list[httpx.Headers] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request.headers)
+        return httpx.Response(200, json=success_payload())
+
+    client = client_with_handler(handler, observability)
+    await client.complete([{"role": "user", "content": "hi"}])
+    headers = seen[0]
+    assert headers["User-Agent"] == "xueban-content-pipeline/1.0"
+    assert headers["x-opencode-session"].startswith("xueban-")
+    await client.aclose()
+
+
+async def test_session_id_is_stable_across_calls() -> None:
+    """同一客户端的会话 ID 保持稳定，便于网关命中提示缓存。"""
+    observability, _ = make_observability()
+    seen: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request.headers["x-opencode-session"])
+        return httpx.Response(200, json=success_payload())
+
+    client = client_with_handler(handler, observability)
+    await client.complete([{"role": "user", "content": "第一句"}])
+    await client.complete([{"role": "user", "content": "第二句"}])
+    assert seen[0] == seen[1]
+    assert client.session_id == seen[0]
+    await client.aclose()
+
+
+async def test_bind_session_switches_session() -> None:
+    """内容管线按知识点分组时显式绑定会话。"""
+    observability, _ = make_observability()
+    seen: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request.headers["x-opencode-session"])
+        return httpx.Response(200, json=success_payload())
+
+    client = client_with_handler(handler, observability)
+    client.bind_session("xueban-g1m-add-within-10")
+    await client.complete([{"role": "user", "content": "出题"}])
+    assert seen == ["xueban-g1m-add-within-10"]
+    assert client.session_id == "xueban-g1m-add-within-10"
+    await client.aclose()
+
+
+async def test_stream_retries_before_first_delta() -> None:
+    """流式在吐出任何增量之前允许退避重试。"""
+    observability, _ = make_observability()
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        if calls["n"] == 1:
+            return httpx.Response(429, text="usage window exhausted")
+        body = (
+            'data: {"choices":[{"delta":{"content":"第一"}}]}\n\n'
+            'data: {"choices":[{"delta":{"content":"第二"}}]}\n\n'
+            "data: [DONE]\n\n"
+        )
+        return httpx.Response(
+            200, content=body.encode("utf-8"), headers={"content-type": "text/event-stream"}
+        )
+
+    client = client_with_handler(handler, observability, llm_rate_limit_retries=2)
+    deltas = [d async for d in client.stream_complete([{"role": "user", "content": "hi"}])]
+    assert deltas == ["第一", "第二"]
+    assert calls["n"] == 2
+    await client.aclose()
+
+
+async def test_stream_does_not_retry_after_first_delta() -> None:
+    """已经产出增量后不再重试，避免调用方收到重复内容。"""
+    observability, _ = make_observability()
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        if calls["n"] == 1:
+            body = 'data: {"choices":[{"delta":{"content":"片段"}}]}\n\n'
+            return httpx.Response(
+                200, content=body.encode("utf-8"), headers={"content-type": "text/event-stream"}
+            )
+        body = 'data: {"choices":[{"delta":{"content":"重复"}}]}\n\ndata: [DONE]\n\n'
+        return httpx.Response(
+            200, content=body.encode("utf-8"), headers={"content-type": "text/event-stream"}
+        )
+
+    client = client_with_handler(handler, observability, llm_rate_limit_retries=3)
+    collected = [d async for d in client.stream_complete([{"role": "user", "content": "hi"}])]
+    assert collected == ["片段"]
+    assert calls["n"] == 1, "吐出增量后不得重试"
+    await client.aclose()
+
+
+async def test_stream_transport_error_maps_to_unavailable() -> None:
+    """建连异常统一映射为 LLM_UNAVAILABLE，而不是裸抛 httpx 错误。"""
+    observability, _ = make_observability()
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ConnectError("connection reset")
+
+    client = client_with_handler(handler, observability, llm_max_retries=1)
+    with pytest.raises(LlmError) as excinfo:
+        [d async for d in client.stream_complete([{"role": "user", "content": "hi"}])]
+    assert excinfo.value.code == "LLM_UNAVAILABLE"
+    await client.aclose()
+
+
+async def test_stream_error_status_is_mapped() -> None:
+    """流式收到的错误状态码与非流式共用同一套错误码映射。"""
+    observability, _ = make_observability()
+    client = client_with_handler(
+        lambda request: httpx.Response(401, text='{"error":{"message":"bad key"}}'),
+        observability,
+    )
+    with pytest.raises(LlmError) as excinfo:
+        [d async for d in client.stream_complete([{"role": "user", "content": "hi"}])]
+    assert excinfo.value.code == "LLM_AUTH_FAILED"
     await client.aclose()
 
 

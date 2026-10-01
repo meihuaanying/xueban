@@ -6,6 +6,7 @@ import asyncio
 import json
 import logging
 import time
+import uuid
 from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
 from typing import Any
@@ -85,7 +86,10 @@ class LlmClient:
     """与 LiteLLM 网关通信的异步客户端。
 
     - 超时：settings.llm_timeout_seconds
-    - 重试：网络类错误/5xx 重试 settings.llm_max_retries 次（指数退避）
+    - 重试：网络类错误与 5xx 重试 llm_max_retries 次；429（网关用量窗口限流）
+      单独用 llm_rate_limit_retries 次预算与更长的退避基数（限流不是故障）
+    - 会话：带 x-opencode-session 与自定义 User-Agent，网关据此路由与命中提示缓存；
+      同一生成任务跨重试保持同一 session_id，可用 bind_session 显式绑定
     - 降级：主备模型切换由 LiteLLM 的 fallbacks 配置负责，本客户端只消费网关结果
     - 观测：每次调用写入 Langfuse（含失败）
     """
@@ -102,13 +106,41 @@ class LlmClient:
         self._client = httpx.AsyncClient(
             base_url=settings.litellm_base_url.rstrip("/"),
             timeout=settings.llm_timeout_seconds,
-            headers={"Authorization": f"Bearer {settings.litellm_master_key}"},
+            headers={
+                "Authorization": f"Bearer {settings.litellm_master_key}",
+                # 网关要求：必须自带 UA（不能是 httpx 默认值），并带稳定的会话 ID，
+                # 否则报 MissingSessionID（HTTP 400）且无法命中提示缓存。
+                "User-Agent": settings.llm_user_agent,
+                "x-opencode-session": f"{settings.llm_session_prefix}-{uuid.uuid4().hex[:16]}",
+            },
             transport=transport,
         )
 
     async def aclose(self) -> None:
         """关闭底层连接。"""
         await self._client.aclose()
+
+    @property
+    def session_id(self) -> str:
+        """当前会话 ID：同一「生成任务」跨重试保持不变，便于网关命中缓存。"""
+        return str(self._client.headers["x-opencode-session"])
+
+    def bind_session(self, session_id: str) -> None:
+        """把后续请求绑定到指定会话（内容管线按知识点分组时复用缓存用）。"""
+        self._client.headers["x-opencode-session"] = session_id
+
+    def _should_retry(self, status_code: int) -> bool:
+        """429 是用量窗口限流，5xx 是上游抖动，两者都值得退避重试。"""
+        return status_code == 429 or status_code >= 500
+
+    async def _sleep_backoff(self, attempt: int, *, rate_limited: bool) -> None:
+        """指数退避；命中 429 时用更长、更保守的基数。"""
+        base = (
+            self._settings.llm_rate_limit_backoff_seconds
+            if rate_limited
+            else self._settings.llm_retry_backoff_seconds
+        )
+        await asyncio.sleep(base * (2**attempt))
 
     async def complete(
         self,
@@ -132,7 +164,11 @@ class LlmClient:
         if max_tokens is not None:
             payload["max_tokens"] = max_tokens
 
-        attempts = self._settings.llm_max_retries + 1
+        # 429（网关用量窗口限流）与 5xx（上游抖动）共用同一个循环，但 429 有独立的
+        # 重试预算与更长的退避基数——限流不是故障，重试要更保守。
+        attempts = (
+            max(self._settings.llm_max_retries, self._settings.llm_rate_limit_retries) + 1
+        )
         last_error: Exception | None = None
         for attempt in range(attempts):
             started = time.perf_counter()
@@ -142,18 +178,28 @@ class LlmClient:
                 last_error = exc
                 logger.warning("LLM 网络异常（第 %s 次）：%s", attempt + 1, exc)
                 if attempt < attempts - 1:
-                    await asyncio.sleep(self._settings.llm_retry_backoff_seconds * (2**attempt))
+                    await self._sleep_backoff(attempt, rate_limited=False)
                     continue
                 break
 
             latency_ms = int((time.perf_counter() - started) * 1000)
+            if response.status_code == 429:
+                last_error = LlmError(
+                    "模型用量窗口已用尽，请稍后重试", code="LLM_RATE_LIMITED", status_code=429
+                )
+                logger.warning("LLM 触发用量窗口限流（第 %s 次）", attempt + 1)
+                if attempt < self._settings.llm_rate_limit_retries:
+                    await self._sleep_backoff(attempt, rate_limited=True)
+                    continue
+                break
+
             if response.status_code >= 500:
                 last_error = LlmError(
                     "模型服务暂时不可用，请稍后重试", code="LLM_UPSTREAM_ERROR", status_code=503
                 )
                 logger.warning("LLM 上游 %s（第 %s 次）", response.status_code, attempt + 1)
-                if attempt < attempts - 1:
-                    await asyncio.sleep(self._settings.llm_retry_backoff_seconds * (2**attempt))
+                if attempt < self._settings.llm_max_retries:
+                    await self._sleep_backoff(attempt, rate_limited=False)
                     continue
                 break
 
@@ -389,17 +435,60 @@ class LlmClient:
         started = time.perf_counter()
         collected: list[str] = []
         error_text: str | None = None
+        attempts = max(self._settings.llm_max_retries, self._settings.llm_rate_limit_retries) + 1
+        try:
+            for attempt in range(attempts):
+                try:
+                    async for delta in self._stream_once(payload, target_model, collected):
+                        yield delta
+                    return
+                except (httpx.TimeoutException, httpx.TransportError, LlmError) as exc:
+                    # 已经吐出过增量就不能重试，否则调用方会收到重复内容
+                    if collected:
+                        error_text = f"{getattr(exc, 'code', 'LLM_ERROR')}: {exc}"
+                        raise
+                    error_text = f"{getattr(exc, 'code', 'LLM_ERROR')}: {exc}"
+                    rate_limited = isinstance(exc, LlmError) and exc.code == "LLM_RATE_LIMITED"
+                    logger.warning("LLM 流式失败（第 %s 次）：%s", attempt + 1, exc)
+                    if attempt < attempts - 1:
+                        await self._sleep_backoff(attempt, rate_limited=rate_limited)
+                        continue
+                    raise
+            raise LlmError(
+                "模型服务暂时不可用，请稍后重试", code="LLM_UPSTREAM_ERROR", status_code=503
+            )
+        finally:
+            latency_ms = int((time.perf_counter() - started) * 1000)
+            self._observability.record_llm_call(
+                trace_id=trace_id,
+                name=name,
+                model=target_model,
+                input_payload=_visible_messages(messages),
+                output_payload="".join(collected) if collected else None,
+                latency_ms=latency_ms,
+                error=error_text,
+            )
+
+    async def _stream_once(
+        self,
+        payload: dict[str, Any],
+        target_model: str,
+        collected: list[str],
+    ) -> AsyncIterator[str]:
+        """单次流式请求；增量写入 collected，供上层判断是否还能安全重试。"""
         try:
             async with self._client.stream(
                 "POST", "/v1/chat/completions", json=payload
             ) as response:
+                if response.status_code == 429:
+                    raise LlmError(
+                        "模型用量窗口已用尽，请稍后重试",
+                        code="LLM_RATE_LIMITED",
+                        status_code=429,
+                    )
                 if response.status_code >= 400:
                     body = (await response.aread()).decode("utf-8", errors="ignore")
-                    error = self._map_client_error_parts(
-                        response.status_code, body, target_model
-                    )
-                    error_text = f"{error.code}: {error.message}"
-                    raise error
+                    raise self._map_client_error_parts(response.status_code, body, target_model)
                 async for line in response.aiter_lines():
                     if not line.startswith("data:"):
                         continue
@@ -420,18 +509,6 @@ class LlmClient:
                         collected.append(content)
                         yield content
         except (httpx.TimeoutException, httpx.TransportError) as exc:
-            error_text = f"LLM_UNAVAILABLE: {exc}"
             raise LlmError(
                 "模型服务不可用，请稍后重试", code="LLM_UNAVAILABLE", status_code=503
             ) from exc
-        finally:
-            latency_ms = int((time.perf_counter() - started) * 1000)
-            self._observability.record_llm_call(
-                trace_id=trace_id,
-                name=name,
-                model=target_model,
-                input_payload=_visible_messages(messages),
-                output_payload="".join(collected) if collected else None,
-                latency_ms=latency_ms,
-                error=error_text,
-            )

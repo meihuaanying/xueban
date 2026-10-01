@@ -48,6 +48,10 @@ class Settings(BaseSettings):
 
     # ----- LLM 网关 -----
     # litellm：真实网关（默认）；mock：确定性离线输出（E2E/CI/无 Key 环境）
+    #
+    # 网关要求（OpenCode Go / OpenAI 兼容）：
+    # - User-Agent 需标明自己是哪个 agent，不能用通用 HTTP 库默认 UA
+    # - x-opencode-session 用于路由与提示缓存，缺失直接 400（MissingSessionID）
     llm_provider: str = "litellm"
     litellm_base_url: str = "http://localhost:4000"
     litellm_master_key: str = "sk-xueban-dev"
@@ -55,6 +59,22 @@ class Settings(BaseSettings):
     llm_timeout_seconds: float = 60.0
     llm_max_retries: int = 2
     llm_retry_backoff_seconds: float = 0.5
+    # 客户端标识：网关按此识别调用方，缺失会降级路由
+    llm_user_agent: str = "xueban-content-pipeline/1.0"
+    # 缺省会话 ID 前缀；实际值由调用方按「一次生成会话」稳定传入，便于断点续跑复用缓存
+    llm_session_prefix: str = "xueban"
+    # 429（用量窗口限流）单独的重试预算：网关限流不是故障，退避要更久
+    llm_rate_limit_retries: int = 5
+    llm_rate_limit_backoff_seconds: float = 8.0
+
+    # ----- 题库内容管线（P1 / §6.2） -----
+    # 出题与讲解教学设计用强中文模型；自动验证的 judge 通道用更便宜的模型控成本
+    content_generation_model: str = "kimi-k3"
+    content_judge_model: str = "deepseek-v4-flash"
+    # 单次请求出多少道题（Go 的用量窗口按请求计费，批量越大越省额度）
+    content_batch_size: int = 10
+    # 每知识点首批最少题量（§6.1 红线：禁止硬编码题目充数）
+    content_min_per_point: int = 30
 
     # ----- 观测 -----
     langfuse_public_key: str = ""
