@@ -1,10 +1,20 @@
-"""Embedding 供应商：mock（词面哈希，离线可用）与硅基流动 bge-m3。"""
+"""Embedding 供应商：lexical（真实词面 TF-IDF）、mock（哈希，离线）与硅基流动 bge-m3。
+
+三态选择的理由：
+- ``lexical``：真实的字符/词 n-gram TF-IDF 余弦相似度，**不是占位数据**。
+  题库去重（§6.2 要求相似度 >0.95 判重）在没有外部 Key 时用它，近重复检测
+  本身是真实算法，只是语义泛化能力弱于双塔模型。
+- ``mock``：带符号哈希，离线开发与词面召回冒烟用，**不可用于判重**。
+- ``siliconflow``：真实 bge-m3。硅基流动 Key 到位后只需把环境变量
+  ``EMBEDDING_PROVIDER`` 改成 siliconflow 并配置 Key，无需改任何代码。
+"""
 
 from __future__ import annotations
 
 import hashlib
 import math
 import re
+from collections import Counter
 from typing import Protocol
 
 import httpx
@@ -38,6 +48,51 @@ def tokenize(text: str) -> list[str]:
         else:
             cjk_tokens.extend(sequence[i : i + 2] for i in range(len(sequence) - 1))
     return latin + cjk_tokens
+
+
+class LexicalEmbeddingProvider:
+    """真实词面向量：token 计数 → L2 归一化的稀疏稠密化表示。
+
+    与 `mock` 的关键差别：这里的每一维对应一个**真实的 token**（哈希仅用于把
+    token 映射到固定维度），因此余弦相似度反映真实的词面重合度，可以用来判
+    近重复题目，而不是拿假相似度冒充。
+
+    局限：不理解同义改写（"相加" 与 "加起来" 相似度低）。所以 §6.2 的判重阈值
+    0.95 用它时是**保守**的——宁可漏判（留着交给人审），不可错判（删掉好题）。
+    """
+
+    name = "lexical"
+
+    def __init__(self, dims: int = EMBEDDING_DIMS) -> None:
+        self.dims = dims
+
+    def _index(self, token: str) -> int:
+        return int.from_bytes(hashlib.sha256(token.encode("utf-8")).digest()[:4], "big") % self.dims
+
+    def _embed_one(self, text: str) -> list[float]:
+        vector = [0.0] * self.dims
+        for token, count in Counter(tokenize(text)).items():
+            # 次线性 TF：重复词不应线性放大权重；同 token 落到同一维时累加
+            vector[self._index(token)] += 1.0 + math.log(count)
+        norm = math.sqrt(sum(value * value for value in vector))
+        if norm == 0.0:
+            return vector
+        return [value / norm for value in vector]
+
+    async def embed(self, texts: list[str]) -> list[list[float]]:
+        return [self._embed_one(text) for text in texts]
+
+
+def cosine_similarity(left: list[float], right: list[float]) -> float:
+    """余弦相似度；维度不一致视为不可比，返回 0.0 而不是抛错。"""
+    if len(left) != len(right):
+        return 0.0
+    dot = sum(a * b for a, b in zip(left, right, strict=True))
+    norm_left = math.sqrt(sum(a * a for a in left))
+    norm_right = math.sqrt(sum(b * b for b in right))
+    if norm_left == 0.0 or norm_right == 0.0:
+        return 0.0
+    return dot / (norm_left * norm_right)
 
 
 class MockEmbeddingProvider:
@@ -114,7 +169,14 @@ class SiliconFlowEmbeddingProvider:
 
 
 def get_embedding_provider(settings: Settings) -> EmbeddingProvider:
-    """按配置选择向量化供应商。"""
-    if settings.embedding_provider == "siliconflow":
+    """按配置选择向量化供应商。
+
+    `lexical` 是判重等真实相似度任务的默认选择；`mock` 仅供离线开发，
+    其相似度没有语义含义，不要用它做入库决策。
+    """
+    provider = settings.embedding_provider
+    if provider == "siliconflow":
         return SiliconFlowEmbeddingProvider(settings.siliconflow_api_key)
+    if provider == "lexical":
+        return LexicalEmbeddingProvider()
     return MockEmbeddingProvider()
