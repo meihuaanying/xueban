@@ -106,6 +106,20 @@ class Settings(BaseSettings):
     # 每知识点首批最少题量（§6.1 红线：禁止硬编码题目充数）
     content_min_per_point: int = 30
 
+    # ----- Explainer 交互网页讲解（P1 / §5） -----
+    # 风格版本进缓存 key：改教学风格就换版本号，历史讲解自然失效，不会新旧混用。
+    explainer_style_version: str = "v1"
+    # §5.4：入库前体积上限 500KB。超限即判定不合格，退回「图文分步讲解」。
+    explainer_max_bytes: int = 500 * 1024
+    # §5.2 ①：教学脚本最多几幕（引入→拆解→交互点→收束）。
+    explainer_max_acts: int = 4
+    # §5.4：每个学生每天最多触发多少次讲解生成（缓存命中不计数，拦的是「反复重生成」）。
+    explainer_daily_quota: int = 20
+    # §5.4：前端渲染超过该秒数必须降级为图文分步讲解，禁止白屏。
+    explainer_render_timeout_seconds: int = 60
+    # 生成一次讲解网页的重试上限（LLM 截断/空正文/消毒不合格都要重来）。
+    explainer_max_attempts: int = 3
+
     # ----- 观测 -----
     langfuse_public_key: str = ""
     langfuse_secret_key: str = ""

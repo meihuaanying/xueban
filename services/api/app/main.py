@@ -22,6 +22,7 @@ from app.api.routes import (
     coach,
     diagnosis,
     exam,
+    explainer,
     grading,
     lessons,
     mistakes,
@@ -191,6 +192,7 @@ def create_app() -> FastAPI:
     application.include_router(mistakes.router)
     application.include_router(parents.router)
     application.include_router(lessons.router)
+    application.include_router(explainer.router)
     application.include_router(plan.router)
     application.include_router(practice.router)
     application.include_router(review.router)

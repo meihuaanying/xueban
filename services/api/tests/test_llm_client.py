@@ -46,7 +46,12 @@ class FakeLangfuse:
 
 
 def make_settings(**overrides: Any) -> Settings:
-    """测试用配置（重试退避为 0，429 重试次数也压到最小以保证用例确定）。"""
+    """测试用配置（重试退避为 0，429 重试次数也压到最小以保证用例确定）。
+
+    备用网关三项显式清空：``Settings`` 会从仓库根的 ``.env`` 补齐未传字段，
+    开发者本地配了 ``LLM_FALLBACK_*`` 就会让「没有备用网关」的用例偷偷多发一次
+    请求。测试的判据必须只由用例自己给的参数决定。
+    """
     base: dict[str, Any] = {
         "litellm_base_url": "http://llm.test",
         "litellm_master_key": "sk-test",
@@ -54,6 +59,9 @@ def make_settings(**overrides: Any) -> Settings:
         "llm_retry_backoff_seconds": 0.0,
         "llm_rate_limit_retries": 0,
         "llm_rate_limit_backoff_seconds": 0.0,
+        "llm_fallback_base_url": "",
+        "llm_fallback_master_key": "",
+        "llm_fallback_model": "",
         "langfuse_public_key": "",
         "langfuse_secret_key": "",
     }

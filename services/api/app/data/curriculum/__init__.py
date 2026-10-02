@@ -30,6 +30,23 @@ SUBJECT_FILES: dict[str, str] = {
 
 VALID_DIFFICULTY_BANDS = frozenset({1, 2, 3})
 
+#: 学科 / 年级的中文名。题库与讲解的 prompt 都要写「数学·一年级」而不是
+#: 「math·grade1」——模型对英文枚举的理解不如中文标签稳。
+SUBJECT_NAMES: dict[str, str] = {
+    "chinese": "语文",
+    "math": "数学",
+    "english": "英语",
+}
+GRADE_NAMES: dict[str, str] = {"grade1": "一年级", "grade2": "二年级"}
+
+
+def subject_name(subject: str) -> str:
+    return SUBJECT_NAMES.get(subject, subject)
+
+
+def grade_name(grade: str) -> str:
+    return GRADE_NAMES.get(grade, grade)
+
 
 class CurriculumError(ValueError):
     """课程数据不合法（结构错误 / 关系断裂 / 字段缺失）。"""
@@ -232,6 +249,15 @@ def iter_all_points() -> Iterator[KnowledgePoint]:
     """按学科顺序遍历全部知识点。"""
     for curriculum in all_curricula():
         yield from curriculum.points
+
+
+def find_point(point_id: str) -> KnowledgePoint | None:
+    """在全部学科里按 id 查一个知识点。"""
+    for curriculum in all_curricula():
+        point = curriculum.by_id(point_id)
+        if point is not None:
+            return point
+    return None
 
 
 def topological_order(curriculum: Curriculum) -> tuple[str, ...]:

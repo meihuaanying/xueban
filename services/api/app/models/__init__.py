@@ -22,6 +22,13 @@ from app.models.content import (
 )
 from app.models.document import Document, DocumentChunk, DocumentStatus
 from app.models.exam import Exam, ExamAnswer, ExamKind, ExamStatus, GradingKind, GradingRecord
+from app.models.explainer import (
+    ExplainerContent,
+    ExplainerFeedback,
+    ExplainerJob,
+    ExplainerMode,
+    ExplainerStatus,
+)
 from app.models.governance import (
     AlertRecord,
     Experiment,
@@ -67,6 +74,11 @@ __all__ = [
     "ExamStatus",
     "Experiment",
     "ExperimentAssignment",
+    "ExplainerContent",
+    "ExplainerFeedback",
+    "ExplainerJob",
+    "ExplainerMode",
+    "ExplainerStatus",
     "GradingKind",
     "GradingRecord",
     "InspectionReport",

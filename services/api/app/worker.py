@@ -55,6 +55,41 @@ async def generate_micro_lesson(ctx: dict[str, object], lesson_id: str) -> str:
         await engine.dispose()
 
 
+async def generate_explainer_content(ctx: dict[str, object], content_id: str) -> str:
+    """异步生成交互网页讲解（P1 / §5.2 五步管线）。
+
+    无论成功还是降级，都会把 content 置为 ready：§5.4 要求前端永不白屏，
+    拿不到交互页时也要有「图文分步讲解」可看，所以「失败」在这里表现为降级，
+    而不是把任务标成 failed 让前端空转。
+    """
+    from app.db import create_engine, create_sessionmaker
+    from app.services.explainer_service import generate_content as run_generation
+    from app.services.llm_client import LlmClient
+    from app.services.observability import ObservabilityService
+    from app.services.safety_service import SafetyService
+
+    engine = create_engine(settings.database_url)
+    sessionmaker = create_sessionmaker(engine)
+    observability = ObservabilityService(settings)
+    llm = LlmClient(settings, observability)
+    safety = SafetyService(settings)
+    try:
+        async with sessionmaker() as session:
+            content = await run_generation(
+                session,
+                content_id=uuid.UUID(content_id),
+                llm=llm,
+                settings=settings,
+                safety=safety,
+            )
+            await session.commit()
+            return f"{content.status.value}/{'degraded' if content.degraded else 'interactive'}"
+    finally:
+        await llm.aclose()
+        observability.flush()
+        await engine.dispose()
+
+
 async def generate_weekly_reports(ctx: dict[str, object]) -> str:
     """为近两周活跃用户生成每周学情报告（每周日 22:00，F-27）。"""
     from app.db import create_engine, create_sessionmaker
@@ -90,6 +125,7 @@ class WorkerSettings:
     functions: ClassVar[list[Any]] = [
         regenerate_paths,
         generate_micro_lesson,
+        generate_explainer_content,
         generate_weekly_reports,
         inspect_quality,
     ]

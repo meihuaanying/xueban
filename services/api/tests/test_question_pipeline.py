@@ -315,9 +315,14 @@ async def test_generator_uses_generation_model() -> None:
     client = make_client(
         handler, llm_default_model="unused-model", content_generation_model="kimi-k3"
     )
-    await QuestionGenerator(client, make_settings(llm_default_model="unused-model")).generate(
-        CHINESE_POINT, count=1
-    )
+    # 生成模型的判据必须落在 QuestionGenerator 手上拿的那份 Settings，
+    # 否则本地 .env 里的 CONTENT_GENERATION_MODEL 会把断言带偏
+    await QuestionGenerator(
+        client,
+        make_settings(
+            llm_default_model="unused-model", content_generation_model="kimi-k3"
+        ),
+    ).generate(CHINESE_POINT, count=1)
     assert seen[0]["model"] == "kimi-k3"
 
 

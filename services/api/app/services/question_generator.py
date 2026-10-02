@@ -21,6 +21,8 @@ from typing import Any
 
 from app.config import Settings
 from app.data.curriculum import KnowledgePoint
+from app.data.curriculum import grade_name as _grade_name
+from app.data.curriculum import subject_name as _subject_name
 from app.errors import LlmError
 from app.services.llm_client import LlmClient
 from app.services.prompts import (
@@ -143,13 +145,6 @@ def _coerce_question(
     )
 
 
-def _subject_name(subject: str) -> str:
-    return {"math": "数学", "chinese": "语文", "english": "英语"}.get(subject, subject)
-
-
-_GRADE_NAMES = {"grade1": "一年级", "grade2": "二年级"}
-
-
 class QuestionGenerator:
     """按知识点批量出题。"""
 
@@ -165,7 +160,7 @@ class QuestionGenerator:
                 "content": QUESTION_GEN_USER_TEMPLATE.format(
                     subject=point.subject,
                     subject_name=_subject_name(point.subject),
-                    grade_name=_GRADE_NAMES.get(point.grade, point.grade),
+                    grade_name=_grade_name(point.grade),
                     unit_name=point.unit_name,
                     point_name=point.name,
                     objective=point.objective,
