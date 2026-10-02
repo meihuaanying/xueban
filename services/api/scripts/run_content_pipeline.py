@@ -92,6 +92,14 @@ async def run(args: argparse.Namespace) -> int:
                 "target_per_point": target,
                 "generation_model": settings.content_generation_model,
                 "judge_model": settings.content_judge_model,
+                # 出题失败与验证拒绝都记在这里。只给样本而不是全文：全量跑会
+                # 有上千条，逐条打印会把真正的异常淹没在正常拒绝里。
+                "error_count": sum(len(o.errors) for o in report.outcomes),
+                "error_sample": [
+                    f"{o.point_id}：{msg}"
+                    for o in report.outcomes
+                    for msg in o.errors
+                ][:10],
             }
             print(json.dumps(summary, ensure_ascii=False, indent=2))
             await session.commit()
@@ -125,6 +133,11 @@ async def _db_totals(session: object) -> dict[str, int]:
         await session.execute(  # type: ignore[attr-defined]
             select(func.count())
             .select_from(QuestionKnowledgePoint)
+            .join(
+                Question,
+                Question.id == QuestionKnowledgePoint.question_id,
+            )
+            .where(Question.stage == ELEMENTARY_STAGE)
             .group_by(QuestionKnowledgePoint.knowledge_point_id)
             .having(func.count() < settings.content_min_per_point)
         )
