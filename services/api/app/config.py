@@ -64,9 +64,17 @@ class Settings(BaseSettings):
     # - User-Agent 需标明自己是哪个 agent，不能用通用 HTTP 库默认 UA
     # - x-opencode-session 用于路由与提示缓存，缺失直接 400（MissingSessionID）
     llm_provider: str = "litellm"
+    # 主 gateway（OpenAI 兼容）。可以是本地 LiteLLM(:4000)、TokenRhythm
+    # (https://tokenrhythm.studio/v1) 或 OpenCode Go (https://opencode.ai/zen/go/v1)，
+    # 三者协议相同，只有 base_url 与密钥不同。
     litellm_base_url: str = "http://localhost:4000"
     litellm_master_key: str = "sk-xueban-dev"
     llm_default_model: str = "deepseek-chat"
+    # 备用 gateway：主 gateway 触发用量窗口（429）时回退到这里。
+    # 与主 gateway 协议一致，只需换 base_url 与密钥。
+    llm_fallback_base_url: str = ""
+    llm_fallback_master_key: str = ""
+    llm_fallback_model: str = ""
     llm_timeout_seconds: float = 60.0
     llm_max_retries: int = 2
     llm_retry_backoff_seconds: float = 0.5

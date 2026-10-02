@@ -99,7 +99,9 @@ class LlmClient:
       单独用 llm_rate_limit_retries 次预算与更长的退避基数（限流不是故障）
     - 会话：带 x-opencode-session 与自定义 User-Agent，网关据此路由与命中提示缓存；
       同一生成任务跨重试保持同一 session_id，可用 bind_session 显式绑定
-    - 降级：主备模型切换由 LiteLLM 的 fallbacks 配置负责，本客户端只消费网关结果
+    - 网关：主网关用量窗口耗尽（429）且退避重试预算用尽后，自动切到备用网关继续；
+      备用网关可用 llm_fallback_base_url / llm_fallback_master_key 配置，
+      模型名用 llm_fallback_model 映射（备用侧不一定有主侧的模型名）
     - 观测：每次调用写入 Langfuse（含失败）
     """
 
@@ -112,39 +114,81 @@ class LlmClient:
     ) -> None:
         self._settings = settings
         self._observability = observability
-        # base_url 允许带路径（OpenCode Go 是 https://opencode.ai/zen/go/v1）。
-        # httpx 的 URL 合并规则是「以 / 开头的相对路径会丢弃 base_url 的路径部分」，
-        # 所以这里把末尾的 /v1 剥成上游根，再用具相对路径 "v1/chat/completions" 请求；
-        # 否则会打到 https://opencode.ai/v1/... 拿到站点首页的 404 HTML。
-        # 对 LiteLLM 这类 base_url 不含路径的服务，两种写法结果一致。
-        base_url = settings.litellm_base_url.rstrip("/")
-        if base_url.endswith("/v1"):
-            base_url = base_url[: -len("/v1")]
-        self._client = httpx.AsyncClient(
-            base_url=base_url,
-            timeout=settings.llm_timeout_seconds,
+        self._transport = transport
+        self._session_id = f"{settings.llm_session_prefix}-{uuid.uuid4().hex[:16]}"
+        self._client = self._make_client(
+            settings.litellm_base_url, settings.litellm_master_key
+        )
+        # 备用网关：主网关触发用量窗口（429）时整体切换过去，避免任务卡死。
+        self._fallback_client: httpx.AsyncClient | None = None
+        if settings.llm_fallback_base_url and settings.llm_fallback_master_key:
+            self._fallback_client = self._make_client(
+                settings.llm_fallback_base_url, settings.llm_fallback_master_key
+            )
+        self._active: httpx.AsyncClient = self._client
+
+    @staticmethod
+    def _upstream_root(base_url: str) -> str:
+        """把 base_url 归一成不含 /v1 的上游根。
+
+        httpx 的 URL 合并规则是「以 / 开头的相对路径会丢弃 base_url 的路径部分」，
+        所以 base_url 带路径时（OpenCode Go 是 https://opencode.ai/zen/go/v1）
+        必须把末尾的 /v1 剥掉，再用具相对路径 "v1/chat/completions" 请求；
+        否则会打到 https://opencode.ai/v1/... 拿到站点首页的 404 HTML。
+        对 base_url 不含路径的服务（LiteLLM :4000、TokenRhythm /v1）同样正确。
+        """
+        root = base_url.rstrip("/")
+        if root.endswith("/v1"):
+            root = root[: -len("/v1")]
+        return root
+
+    def _make_client(self, base_url: str, api_key: str) -> httpx.AsyncClient:
+        return httpx.AsyncClient(
+            base_url=self._upstream_root(base_url),
+            timeout=self._settings.llm_timeout_seconds,
             headers={
-                "Authorization": f"Bearer {settings.litellm_master_key}",
+                "Authorization": f"Bearer {api_key}",
                 # 网关要求：必须自带 UA（不能是 httpx 默认值），并带稳定的会话 ID，
                 # 否则报 MissingSessionID（HTTP 400）且无法命中提示缓存。
-                "User-Agent": settings.llm_user_agent,
-                "x-opencode-session": f"{settings.llm_session_prefix}-{uuid.uuid4().hex[:16]}",
+                "User-Agent": self._settings.llm_user_agent,
+                "x-opencode-session": self._session_id,
             },
-            transport=transport,
+            transport=self._transport,
         )
+
+    @property
+    def gateway_name(self) -> str:
+        """当前生效的网关标识（用于观测与排障）。"""
+        if self._active is self._fallback_client:
+            return "fallback"
+        return "primary"
+
+    def _switch_to_fallback(self) -> bool:
+        """主网关限流时切到备用网关；没有备用或已在备用上则返回 False。"""
+        if self._fallback_client is None or self._active is self._fallback_client:
+            return False
+        logger.warning("主网关用量窗口耗尽，切换到备用网关继续")
+        self._active = self._fallback_client
+        return True
 
     async def aclose(self) -> None:
         """关闭底层连接。"""
         await self._client.aclose()
+        if self._fallback_client is not None:
+            await self._fallback_client.aclose()
 
     @property
     def session_id(self) -> str:
         """当前会话 ID：同一「生成任务」跨重试保持不变，便于网关命中缓存。"""
-        return str(self._client.headers["x-opencode-session"])
+        return self._session_id
 
     def bind_session(self, session_id: str) -> None:
         """把后续请求绑定到指定会话（内容管线按知识点分组时复用缓存用）。"""
-        self._client.headers["x-opencode-session"] = session_id
+        self._session_id = session_id
+        # 两个网关共用同一会话 ID：跨网关重试时提示缓存仍能命中。
+        for client in (self._client, self._fallback_client):
+            if client is not None:
+                client.headers["x-opencode-session"] = session_id
 
     def _should_retry(self, status_code: int) -> bool:
         """429 是用量窗口限流，5xx 是上游抖动，两者都值得退避重试。"""
@@ -190,7 +234,7 @@ class LlmClient:
         for attempt in range(attempts):
             started = time.perf_counter()
             try:
-                response = await self._client.post("v1/chat/completions", json=payload)
+                response = await self._active.post("v1/chat/completions", json=payload)
             except (httpx.TimeoutException, httpx.TransportError) as exc:
                 last_error = exc
                 logger.warning("LLM 网络异常（第 %s 次）：%s", attempt + 1, exc)
@@ -201,13 +245,26 @@ class LlmClient:
 
             latency_ms = int((time.perf_counter() - started) * 1000)
             if response.status_code == 429:
+                # 用量窗口限流：先退避重试；主网关重试预算耗尽后切到备用网关，
+                # 否则整条内容管线会因为单个网关的额度问题停摆。
+                if attempt < self._settings.llm_rate_limit_retries:
+                    last_error = LlmError(
+                        "模型用量窗口已用尽，请稍后重试",
+                        code="LLM_RATE_LIMITED",
+                        status_code=429,
+                    )
+                    logger.warning("LLM 触发用量窗口限流（第 %s 次）", attempt + 1)
+                    await self._sleep_backoff(attempt, rate_limited=True)
+                    continue
+                if self._switch_to_fallback():
+                    # 备用网关不一定有主网关的模型名，按配置映射后再试。
+                    fallback_model = self._settings.llm_fallback_model
+                    if fallback_model:
+                        payload["model"] = fallback_model
+                    continue
                 last_error = LlmError(
                     "模型用量窗口已用尽，请稍后重试", code="LLM_RATE_LIMITED", status_code=429
                 )
-                logger.warning("LLM 触发用量窗口限流（第 %s 次）", attempt + 1)
-                if attempt < self._settings.llm_rate_limit_retries:
-                    await self._sleep_backoff(attempt, rate_limited=True)
-                    continue
                 break
 
             if response.status_code >= 500:
@@ -506,7 +563,7 @@ class LlmClient:
     ) -> AsyncIterator[str]:
         """单次流式请求；增量写入 collected，供上层判断是否还能安全重试。"""
         try:
-            async with self._client.stream(
+            async with self._active.stream(
                 "POST", "v1/chat/completions", json=payload
             ) as response:
                 if response.status_code == 429:

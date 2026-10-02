@@ -1,7 +1,8 @@
-"""LLM 客户端测试（T1.4）：主备降级由网关配置承担，本层验证重试/超时/错误映射/观测。"""
+"""LLM 客户端测试（T1.4 / P1）：验证重试、超时、错误映射、观测与网关回退。"""
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 import httpx
@@ -222,6 +223,70 @@ async def test_empty_content_is_not_retried_for_tool_only_reply() -> None:
     assert excinfo.value.code == "LLM_BAD_RESPONSE"
     assert calls["n"] == 1
     await client.aclose()
+
+
+async def test_falls_back_to_secondary_gateway_after_rate_limit() -> None:
+    """主网关用量窗口耗尽后应自动切到备用网关，而不是让整批任务失败。"""
+    observability, _ = make_observability()
+    seen: list[dict[str, Any]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(
+            {
+                "host": request.url.host,
+                "model": json.loads(request.content.decode("utf-8"))["model"],
+            }
+        )
+        if request.url.host == "primary.test":
+            return httpx.Response(429, text="usage window exhausted")
+        return httpx.Response(200, json=success_payload())
+
+    settings = make_settings(
+        litellm_base_url="https://primary.test/v1",
+        llm_rate_limit_retries=0,
+        llm_fallback_base_url="https://backup.test/v1",
+        llm_fallback_master_key="sk-backup",
+        llm_fallback_model="deepseek-v4-flash",
+    )
+    client = LlmClient(settings, observability, transport=httpx.MockTransport(handler))
+
+    result = await client.complete([{"role": "user", "content": "hi"}], model="kimi-k3")
+
+    assert result.content.startswith("你好")
+    assert seen[0]["host"] == "primary.test"
+    assert seen[0]["model"] == "kimi-k3"
+    assert seen[-1]["host"] == "backup.test"
+    assert seen[-1]["model"] == "deepseek-v4-flash", "备用网关应使用映射后的模型名"
+    assert client.gateway_name == "fallback"
+    await client.aclose()
+
+
+async def test_no_fallback_configured_keeps_raising_rate_limit() -> None:
+    """没有备用网关时仍按原样抛 LLM_RATE_LIMITED。"""
+    observability, _ = make_observability()
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        return httpx.Response(429, text="usage window exhausted")
+
+    client = client_with_handler(handler, observability, llm_rate_limit_retries=0)
+    with pytest.raises(LlmError) as excinfo:
+        await client.complete([{"role": "user", "content": "hi"}])
+    assert excinfo.value.code == "LLM_RATE_LIMITED"
+    assert calls["n"] == 1
+    assert client.gateway_name == "primary"
+    await client.aclose()
+
+
+def test_upstream_root_strips_v1_suffix() -> None:
+    """base_url 带 /v1 时要剥掉，否则 httpx 会丢弃路径部分打到站点首页。"""
+    assert LlmClient._upstream_root("https://x.dev/v1") == "https://x.dev"
+    assert LlmClient._upstream_root("https://x.dev/v1/") == "https://x.dev"
+    assert LlmClient._upstream_root("http://localhost:4000") == "http://localhost:4000"
+    assert (
+        LlmClient._upstream_root("https://opencode.ai/zen/go/v1") == "https://opencode.ai/zen/go"
+    )
 
 
 async def test_model_not_found() -> None:
