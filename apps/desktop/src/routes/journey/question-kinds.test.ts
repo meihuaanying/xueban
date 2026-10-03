@@ -50,6 +50,15 @@ describe("parseLinkItems", () => {
   it("取不到左项时返回空数组，调用方据此降级", () => {
     expect(parseLinkItems("")).toEqual([]);
   });
+
+  it("没有冒号引出列表时返回空数组，而不是把整个题干当成一个左项", () => {
+    expect(parseLinkItems("看图连线。")).toEqual([]);
+    expect(parseLinkItems("把物品和形状连起来")).toEqual([]);
+  });
+
+  it("冒号后是空的也返回空数组", () => {
+    expect(parseLinkItems("把物品和形状连起来：")).toEqual([]);
+  });
 });
 
 describe("toOptions", () => {

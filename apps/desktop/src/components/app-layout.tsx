@@ -6,6 +6,7 @@ import { Badge, Button } from "@xueban/ui";
 import { useAuth } from "@/lib/auth";
 import { GuardianGate } from "@/components/guardian-gate";
 import { JourneyNav } from "@/components/journey-nav";
+import { RestBreakGate } from "@/components/rest-break";
 import { useJourney } from "@/journey/journey-context";
 import { SyncIndicator } from "@/lib/sync";
 
@@ -65,9 +66,13 @@ export function AppLayout() {
           </div>
         </header>
         <main className="min-w-0 flex-1">
-          <GuardianGate>
-            <Outlet />
-          </GuardianGate>
+          {/* 儿童模式才计时：§8 约束 2 的「一年级每次 20 分钟强制休息」。
+              GuardianGate 管「今天还能不能学」，RestBreakGate 管「这一次连着学太久要歇」 */}
+          <RestBreakGate enabled={theme === "kids"}>
+            <GuardianGate>
+              <Outlet />
+            </GuardianGate>
+          </RestBreakGate>
         </main>
         <footer className="border-t border-border px-lg py-xs text-app-xs text-muted-foreground">
           守护型讲解 · 不直接给答案 ｜ 数据云端同步（实时同步）

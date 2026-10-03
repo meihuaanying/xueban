@@ -10,6 +10,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CorrectBurst,
   HintStack,
   type HintLevel,
   QuestionCard,
@@ -109,7 +110,10 @@ export function FeedbackCard({
   onNext: () => void;
 }) {
   return (
-    <Card data-testid="unit-feedback">
+    // relative + overflow-hidden：让撒花层绝对定位在卡片内，且不溢出到页面
+    <Card className="relative overflow-hidden" data-testid="unit-feedback">
+      {/* §4.1 正反馈动效：答对撒花。纯 CSS 且尊重 prefers-reduced-motion */}
+      {isCorrect ? <CorrectBurst testId="unit-celebrate" /> : null}
       <CardHeader>
         <CardTitle className={isCorrect ? "text-success" : "text-warning"}>
           {isCorrect ? "回答正确" : "还没掌握"}

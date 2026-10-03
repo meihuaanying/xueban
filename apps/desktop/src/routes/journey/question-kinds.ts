@@ -42,8 +42,12 @@ export function resolveKind(qtype: string): QuestionKind {
  * 取不到就返回空数组，由调用方降级成普通选择题，绝不崩。
  */
 export function parseLinkItems(stem: string): string[] {
-  const tail = stem.split(/[：:]/).pop() ?? stem;
-  return tail
+  const parts = stem.split(/[：:]/);
+  // 题库的 match 题一定带冒号引出左项列表。没有冒号时整个题干会被当成一个
+  // 「左项」（"看图连线。" → ["看图连线"]），那不是降级而是拿垃圾当题目，
+  // 所以这里返回空数组，让调用方退回普通选项形态。
+  if (parts.length < 2) return [];
+  return (parts[parts.length - 1] ?? "")
     .split(/[、，,]/)
     .map((part) => part.replace(/[。.!！?？]+$/, "").trim())
     .filter(Boolean);

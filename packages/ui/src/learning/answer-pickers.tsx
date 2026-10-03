@@ -24,7 +24,12 @@ export interface LinkMatcherProps {
   left: string[];
   /** 右项候选池 */
   right: string[];
-  /** 已配对结果（左 → 右），受控 */
+  /**
+   * 已配对结果（左 → 右）。
+   * 传了就受控，不传就自己管内部状态——连线台是「答完直接提交」的一次性
+   * 交互，强迫每个父组件都自己维护一份 state 只会让调用方变啰嗦，
+   * 而且漏传就会永远配不满（受控组件拿到空对象）。
+   */
   value?: Record<string, string>;
   disabled?: boolean;
   /** 配对变化时回调；父组件负责序列化成答案提交 */
@@ -44,43 +49,48 @@ export interface LinkMatcherProps {
 export function LinkMatcher({
   left,
   right,
-  value = {},
+  value,
   disabled,
   onChange,
   onComplete,
 }: LinkMatcherProps) {
   const [active, setActive] = useState<string | null>(null);
+  // 非受控时自己记一份，避免「配好一个就丢一个」
+  const [internal, setInternal] = useState<Record<string, string>>({});
+  const pairs = value ?? internal;
 
   const pair = (rightKey: string) => {
     if (!active || disabled) return;
     // 再点一次自己已经配上的右项 = 撤销。这一条必须真的生效：孩子配错了
     // 却改不掉，只能从头再来，那挫败感比做不出题还强。
-    if (value[active] === rightKey) {
-      const undone = { ...value };
+    if (pairs[active] === rightKey) {
+      const undone = { ...pairs };
       delete undone[active];
       setActive(null);
+      if (!value) setInternal(undone);
       onChange?.(undone, false);
       return;
     }
-    const next: Record<string, string> = { ...value };
+    const next: Record<string, string> = { ...pairs };
     // 同一右项被别的左项占用时先解掉旧配，保证一右只配一左
     for (const [l, r] of Object.entries(next)) {
       if (r === rightKey) delete next[l];
     }
     next[active] = rightKey;
     setActive(null);
+    if (!value) setInternal(next);
     const complete = Object.keys(next).length === left.length;
     onChange?.(next, complete);
     if (complete) onComplete?.(next);
   };
 
-  const usedRight = new Set(Object.values(value));
+  const usedRight = new Set(Object.values(pairs));
 
   return (
     <div className="mt-sm flex flex-col gap-sm" data-testid="link-matcher">
       <ul className="flex flex-wrap gap-xs" role="list" aria-label="要配对的东西">
         {left.map((item) => {
-          const matched = value[item];
+          const matched = pairs[item];
           return (
             <li key={item}>
               <button
@@ -134,7 +144,7 @@ export function LinkMatcher({
       </ul>
 
       <p className="text-app-xs text-muted-foreground" data-testid="link-progress">
-        已配对 {Object.keys(value).length} / {left.length}
+        已配对 {Object.keys(pairs).length} / {left.length}
       </p>
     </div>
   );
@@ -160,10 +170,23 @@ const KEYFRAMES = `
  * 而动效必须立刻有——孩子答对的那一秒就是正反馈窗口。
  * 尊重 prefers-reduced-motion（动效敏感的孩子会直接关掉它）。
  */
-export function CorrectBurst({ count = 18 }: { count?: number }) {
+export function CorrectBurst({
+  count = 18,
+  className,
+  testId,
+}: {
+  count?: number;
+  className?: string;
+  /** 宿主给撒花层挂的测试锚点（组件自身是 aria-hidden 的装饰层） */
+  testId?: string;
+}) {
   const pieces = Array.from({ length: count }, (_, index) => index);
   return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+    <div
+      aria-hidden
+      data-testid={testId}
+      className={cn("pointer-events-none absolute inset-0 overflow-hidden", className)}
+    >
       <style>{KEYFRAMES}</style>
       {pieces.map((index) => (
         <span
