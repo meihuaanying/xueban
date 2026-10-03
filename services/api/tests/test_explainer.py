@@ -26,6 +26,10 @@ from app.models import (
     ExplainerJob,
     ExplainerMode,
     ExplainerStatus,
+    Question,
+    QuestionKnowledgePoint,
+    QuestionStatus,
+    QuestionType,
     User,
     UserRole,
 )
@@ -730,3 +734,80 @@ async def test_feedback_rejects_unknown_content(client: AsyncClient, student_tok
         headers=auth_headers(student_token),
     )
     assert response.status_code == 404
+
+
+# ------------------------------------------- §5.1 场景 1/2/3 的接线契约
+
+
+@pytest_asyncio.fixture()
+async def linked_question(
+    sessionmaker: async_sessionmaker[AsyncSession],
+) -> tuple[uuid.UUID, uuid.UUID, str]:
+    """一道挂上知识点的题，返回 (question_id, knowledge_point_id, 显示名)。"""
+    point = find_point(POINT_CODE)
+    assert point is not None
+    async with sessionmaker() as session:
+        kp_id = await explainer_service.ensure_knowledge_point(
+            session, point, stage=explainer_service.ELEMENTARY_STAGE, sort_order=1
+        )
+        question = Question(
+            subject="math",
+            stage="grade1_2",
+            qtype=QuestionType.CHOICE,
+            stem="8 + 5 = ?",
+            options={"A": "12", "B": "13", "C": "14"},
+            answer="B",
+            difficulty=2,
+            status=QuestionStatus.PUBLISHED,
+        )
+        session.add(question)
+        await session.flush()
+        session.add(QuestionKnowledgePoint(question_id=question.id, knowledge_point_id=kp_id))
+        await session.commit()
+        return question.id, kp_id, point.name
+
+
+async def test_question_dto_exposes_knowledge_point_ids(
+    sessionmaker: async_sessionmaker[AsyncSession],
+    linked_question: tuple[uuid.UUID, uuid.UUID, str],
+) -> None:
+    """题目 DTO 必须同时给出显示名与知识点 id（前端讲解入口只认 id）。"""
+    from app.services import diagnosis_service
+
+    question_id, kp_id, name = linked_question
+    async with sessionmaker() as session:
+        links = await diagnosis_service.question_knowledge_point_links(session, question_id)
+        names = await diagnosis_service.question_knowledge_point_names(session, question_id)
+    assert names == [name]
+    assert links == [(kp_id, name)]
+
+
+async def test_knowledge_point_id_from_question_can_open_explainer(
+    client: AsyncClient,
+    student_token: str,
+    linked_question: tuple[uuid.UUID, uuid.UUID, str],
+) -> None:
+    """回归：把题目上的知识点 id 喂给讲解接口必须能开；显示名则必然 404。
+
+    这条正是 §5.1 场景 1/2/3 的接线契约——前端拿 ``knowledge_point_ids``
+    才能让「做题 → 错题 → 动画讲解」闭环真的通；早期只给 ``knowledge_points``
+    （显示名）时，前端把名字传给 generate 一律 CURRICULUM_POINT_NOT_FOUND，
+    而当时的 E2E 允许 ``explainer-failed`` 通过，缺陷被掩盖了很久。
+    """
+    _, kp_id, name = linked_question
+
+    by_name = await client.post(
+        "/v1/explainer/generate",
+        json={"knowledge_id": name, "mode": "interactive"},
+        headers=auth_headers(student_token),
+    )
+    assert by_name.status_code == 404
+    assert by_name.json()["code"] == "CURRICULUM_POINT_NOT_FOUND"
+
+    by_id = await client.post(
+        "/v1/explainer/generate",
+        json={"knowledge_id": kp_id.hex, "mode": "interactive"},
+        headers=auth_headers(student_token),
+    )
+    assert by_id.status_code == 202, by_id.text
+    assert by_id.json()["job_id"]

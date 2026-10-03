@@ -28,14 +28,15 @@ router = APIRouter(prefix="/v1/diagnosis", tags=["diagnosis"])
 
 async def _question_out(session: AsyncSession, question: Question) -> DiagnosisQuestionOut:
     """组装题目 DTO（含知识点名称，不含答案）。"""
-    names = await diagnosis_service.question_knowledge_point_names(session, question.id)
+    links = await diagnosis_service.question_knowledge_point_links(session, question.id)
     return DiagnosisQuestionOut(
         id=question.id,
         stem=question.stem,
         qtype=question.qtype.value,
         options=question.options,
         difficulty=question.difficulty,
-        knowledge_points=names,
+        knowledge_points=[name for _, name in links],
+        knowledge_point_ids=[point_id.hex for point_id, _ in links],
     )
 
 

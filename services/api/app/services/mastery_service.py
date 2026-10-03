@@ -133,8 +133,17 @@ async def get_mastery_overview(
     subject: str | None = None,
     stage: str | None = None,
     knowledge_point_ids: list[uuid.UUID] | None = None,
+    include_unseen: bool = False,
 ) -> list[MasteryPoint]:
-    """掌握度总览（含衰减），供雷达图/画像使用。"""
+    """掌握度总览（含衰减），供雷达图/画像使用。
+
+    ``include_unseen=True`` 时，把该学科/学段下**还没练过**的知识点也一并列出
+    （mastery 0、level red）。知识地图需要它——否则新用户一打开就是一片空白，
+    根本无从点进讲解（§5.1 触发场景 3）。
+
+    默认关闭：雷达图与学情画像的语义是「我学过什么」，把没碰过的知识点混进来
+    会把平均掌握度稀释掉，那是给家长看的数字，含义不能含混。
+    """
     stmt = (
         select(MasteryRecord, KnowledgePoint)
         .join(KnowledgePoint, KnowledgePoint.id == MasteryRecord.knowledge_point_id)
@@ -165,8 +174,48 @@ async def get_mastery_overview(
                 last_practiced_at=record.last_practiced_at,
             )
         )
+    if include_unseen:
+        points.extend(
+            await _unseen_points(session, points, subject=subject, stage=stage)
+        )
     points.sort(key=lambda item: item.mastery)
     return points
+
+
+async def _unseen_points(
+    session: AsyncSession,
+    points: list[MasteryPoint],
+    *,
+    subject: str | None,
+    stage: str | None,
+) -> list[MasteryPoint]:
+    """列出该学科/学段下还没有掌握度记录的知识点。"""
+    known_ids = {item.knowledge_point_id for item in points}
+    stmt = select(KnowledgePoint)
+    if subject:
+        stmt = stmt.where(KnowledgePoint.subject == subject)
+    if stage:
+        stmt = stmt.where(KnowledgePoint.stage == stage)
+    if known_ids:
+        stmt = stmt.where(KnowledgePoint.id.notin_(known_ids))
+    # 必须走 scalars()：单实体 ORM 查询用 .all() 拿到的是「1 元素行」而不是
+    # KnowledgePoint 实体本身，对它取 .id 会抛 AttributeError: id。
+    knowledge_points = (await session.execute(stmt)).scalars().all()
+    return [
+        MasteryPoint(
+            knowledge_point_id=knowledge_point.id,
+            code=knowledge_point.code,
+            name=knowledge_point.name,
+            subject=knowledge_point.subject,
+            stage=knowledge_point.stage,
+            mastery=0.0,
+            level="red",
+            total_attempts=0,
+            correct_attempts=0,
+            last_practiced_at=None,
+        )
+        for knowledge_point in knowledge_points
+    ]
 
 
 def mastery_average(points: list[MasteryPoint]) -> float | None:

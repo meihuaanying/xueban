@@ -39,7 +39,7 @@ async def list_mistakes(
     counts = await mistake_book_service.mistake_summary(session, user=user)
     entries: list[MistakeEntryOut] = []
     for view in views:
-        names = await diagnosis_service.question_knowledge_point_names(session, view.question.id)
+        links = await diagnosis_service.question_knowledge_point_links(session, view.question.id)
         entries.append(
             MistakeEntryOut(
                 id=view.entry.id,
@@ -49,7 +49,8 @@ async def list_mistakes(
                     qtype=view.question.qtype.value,
                     options=view.question.options,
                     difficulty=view.question.difficulty,
-                    knowledge_points=names,
+                    knowledge_points=[name for _, name in links],
+                    knowledge_point_ids=[point_id.hex for point_id, _ in links],
                 ),
                 wrong_answer=view.entry.wrong_answer,
                 error_reason=view.entry.error_reason,
@@ -92,7 +93,7 @@ async def repractice(
     )
     payload_out: list[QuestionBriefOut] = []
     for question in questions:
-        names = await diagnosis_service.question_knowledge_point_names(session, question.id)
+        links = await diagnosis_service.question_knowledge_point_links(session, question.id)
         payload_out.append(
             QuestionBriefOut(
                 id=question.id,
@@ -100,7 +101,8 @@ async def repractice(
                 qtype=question.qtype.value,
                 options=question.options,
                 difficulty=question.difficulty,
-                knowledge_points=names,
+                knowledge_points=[name for _, name in links],
+                knowledge_point_ids=[point_id.hex for point_id, _ in links],
             )
         )
     response = MistakeRepracticeResponse(count=len(payload_out), questions=payload_out)

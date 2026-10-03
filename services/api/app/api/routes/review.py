@@ -35,7 +35,7 @@ async def due(
         question = await session.get(Question, card.question_id)
         if question is None:
             continue
-        names = await diagnosis_service.question_knowledge_point_names(session, question.id)
+        links = await diagnosis_service.question_knowledge_point_links(session, question.id)
         payload.append(
             ReviewCardOut(
                 card_id=card.id,
@@ -45,7 +45,8 @@ async def due(
                     qtype=question.qtype.value,
                     options=question.options,
                     difficulty=question.difficulty,
-                    knowledge_points=names,
+                    knowledge_points=[name for _, name in links],
+                    knowledge_point_ids=[point_id.hex for point_id, _ in links],
                 ),
                 state=card.state,
                 reps=card.reps,

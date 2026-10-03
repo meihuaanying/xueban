@@ -33,14 +33,15 @@ router = APIRouter(prefix="/v1/tutor", tags=["tutor"])
 
 
 async def _question_out(session: AsyncSession, question: Question) -> TutorQuestionOut:
-    names = await diagnosis_service.question_knowledge_point_names(session, question.id)
+    links = await diagnosis_service.question_knowledge_point_links(session, question.id)
     return TutorQuestionOut(
         id=question.id,
         stem=question.stem,
         qtype=question.qtype.value,
         options=question.options,
         difficulty=question.difficulty,
-        knowledge_points=names,
+        knowledge_points=[name for _, name in links],
+        knowledge_point_ids=[point_id.hex for point_id, _ in links],
     )
 
 

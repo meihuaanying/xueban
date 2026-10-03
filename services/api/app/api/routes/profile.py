@@ -21,12 +21,21 @@ router = APIRouter(prefix="/v1/profile", tags=["profile"])
 async def get_mastery(
     subject: str | None = Query(default=None, max_length=32),
     stage: str | None = Query(default=None, max_length=20),
+    include_unseen: bool = Query(
+        default=False,
+        description="是否连还没练过的知识点一起返回。知识地图需要（否则新用户一片空白），"
+        "雷达图/学情画像不传，保持「我学过什么」的语义。",
+    ),
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> MasteryOverviewResponse:
     """返回掌握度总览（含时间衰减与红黄绿分级）。"""
     points = await mastery_service.get_mastery_overview(
-        session, user_id=user.id, subject=subject, stage=stage
+        session,
+        user_id=user.id,
+        subject=subject,
+        stage=stage,
+        include_unseen=include_unseen,
     )
     levels = {"red": 0, "yellow": 0, "green": 0}
     for point in points:

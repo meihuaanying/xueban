@@ -462,18 +462,30 @@ async def list_exam_questions(session: AsyncSession, exam: Exam) -> list[Questio
     return questions
 
 
-async def question_knowledge_point_names(
+async def question_knowledge_point_links(
     session: AsyncSession, question_id: uuid.UUID
-) -> list[str]:
-    """题目的知识点名称列表（响应组装用）。"""
+) -> list[tuple[uuid.UUID, str]]:
+    """题目的知识点（库内 UUID, 显示名）列表，按建立顺序返回。
+
+    前端要触发 §5.1 动画讲解必须拿到知识点 id（``explainer`` 路由只接受
+    课程编码或库内 UUID），只给显示名会让讲解入口直接 404。
+    """
     rows = (
         await session.execute(
-            select(KnowledgePoint.name)
+            select(KnowledgePoint.id, KnowledgePoint.name)
             .join(
                 QuestionKnowledgePoint,
                 QuestionKnowledgePoint.knowledge_point_id == KnowledgePoint.id,
             )
             .where(QuestionKnowledgePoint.question_id == question_id)
+            .order_by(QuestionKnowledgePoint.id)
         )
-    ).scalars()
-    return list(rows)
+    ).all()
+    return [(row[0], row[1]) for row in rows]
+
+
+async def question_knowledge_point_names(
+    session: AsyncSession, question_id: uuid.UUID
+) -> list[str]:
+    """题目的知识点名称列表（响应组装用）。"""
+    return [name for _, name in await question_knowledge_point_links(session, question_id)]

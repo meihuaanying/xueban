@@ -40,7 +40,7 @@ async def generate(
     )
     questions: list[PracticeQuestionOut] = []
     for item in practice_set.items:
-        names = await diagnosis_service.question_knowledge_point_names(
+        links = await diagnosis_service.question_knowledge_point_links(
             session, item.question.id
         )
         questions.append(
@@ -50,7 +50,8 @@ async def generate(
                 qtype=item.question.qtype.value,
                 options=item.question.options,
                 difficulty=item.question.difficulty,
-                knowledge_points=names,
+                knowledge_points=[name for _, name in links],
+                knowledge_point_ids=[point_id.hex for point_id, _ in links],
                 reason=item.reason,
             )
         )

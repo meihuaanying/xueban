@@ -18,6 +18,10 @@ class QuestionBriefOut(BaseModel):
     options: dict[str, str] | None = None
     difficulty: int
     knowledge_points: list[str] = Field(default_factory=list)
+    knowledge_point_ids: list[str] = Field(
+        default_factory=list,
+        description="知识点库内 UUID（32 位无横线），与 knowledge_points 同序；§5.1 讲解入口用",
+    )
 
 
 class PracticeGenerateRequest(BaseModel):

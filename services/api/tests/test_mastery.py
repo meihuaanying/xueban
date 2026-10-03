@@ -185,6 +185,61 @@ async def test_overview_sorted_and_filtered(
     assert english_points == []
 
 
+async def test_overview_can_include_unseen_points(
+    sessionmaker: async_sessionmaker[AsyncSession],
+) -> None:
+    """知识地图要能看到还没练过的知识点，否则新用户打开就是一片空白（§5.1 场景 3）。"""
+    learned = await _add_kp(sessionmaker, code="math.junior.c01.t01", name="学过的")
+    await _add_kp(sessionmaker, code="math.junior.c01.t02", name="没学过的")
+    await _add_kp(
+        sessionmaker, code="chinese.junior.c01.t01", name="语文的", subject="chinese"
+    )
+    user_id = await _add_user(sessionmaker)
+    async with sessionmaker() as session:
+        for _ in range(3):
+            await mastery_service.record_practice(
+                session, user_id=user_id, knowledge_point_id=learned, correct=True
+            )
+        await session.commit()
+
+        # 默认口径只回答「我学过什么」
+        default_points = await mastery_service.get_mastery_overview(
+            session, user_id=user_id, subject="math"
+        )
+        # 知识地图口径把没练过的也列出来，并按掌握度升序排（最弱排最前）
+        with_unseen = await mastery_service.get_mastery_overview(
+            session, user_id=user_id, subject="math", include_unseen=True
+        )
+        # 学科过滤仍然生效
+        chinese_with_unseen = await mastery_service.get_mastery_overview(
+            session, user_id=user_id, subject="chinese", include_unseen=True
+        )
+
+    assert [point.name for point in default_points] == ["学过的"]
+    assert [point.name for point in with_unseen] == ["没学过的", "学过的"]
+    unseen = with_unseen[0]
+    assert unseen.mastery == 0.0
+    assert unseen.level == "red"
+    assert unseen.total_attempts == 0
+    assert unseen.correct_attempts == 0
+    assert unseen.last_practiced_at is None
+    assert [point.name for point in chinese_with_unseen] == ["语文的"]
+
+
+async def test_overview_include_unseen_ignores_other_stages(
+    sessionmaker: async_sessionmaker[AsyncSession],
+) -> None:
+    """stage 过滤对「没练过的知识点」同样生效，不能把别的学段混进来。"""
+    await _add_kp(sessionmaker, code="math.g1.t01", name="一数", stage="grade1_2")
+    await _add_kp(sessionmaker, code="math.junior.c01.t01", name="初一的")
+    user_id = await _add_user(sessionmaker)
+    async with sessionmaker() as session:
+        junior_only = await mastery_service.get_mastery_overview(
+            session, user_id=user_id, stage="junior", include_unseen=True
+        )
+    assert [point.name for point in junior_only] == ["初一的"]
+
+
 async def test_overview_applies_decay(sessionmaker: async_sessionmaker[AsyncSession]) -> None:
     kp_id = await _add_kp(sessionmaker)
     user_id = await _add_user(sessionmaker)
