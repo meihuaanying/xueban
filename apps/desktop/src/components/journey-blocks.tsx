@@ -70,13 +70,17 @@ export function JourneyStepper() {
   const definition = stageDefinition(stage);
   const nextDefinition = stageDefinition(target);
 
+  // kids 下提示文字不能用 text-app-xs：kids 档 xs 只有 15.4px，7 岁孩子读「下一站」
+  // 这种导航信息本就吃力，小字更读不清。基准 18px 起步（§4.1）。
+  const hintClass = theme === "kids" ? "text-app" : "text-app-xs";
+
   return (
     <div className="flex flex-wrap items-center justify-between gap-sm border-t border-border pt-sm">
-      <p className="text-app-xs text-muted-foreground">
+      <p className={`${hintClass} text-muted-foreground`}>
         当前：第 {definition.order} 站 · {definition.label}
       </p>
       <div className="flex items-center gap-sm">
-        <span className="text-app-xs text-muted-foreground" data-testid="journey-next">
+        <span className={`${hintClass} text-muted-foreground`} data-testid="journey-next">
           下一站：{nextDefinition.label}
         </span>
         <Button
