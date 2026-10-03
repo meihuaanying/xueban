@@ -6,9 +6,13 @@ import { Badge, Button } from "@xueban/ui";
 import { useAuth } from "@/lib/auth";
 import { GuardianGate } from "@/components/guardian-gate";
 import { JourneyNav } from "@/components/journey-nav";
+import { KidsNavBar } from "@/components/kids-navigation";
 import { RestBreakGate } from "@/components/rest-break";
 import { useJourney } from "@/journey/journey-context";
+import { STAGES } from "@/journey/stages";
 import { SyncIndicator } from "@/lib/sync";
+
+const KIDS_NAV_ITEMS = STAGES.map((stage) => ({ id: stage.id, label: stage.label }));
 
 const SKIN_LABEL = {
   kids: "儿童模式",
@@ -17,11 +21,17 @@ const SKIN_LABEL = {
 
 export function AppLayout() {
   const { user, logout } = useAuth();
-  const { theme, mode, setTheme, setMode } = useJourney();
+  const { theme, mode, stage, goTo, setTheme, setMode } = useJourney();
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
-      <JourneyNav />
+      {theme === "kids" ? (
+        // 儿童模式换成图标 + 吉祥物导航（§4.1）。刻意与学院派侧边栏并存：
+        // 家长/老师仍可切回专注模式，两套导航各有适用人群。
+        <KidsNavBar items={KIDS_NAV_ITEMS} active={stage} onNavigate={goTo} speakable />
+      ) : (
+        <JourneyNav />
+      )}
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between gap-4 border-b border-border bg-card px-lg py-xs">

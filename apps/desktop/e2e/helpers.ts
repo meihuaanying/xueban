@@ -6,7 +6,16 @@ const API_ORIGIN =
   process.env.PLAYWRIGHT_API_ORIGIN ??
   `http://127.0.0.1:${process.env.PLAYWRIGHT_API_PORT ?? (process.platform === "win32" ? "8091" : "8000")}`;
 
-export { API_ORIGIN };
+/**
+ * 前端读取后端地址的 localStorage 键（须与 `src/lib/api.ts` 的常量一致）。
+ *
+ * E2E 的 API 直连（request fixture）用的是 Node 侧的 API_ORIGIN，而页面里的
+ * fetch 用的是编译进产物的地址；两者不一致时页面会判未登录并跳登录页，
+ * 整轮用例的 testid 断言集体失真。这里把同一个地址显式注入页面，两边就一致了。
+ */
+const API_BASE_URL_STORAGE_KEY = "xueban.apiBaseUrl";
+
+export { API_BASE_URL_STORAGE_KEY, API_ORIGIN };
 
 export interface TestAccount {
   phone: string;

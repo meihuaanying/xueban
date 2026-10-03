@@ -2,8 +2,31 @@
  * 桌面端 API 客户端：统一错误契约（code/message/trace_id）与类型化端点。
  */
 
+/**
+ * 后端地址的运行时覆盖键（localStorage）。
+ *
+ * 为什么需要它：`VITE_API_BASE_URL` 是在 **build 期**被内联进产物的，本地 E2E
+ * 若把后端跑在别的端口，就必须重建 dist 才生效——「测试跑的是上一次构建的产物」
+ * 会让整轮 E2E 的断言集体失真，且极难定位。允许运行时覆盖后，E2E 只需在页面
+ * 初始化时写一个键，不必改构建参数，CI 与本地的行为也就一致了。
+ */
+export const API_BASE_URL_STORAGE_KEY = "xueban.apiBaseUrl";
+
+function readRuntimeOverride(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const value = window.localStorage.getItem(API_BASE_URL_STORAGE_KEY);
+    return value && value.trim() ? value.trim() : null;
+  } catch {
+    // 无痕模式 / 存储被禁用：退回构建期配置，不阻断主流程
+    return null;
+  }
+}
+
 export const API_BASE_URL =
-  (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "http://localhost:8000";
+  readRuntimeOverride() ??
+  (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
+  "http://localhost:8000";
 
 export interface ApiErrorBody {
   code?: string;

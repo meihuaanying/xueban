@@ -28,8 +28,8 @@ prompts:
 providers:
   - id: openai:chat:{{env.EVAL_MODEL}}
     config:
-      apiBaseUrl: {{env.EVAL_API_BASE_URL}}
-      apiKey: {{env.EVAL_API_KEY}}
+      apiBaseUrl: "{{env.EVAL_API_BASE_URL}}"
+      apiKey: "{{env.EVAL_API_KEY}}"
       headers:
         User-Agent: xueban-eval/1.0
         x-opencode-session: promptfoo-grade12-level1
@@ -39,8 +39,8 @@ defaultTest:
     provider:
       id: openai:chat:{{env.EVAL_MODEL}}
       config:
-        apiBaseUrl: {{env.EVAL_API_BASE_URL}}
-        apiKey: {{env.EVAL_API_KEY}}
+        apiBaseUrl: "{{env.EVAL_API_BASE_URL}}"
+        apiKey: "{{env.EVAL_API_KEY}}"
         headers:
           User-Agent: xueban-eval/1.0
           x-opencode-session: promptfoo-grade12-level1
@@ -56,8 +56,8 @@ assert:
     # 评审模型单独配置：被测模型评自己不可信，评审用更强的模型
     provider: openai:chat:{{env.EVAL_GRADER_MODEL}}
     config:
-      apiBaseUrl: {{env.EVAL_API_BASE_URL}}
-      apiKey: {{env.EVAL_API_KEY}}
+      apiBaseUrl: "{{env.EVAL_API_BASE_URL}}"
+      apiKey: "{{env.EVAL_API_KEY}}"
       headers:
         User-Agent: xueban-eval/1.0
         x-opencode-session: promptfoo-grade12-grader

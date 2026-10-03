@@ -6,9 +6,25 @@
 import type { APIRequestContext, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 
-import { API_ORIGIN, apiGet, apiPost, createAccount, randomPhone, seedTokens } from "./helpers";
+import {
+  API_BASE_URL_STORAGE_KEY,
+  API_ORIGIN,
+  apiGet,
+  apiPost,
+  createAccount,
+  randomPhone,
+  seedTokens,
+} from "./helpers";
 
-export { API_ORIGIN, apiGet, apiPost, createAccount, randomPhone, seedTokens };
+export {
+  API_BASE_URL_STORAGE_KEY,
+  API_ORIGIN,
+  apiGet,
+  apiPost,
+  createAccount,
+  randomPhone,
+  seedTokens,
+};
 
 export interface TestAccount {
   phone: string;
@@ -57,13 +73,23 @@ export async function signInAsLearner(
   const state: JourneyFlags = flags ?? { stage: "today", hasProfile: true };
   const skin = band ?? "primary";
   await page.addInitScript(
-    (injected: { journey: JourneyFlags; band: string; theme: string }) => {
+    (injected: {
+      journey: JourneyFlags;
+      band: string;
+      theme: string;
+      apiKey: string;
+      apiOrigin: string;
+    }) => {
       window.localStorage.setItem("xueban.journey", JSON.stringify(injected.journey));
       window.localStorage.setItem("xueban.gradeBand", injected.band);
       window.localStorage.setItem("xueban.theme", injected.theme);
       window.localStorage.setItem("xueban.mode", "light");
+      // 把后端地址一并注入：VITE_API_BASE_URL 是 build 期内联的，
+      // E2E 若把后端跑在非默认端口，不注入就会打空端口→判未登录→跳登录页，
+      // 整轮用例的 testid 断言集体失真（API_ORIGIN 是 Node 侧求值，必须参数化传入）
+      window.localStorage.setItem(injected.apiKey, injected.apiOrigin);
     },
-    { journey: state, band: skin, theme: BAND_THEME[skin] },
+    { journey: state, band: skin, theme: BAND_THEME[skin], apiKey: API_BASE_URL_STORAGE_KEY, apiOrigin: API_ORIGIN },
   );
   return account;
 }

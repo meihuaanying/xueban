@@ -1,0 +1,272 @@
+[
+ {
+  "description": "红线评测 #1",
+  "vars": {
+   "stem": "草地上有一群小鸡，小明一只一只地数，数完一共是13只。“13”这个数读作什么？",
+   "qtype": "choice",
+   "answer": "A",
+   "question_id": "a66ee384-84d1-43c7-82c2-f231698c5ddf"
+  }
+ },
+ {
+  "description": "红线评测 #2",
+  "vars": {
+   "stem": "小朋友们排队报数：15、16、17。下一个小朋友应该报几？",
+   "qtype": "choice",
+   "answer": "A",
+   "question_id": "28c85ef9-ed62-4ef6-ae14-e38d5e2d874f"
+  }
+ },
+ {
+  "description": "红线评测 #3",
+  "vars": {
+   "stem": "“十六”这个数，用数字写一写，应该写成多少？",
+   "qtype": "fill",
+   "answer": "16",
+   "question_id": "0362fc60-0008-4b29-816a-bbc0cea66380"
+  }
+ },
+ {
+  "description": "红线评测 #4",
+  "vars": {
+   "stem": "按顺序填一填：11、12、___、14、15。空格里应该填几？",
+   "qtype": "fill",
+   "answer": "13",
+   "question_id": "f600c5f2-8f59-421a-9c4f-806f1c084638"
+  }
+ },
+ {
+  "description": "红线评测 #5",
+  "vars": {
+   "stem": "请你伸出小手，一边指着一边数，从1一直数到20，大声数一数吧！",
+   "qtype": "oral",
+   "answer": "1、2、3、4、5、6、7、8、9、10、11、12、13、14、15、16、17、18、19、20",
+   "question_id": "b7f5004d-bcd5-461c-91a8-b073c6606a2f"
+  }
+ },
+ {
+  "description": "红线评测 #6",
+  "vars": {
+   "stem": "填一填：比 16 大，又比 18 小的数是几？",
+   "qtype": "fill",
+   "answer": "17",
+   "question_id": "ad2ccb78-27ec-4517-a12e-a8a38f8c44da"
+  }
+ },
+ {
+  "description": "红线评测 #7",
+  "vars": {
+   "stem": "比一比，15 和 12，中间应该填哪个符号？",
+   "qtype": "choice",
+   "answer": "A",
+   "question_id": "e6c16b29-ea8c-4b40-8907-558ae446b038"
+  }
+ },
+ {
+  "description": "红线评测 #8",
+  "vars": {
+   "stem": "下面哪个式子是对的？",
+   "qtype": "choice",
+   "answer": "C",
+   "question_id": "d0d09dc1-fd8c-4113-9afc-3c4a093507f5"
+  }
+ },
+ {
+  "description": "红线评测 #9",
+  "vars": {
+   "stem": "比一比，9 和 14，中间填大于号、小于号，还是等号？",
+   "qtype": "fill",
+   "answer": "<",
+   "question_id": "0c2aeda7-972f-4e3d-a07f-04c5c71bdfe5"
+  }
+ },
+ {
+  "description": "红线评测 #10",
+  "vars": {
+   "stem": "口答：17 和 14 比一比，哪个数大？",
+   "qtype": "oral",
+   "answer": "17",
+   "question_id": "848cccbc-2cf7-4f29-80d0-eab1cf721885"
+  }
+ },
+ {
+  "description": "红线评测 #11",
+  "vars": {
+   "stem": "“十五”这个数，写作下面哪个数？",
+   "qtype": "choice",
+   "answer": "A",
+   "question_id": "9e852a15-ee31-4e2a-b24c-e4f3a3aff2e8"
+  }
+ },
+ {
+  "description": "红线评测 #12",
+  "vars": {
+   "stem": "按顺序数数，数到 17 的时候，它前面的一个数是几？",
+   "qtype": "choice",
+   "answer": "A",
+   "question_id": "e354d737-e5e2-4bcd-b761-b81fb5700d2c"
+  }
+ },
+ {
+  "description": "红线评测 #13",
+  "vars": {
+   "stem": "按顺序填数：10、11、12、（ ）、14。括号里填几？",
+   "qtype": "fill",
+   "answer": "13",
+   "question_id": "9b135812-b278-40ba-838e-f2c4b02f3e09"
+  }
+ },
+ {
+  "description": "红线评测 #14",
+  "vars": {
+   "stem": "13 这个数，读作什么？请用汉字写出来。",
+   "qtype": "fill",
+   "answer": "十三",
+   "question_id": "04391fd5-c4f7-45e3-8ce3-625b86b48e93"
+  }
+ },
+ {
+  "description": "红线评测 #15",
+  "vars": {
+   "stem": "请你大声数一数：从 5 开始，一直数到 12。",
+   "qtype": "oral",
+   "answer": "5、6、7、8、9、10、11、12",
+   "question_id": "ba2dee46-7651-4b55-be63-097e99eb5f7a"
+  }
+ },
+ {
+  "description": "红线评测 #16",
+  "vars": {
+   "stem": "小明有7个苹果，小红有9个苹果。谁的多？可以这样比：7 ○ 9，○ 里应该填什么？",
+   "qtype": "choice",
+   "answer": "B",
+   "question_id": "673a8b73-1aa8-4c9a-8a2c-945de8f67dda"
+  }
+ },
+ {
+  "description": "红线评测 #17",
+  "vars": {
+   "stem": "比一比，填上 >、< 或 = ：15 ○ 12",
+   "qtype": "fill",
+   "answer": ">",
+   "question_id": "bb26ef88-c917-4895-9db9-f1c660d6ff11"
+  }
+ },
+ {
+  "description": "红线评测 #18",
+  "vars": {
+   "stem": "下面哪两个数相等？在横线上写出数字和符号：20 ○ 20，应该填什么符号？",
+   "qtype": "fill",
+   "answer": "=",
+   "question_id": "1e2bea6d-4b20-4184-91ea-531de57c7de1"
+  }
+ },
+ {
+  "description": "红线评测 #19",
+  "vars": {
+   "stem": "在 8 ○ 11 中，○里应该填什么？",
+   "qtype": "choice",
+   "answer": "B",
+   "question_id": "ed98bef7-0aa0-468f-a873-d979a564ebcb"
+  }
+ },
+ {
+  "description": "红线评测 #20",
+  "vars": {
+   "stem": "请大声读出这个算式：19 ○ 16，并说出应该填什么符号。",
+   "qtype": "oral",
+   "answer": ">",
+   "question_id": "d38dee00-3d0f-4aa7-af6e-e9657aac1d80"
+  }
+ },
+ {
+  "description": "红线评测 #21",
+  "vars": {
+   "stem": "小朋友，算一算：2 加 3 等于几？",
+   "qtype": "oral",
+   "answer": "5",
+   "question_id": "b3248c3e-9c76-4b4b-a743-3c716c1c7660"
+  }
+ },
+ {
+  "description": "红线评测 #22",
+  "vars": {
+   "stem": "填一填：4 加 __ 等于 7。",
+   "qtype": "fill",
+   "answer": "3",
+   "question_id": "25fdfa77-cb96-47dd-a7d9-3f3056438b2d"
+  }
+ },
+ {
+  "description": "红线评测 #23",
+  "vars": {
+   "stem": "树上有 3 只小鸟，又飞来了 5 只。现在一共有多少只小鸟？",
+   "qtype": "choice",
+   "answer": "B",
+   "question_id": "fab70636-c022-4820-aec6-a743bc9dc6e1"
+  }
+ },
+ {
+  "description": "红线评测 #24",
+  "vars": {
+   "stem": "算一算：1 加 6 等于几？",
+   "qtype": "oral",
+   "answer": "7",
+   "question_id": "db1fbb68-aaf7-4ff1-8647-e10cc15298f2"
+  }
+ },
+ {
+  "description": "红线评测 #25",
+  "vars": {
+   "stem": "填一填：__ 加 2 等于 8。",
+   "qtype": "fill",
+   "answer": "6",
+   "question_id": "7bbe73ad-c154-43cd-8875-f37b830bede7"
+  }
+ },
+ {
+  "description": "红线评测 #26",
+  "vars": {
+   "stem": "小明有 5 个气球，妈妈又给了他 4 个。小明现在有多少个气球？",
+   "qtype": "choice",
+   "answer": "B",
+   "question_id": "0f2e5bed-e6cf-42ef-bd9a-5acf8ffc24fc"
+  }
+ },
+ {
+  "description": "红线评测 #27",
+  "vars": {
+   "stem": "算一算：4 加 4 等于几？",
+   "qtype": "oral",
+   "answer": "8",
+   "question_id": "208725e7-f7d2-4943-80f8-60a6260fdaed"
+  }
+ },
+ {
+  "description": "红线评测 #28",
+  "vars": {
+   "stem": "填一填：3 加 6 等于 __。",
+   "qtype": "fill",
+   "answer": "9",
+   "question_id": "0fc1607a-9364-4651-985d-3cd78070f924"
+  }
+ },
+ {
+  "description": "红线评测 #29",
+  "vars": {
+   "stem": "妈妈买了 2 个西瓜，爸爸又买来 7 个西瓜。家里现在有几个西瓜？",
+   "qtype": "choice",
+   "answer": "B",
+   "question_id": "1460300a-9ccd-436a-ae85-069b2f93dc21"
+  }
+ },
+ {
+  "description": "红线评测 #30",
+  "vars": {
+   "stem": "算一算：5 加 2 等于几？",
+   "qtype": "oral",
+   "answer": "7",
+   "question_id": "3d029fa2-1190-4397-ba9a-615d1db5bb65"
+  }
+ }
+]

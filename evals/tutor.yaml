@@ -22,8 +22,8 @@ prompts:
 providers:
   - id: openai:chat:{{env.EVAL_MODEL}}
     config:
-      apiBaseUrl: {{env.EVAL_API_BASE_URL}}
-      apiKey: {{env.EVAL_API_KEY}}
+      apiBaseUrl: "{{env.EVAL_API_BASE_URL}}"
+      apiKey: "{{env.EVAL_API_KEY}}"
       headers:
         User-Agent: xueban-eval/1.0
         x-opencode-session: promptfoo-tutor-level1
@@ -33,8 +33,8 @@ defaultTest:
     provider:
       id: openai:chat:{{env.EVAL_MODEL}}
       config:
-        apiBaseUrl: {{env.EVAL_API_BASE_URL}}
-        apiKey: {{env.EVAL_API_KEY}}
+        apiBaseUrl: "{{env.EVAL_API_BASE_URL}}"
+        apiKey: "{{env.EVAL_API_KEY}}"
         headers:
           User-Agent: xueban-eval/1.0
           x-opencode-session: promptfoo-tutor-level1
