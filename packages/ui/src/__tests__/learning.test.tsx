@@ -124,6 +124,57 @@ describe("QuestionCard", () => {
     render(<QuestionCard stem="x" options={[{ key: "A", label: "1" }]} />);
     expect(screen.queryByTestId("fill-input")).toBeNull();
   });
+
+  // 以下四条覆盖小学题型（§6.1）。此前 judge/oral/match/pick_hanzi 全都退化
+  // 成「选项列表」或「填空框」，生成的题根本无法作答。
+  it("判断题没有 options 时自带对/错两个大按钮，提交值就是中文答案", () => {
+    const onSelect = vi.fn();
+    render(<QuestionCard stem="写「小」字，第一笔是竖钩，对吗？" kind="judge" onSelect={onSelect} />);
+    fireEvent.click(screen.getByRole("button", { name: /对/ }));
+    expect(onSelect).toHaveBeenCalledWith("对");
+  });
+
+  it("口算题没有 options 时给输入框并换成「先说出来」的提示", () => {
+    render(<QuestionCard stem="47 + 26 等于多少？" kind="oral" />);
+    expect(screen.getByTestId("fill-input")).toHaveAttribute(
+      "placeholder",
+      "先说出来，再把答案写在这里",
+    );
+  });
+
+  it("点选识字不显示 ABCD 序号，只给大字卡", () => {
+    render(
+      <QuestionCard
+        stem="请选出由「口」和「十」组成的字"
+        kind="pick"
+        options={[
+          { key: "A", label: "田" },
+          { key: "B", label: "叶" },
+        ]}
+      />,
+    );
+    expect(screen.queryByText(/A\./)).toBeNull();
+    expect(screen.getByRole("button", { name: "田" })).toBeInTheDocument();
+  });
+
+  it("连线题渲染配对台；取不到左项时降级成选择题而不是崩", () => {
+    const onSelect = vi.fn();
+    const { unmount } = render(
+      <QuestionCard
+        stem="把物品和它的形状连起来：铅笔盒、魔方。"
+        kind="link"
+        linkItems={["铅笔盒", "魔方"]}
+        options={[{ key: "A", label: "长方形" }]}
+        onSelect={onSelect}
+      />,
+    );
+    expect(screen.getByTestId("link-matcher")).toBeInTheDocument();
+    unmount();
+
+    render(<QuestionCard stem="连一连" kind="link" options={[{ key: "A", label: "圆形" }]} />);
+    expect(screen.queryByTestId("link-matcher")).toBeNull();
+    expect(screen.getByRole("button", { name: /A\./ })).toBeInTheDocument();
+  });
 });
 
 describe("HintStack（守护型红线）", () => {

@@ -4,9 +4,18 @@ import { useEffect, useId, useState, type HTMLAttributes, type ReactNode } from 
 
 import { cn } from "../cn";
 import { AudioButton } from "./audio-button";
+import { JUDGE_OPTIONS, LinkMatcher, ORAL_PLACEHOLDER } from "./answer-pickers";
 import { MathFormula } from "../formula";
 
-export type QuestionKind = "choice" | "fill" | "judge" | "link" | "oral" | "dictation";
+export type QuestionKind =
+  | "choice"
+  | "fill"
+  | "judge"
+  | "link"
+  | "oral"
+  | "dictation"
+  /** 点选识字（语文）：大字卡网格，不显示 ABC 序号 */
+  | "pick";
 
 export interface QuestionOption {
   key: string;
@@ -21,6 +30,15 @@ export interface QuestionCardProps extends Omit<HTMLAttributes<HTMLDivElement>, 
   meta?: string;
   kind?: QuestionKind;
   options?: QuestionOption[];
+  /**
+   * 连线题左项（题干里列出的实物）。右项池走 options。
+   * 题库的 match 题只把形状池放进 options，左项在题干里，由调用方解析后传入。
+   */
+  linkItems?: string[];
+  /** 连线题当前配对（左 → 右），受控 */
+  linkPairs?: Record<string, string>;
+  /** 连线题配对变化（全部配好时带 complete=true，父组件据此决定能否提交） */
+  onLinkPairs?: (pairs: Record<string, string>, complete: boolean) => void;
   /** 拼音标注（语文/英语启蒙） */
   pinyin?: string;
   /** 已选中的选项 */
@@ -47,6 +65,9 @@ export function QuestionCard({
   meta,
   kind = "choice",
   options,
+  linkItems,
+  linkPairs,
+  onLinkPairs,
   pinyin,
   value,
   onSelect,
@@ -62,6 +83,15 @@ export function QuestionCard({
   // 由「提交答案」按钮显式触发 onSelect。
   const [draft, setDraft] = useState("");
   useEffect(() => setDraft(""), [stem]);
+  // 判断题与口算题在题库里没有 options（answer 直接是「对」/「73」），
+  // 所以兜底按钮由前端补，否则这两类题会掉进文本框，孩子不知道怎么答。
+  const resolvedOptions =
+    options && options.length
+      ? options
+      : kind === "judge"
+        ? JUDGE_OPTIONS
+        : undefined;
+  const isLink = kind === "link" && Boolean(linkItems?.length);
   return (
     <section
       aria-label={stem}
@@ -90,15 +120,29 @@ export function QuestionCard({
         </p>
       ) : null}
 
-      {options?.length ? (
+      {isLink ? (
+        <LinkMatcher
+          left={linkItems ?? []}
+          right={(resolvedOptions ?? []).map((option) => String(option.label))}
+          value={linkPairs}
+          disabled={disabled}
+          onChange={(pairs, complete) => onLinkPairs?.(pairs, complete)}
+        />
+      ) : resolvedOptions?.length ? (
         <ul
           className={cn(
             "mt-sm grid gap-xs",
-            options.length <= 2 ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2",
+            // 点选识字：一律两列大字卡（田字格观感），不按选项数自适应——
+            // 一年级需要的是「大而方」的字卡，不是紧凑的 ABC 列表
+            kind === "pick"
+              ? "grid-cols-2"
+              : resolvedOptions.length <= 2
+                ? "grid-cols-1"
+                : "grid-cols-1 sm:grid-cols-2",
           )}
           role="list"
         >
-          {options.map((option) => {
+          {resolvedOptions.map((option) => {
             const selected = value === option.key;
             return (
               <li key={option.key}>
@@ -111,13 +155,15 @@ export function QuestionCard({
                   className={cn(
                     "flex min-h-[var(--tap-min)] w-full items-center justify-center gap-xs",
                     "rounded-control border px-sm text-app transition-colors",
+                    // 点选识字是「看字选字」，ABCD 序号只会干扰识字本身
+                    kind === "pick" && "min-h-[120px] text-app-xl font-semibold",
                     selected
                       ? "border-primary bg-primary-soft text-accent-foreground"
                       : "border-border-strong bg-card text-foreground hover:bg-accent",
                     disabled && "cursor-not-allowed opacity-60",
                   )}
                 >
-                  <span className="font-semibold">{option.key}.</span>
+                  {kind === "pick" ? null : <span className="font-semibold">{option.key}.</span>}
                   <span>{option.label}</span>
                 </button>
               </li>
@@ -126,7 +172,7 @@ export function QuestionCard({
         </ul>
       ) : null}
 
-      {options?.length ? null : (
+      {isLink || resolvedOptions?.length ? null : (
         <div className="mt-sm flex flex-col gap-xs">
           <label className="text-app-sm text-muted-foreground" htmlFor={fillId}>
             你的答案
@@ -138,7 +184,7 @@ export function QuestionCard({
             value={draft}
             disabled={disabled}
             onChange={(event) => setDraft(event.target.value)}
-            placeholder="请输入答案"
+            placeholder={kind === "oral" ? ORAL_PLACEHOLDER : "请输入答案"}
             className={cn(
               "min-h-[var(--input-height)] w-full rounded-control",
               "border border-border-strong bg-card px-sm text-app text-foreground",
