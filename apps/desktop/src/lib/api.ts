@@ -134,6 +134,9 @@ export interface DiagnosisQuestion {
   options: Record<string, string> | null;
   difficulty: number;
   knowledge_points: string[];
+  /** 知识点库内 UUID（32 位无横线），与 knowledge_points 同序。
+   * §5.1 动画讲解只认 id，传显示名会被后端判 404。 */
+  knowledge_point_ids: string[];
 }
 
 export interface DiagnosisStart {
@@ -249,6 +252,9 @@ export interface TutorQuestion {
   options: Record<string, string> | null;
   difficulty: number;
   knowledge_points: string[];
+  /** 知识点库内 UUID（32 位无横线），与 knowledge_points 同序。
+   * §5.1 动画讲解只认 id，传显示名会被后端判 404。 */
+  knowledge_point_ids: string[];
 }
 
 export interface TutorSession {
@@ -301,6 +307,9 @@ export interface PracticeQuestion {
   options: Record<string, string> | null;
   difficulty: number;
   knowledge_points: string[];
+  /** 知识点库内 UUID（32 位无横线），与 knowledge_points 同序。
+   * §5.1 动画讲解只认 id，传显示名会被后端判 404。 */
+  knowledge_point_ids: string[];
   reason: string;
 }
 
@@ -328,6 +337,9 @@ export interface QuestionBrief {
   options: Record<string, string> | null;
   difficulty: number;
   knowledge_points: string[];
+  /** 知识点库内 UUID（32 位无横线），与 knowledge_points 同序。
+   * §5.1 动画讲解只认 id，传显示名会被后端判 404。 */
+  knowledge_point_ids: string[];
 }
 
 export interface MistakeEntry {
@@ -491,6 +503,9 @@ export interface ExamQuestion {
   options: Record<string, string> | null;
   difficulty: number;
   knowledge_points: string[];
+  /** 知识点库内 UUID（32 位无横线），与 knowledge_points 同序。
+   * §5.1 动画讲解只认 id，传显示名会被后端判 404。 */
+  knowledge_point_ids: string[];
 }
 
 export interface ExamCreate {
@@ -549,8 +564,15 @@ export const api = {
   answerDiagnosis: (examId: string, payload: { question_id: string; answer: string }) =>
     post<DiagnosisAnswer>(`/v1/diagnosis/${examId}/answer`, payload),
   diagnosisReport: (examId: string) => get<DiagnosisReport>(`/v1/diagnosis/${examId}/report`),
-  mastery: (subject?: string) =>
-    get<MasteryOverview>(`/v1/profile/mastery${subject ? `?subject=${subject}` : ""}`),
+  mastery: (subject?: string, options?: { includeUnseen?: boolean }) => {
+    // include_unseen：知识地图要展示「还没练过」的知识点，否则新用户打开就是一片空白。
+    // 雷达图/画像不传，保持「我学过什么」的语义。
+    const params = new URLSearchParams();
+    if (subject) params.set("subject", subject);
+    if (options?.includeUnseen) params.set("include_unseen", "true");
+    const query = params.toString();
+    return get<MasteryOverview>(`/v1/profile/mastery${query ? `?${query}` : ""}`);
+  },
   behavior: () => get<BehaviorProfile>("/v1/profile/behavior"),
 
   // 规划

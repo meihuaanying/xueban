@@ -51,7 +51,7 @@ describe("V3 学习工具（桌面）", () => {
     });
     mockedApi.createTutorSession.mockResolvedValue({
       session_id: "11111111-1111-1111-1111-111111111111",
-      question: { id: "q1", stem: "计算 18 × 5", qtype: "choice", options: null, difficulty: 2, knowledge_points: [] },
+      question: { id: "q1", stem: "计算 18 × 5", qtype: "choice", options: null, difficulty: 2, knowledge_points: [], knowledge_point_ids: [] },
       hint_level: 0,
       hint_level_name: "未开始",
       max_hint_level: 3,

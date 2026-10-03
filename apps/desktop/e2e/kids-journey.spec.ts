@@ -74,16 +74,24 @@ test.describe("妹妹旅程 · 一年级全流程（儿童模式）", () => {
     await seedJourneyData(request, account);
     await page.goto("/journey/unit");
 
-    // 连续两题都答错 → §5.1 触发场景 1 的「看个动画讲解？」建议
-    for (let round = 0; round < 2; round += 1) {
+    // 连续两题都答错 → §5.1 触发场景 1 的「看个动画讲解？」建议。
+    // 每一轮都可能落空（还没出题、点不上选项、答对了不算错），所以循环到
+    // 「累计两次确认答错」为止，而不是死等第 2 轮——死等会在数据抖动时
+    // 报出「unit-feedback 找不到」，把真正的原因（这一轮压根没作答）藏掉。
+    let wrongRounds = 0;
+    for (let round = 0; round < 4 && wrongRounds < 2; round += 1) {
       const generate = page.getByTestId("unit-generate");
       if (await generate.isVisible()) {
         await generate.click();
       }
-      await answerQuestionCard(page, { required: false });
-      const feedback = page.getByTestId("unit-feedback");
-      await expect(feedback).toBeVisible({ timeout: 20_000 });
+      const acted = await answerQuestionCard(page, { required: false });
+      if (acted === "none") continue;
+      await expect(page.getByTestId("unit-feedback")).toBeVisible({ timeout: 20_000 });
+      // 「还没掌握」= 本轮没答对，wrongStreak 才会累加
+      const notYet = page.getByTestId("unit-feedback").getByText("还没掌握");
+      if (await notYet.isVisible()) wrongRounds += 1;
     }
+    expect(wrongRounds, "应当至少答错两轮，才会触发讲解建议").toBeGreaterThanOrEqual(2);
 
     const suggest = page.getByTestId("explainer-idle");
     await expect(suggest).toBeVisible({ timeout: 20_000 });
@@ -118,5 +126,56 @@ test.describe("妹妹旅程 · 一年级全流程（儿童模式）", () => {
     // 这里断言「页面确实进了错题本且能往复习走」，也就是旅程的可达性。
     await expect(page.getByTestId("stage-mistakes")).toBeVisible();
     await expect(page.getByTestId("mistakes-to-review")).toBeVisible();
+  });
+
+  test("场景 2：错题详情里点「动画讲解这个知识点」能打开讲解", async ({ page, request }) => {
+    const account = await signInAsLearner(
+      page,
+      request,
+      { stage: "mistakes", hasProfile: true, diagnosisDone: true },
+    );
+    const seeded = await seedJourneyData(request, account);
+    expect(seeded.mistakesCollected).toBeGreaterThan(0);
+    await page.goto("/journey/mistakes");
+
+    const trigger = page.locator('[data-testid^="mistake-explainer-"]').first();
+    await expect(trigger).toBeVisible({ timeout: 20_000 });
+    await trigger.click();
+
+    // §5.4 降级契约：不硬等真实生成，只要出现「生成中/已就绪/失败」任一可见状态，
+    // 就证明入口 → hook → 接口 → 面板这条链路是通的（不会点了没反应）。
+    await expect(
+      page
+        .locator(
+          '[data-testid="explainer-pending"], [data-testid="explainer-ready"], [data-testid="explainer-failed"]',
+        )
+        .first(),
+    ).toBeVisible({ timeout: 30_000 });
+  });
+
+  test("场景 3：知识地图节点可点开讲解", async ({ page, request }) => {
+    const account = await signInAsLearner(
+      page,
+      request,
+      { stage: "today", hasProfile: true, diagnosisDone: true },
+      "junior", // 知识地图挂在学院派侧边栏上，kids 主题用图标导航
+    );
+    await seedJourneyData(request, account);
+    await page.goto("/journey/today");
+
+    // 知识地图挂在学院派侧边栏上，只在专注模式渲染；kids 主题换成图标导航。
+    // 用 junior band 登录时主题**本来就是** focus，所以这里只断言、不再点 theme-toggle
+    // ——再点一次反而会切到 kids，把知识地图换掉。
+    await expect(page.getByTestId("theme-badge")).toHaveText("专注模式");
+    const node = page.locator('[data-testid^="kmap-node-"]').first();
+    await expect(node).toBeVisible({ timeout: 20_000 });
+    await node.click();
+    await expect(
+      page
+        .locator(
+          '[data-testid="explainer-pending"], [data-testid="explainer-ready"], [data-testid="explainer-failed"]',
+        )
+        .first(),
+    ).toBeVisible({ timeout: 30_000 });
   });
 });

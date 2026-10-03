@@ -1,63 +1,28 @@
 "use client";
 
-/** 旅程第 5 站 · 错题复习：错题本 + 复习卡（FSRS 到期）。 */
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from "@xueban/ui";
+/** 旅程第 5 站 · 错题复习：错题本 + 复习卡（FSRS 到期）+ 动画讲解入口（场景 2）。 */
+import { Button, Card, CardContent, CardHeader, CardTitle } from "@xueban/ui";
 import { useCallback, useState } from "react";
 
 import { AsyncFeedback, JourneyStepper } from "@/components/journey-blocks";
 import { StageShell } from "@/components/stage-shell";
 import { api, type ReviewGrade } from "@/lib/api";
+import { useExplainer } from "@/journey/use-explainer";
 import { useJourney } from "@/journey/journey-context";
 import { useMistakes, useReviewDue } from "@/journey/use-journey-data";
-
-const GRADES = [
-  { grade: 1, label: "忘了" },
-  { grade: 2, label: "有点难" },
-  { grade: 3, label: "想起来了" },
-  { grade: 4, label: "很简单" },
-] as const;
-
-function GradeActions({
-  cardId,
-  done,
-  busy,
-  onGrade,
-}: {
-  cardId: string;
-  done: ReviewGrade | undefined;
-  busy: boolean;
-  onGrade: (cardId: string, value: number) => Promise<void>;
-}) {
-  if (done) {
-    return (
-      <p className="text-app-sm text-success-foreground">
-        已记录：下次 {done.interval_days} 天后复习
-      </p>
-    );
-  }
-  return (
-    <div className="flex flex-wrap gap-xs">
-      {GRADES.map((item) => (
-        <Button
-          key={item.grade}
-          variant="outline"
-          disabled={busy}
-          onClick={() => void onGrade(cardId, item.grade)}
-          data-testid={`review-grade-${cardId}-${item.grade}`}
-        >
-          {item.label}
-        </Button>
-      ))}
-    </div>
-  );
-}
+import { ExplainerDock } from "./explainer-launcher";
+import { GradeActions, MistakeList } from "./mistake-blocks";
 
 export default function MistakesStagePage() {
-  const { mark, goTo } = useJourney();
+  const { mark, goTo, theme } = useJourney();
   const mistakes = useMistakes();
   const review = useReviewDue();
+  const explainer = useExplainer();
   const [graded, setGraded] = useState<Record<string, ReviewGrade>>({});
   const [busy, setBusy] = useState(false);
+  // 当前打开讲解的知识点；空表示用户还没点任何入口（此时不渲染面板）
+  const [explainKnowledgeId, setExplainKnowledgeId] = useState("");
+  const speakable = theme === "kids";
 
   const grade = useCallback(
     async (cardId: string, value: number) => {
@@ -126,27 +91,18 @@ export default function MistakesStagePage() {
           emptyHint="练习中答错的题会自动收录到这里。"
           onRetry={() => void mistakes.reload()}
         >
-          <section aria-label="错题本" className="flex flex-col gap-sm" data-testid="mistake-list">
-            <h3 className="text-app-lg font-semibold">
-              错题本（{mistakes.data?.active_count ?? 0}）
-            </h3>
-            {entries.map((entry) => (
-              <Card key={entry.id} data-testid={`mistake-${entry.id}`}>
-                <CardHeader>
-                  <CardTitle>{entry.question.stem}</CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-wrap items-center gap-xs">
-                  <Badge variant={entry.state === "mastered" ? "success" : "warning"}>
-                    {entry.state === "mastered" ? "已掌握" : "待巩固"}
-                  </Badge>
-                  <span className="text-app-xs text-muted-foreground">
-                    错因：{entry.error_reason_label} · 已复习 {entry.review_count} 次
-                  </span>
-                </CardContent>
-              </Card>
-            ))}
-          </section>
+          <MistakeList
+            entries={entries}
+            speakable={speakable}
+            onOpenExplainer={(knowledgeId) => {
+              setExplainKnowledgeId(knowledgeId);
+              void explainer.open(knowledgeId);
+            }}
+          />
         </AsyncFeedback>
+
+        {/* 场景 2（§5.1）：讲解面板只显示一份，点哪条看哪条 */}
+        <ExplainerDock explainer={explainer} knowledgeId={explainKnowledgeId} speakable={speakable} />
 
         <Button onClick={finish} data-testid="mistakes-to-review">
           完成复习，去复盘

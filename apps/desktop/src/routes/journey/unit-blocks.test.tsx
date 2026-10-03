@@ -19,7 +19,9 @@ function question(overrides: Partial<TestQuestion> = {}): TestQuestion {
     options: { A: "2", B: "3" },
     difficulty: 1,
     reason: "",
-    knowledge_points: ["g1m-add-within-10"],
+    // 讲解入口吃的是 knowledge_point_ids（库内 UUID）；显示名是给人看的，不是 id。
+    knowledge_points: ["10 以内加法"],
+    knowledge_point_ids: ["0123456789abcdef0123456789abcdef"],
     ...overrides,
   };
 }

@@ -60,6 +60,36 @@ describe("KnowledgeMap", () => {
     );
     expect(container.querySelector(".opacity-60")).not.toBeNull();
   });
+
+  it("不传 onSelect 时节点仍是纯展示，不能看起来能点却点不动", () => {
+    render(<KnowledgeMap nodes={[{ id: "n1", label: "数", level: 5 }]} onSelect={undefined} />);
+    expect(screen.queryByTestId("kmap-node-n1")).toBeNull();
+  });
+
+  it("传 onSelect 后节点变可点按钮，回传知识点 id", () => {
+    const onSelect = vi.fn();
+    render(<KnowledgeMap nodes={nodes} onSelect={onSelect} />);
+    fireEvent.click(screen.getByTestId("kmap-node-n2"));
+    expect(onSelect).toHaveBeenCalledWith("n2");
+  });
+
+  it("locked 节点即使传了 onSelect 也不可点", () => {
+    const onSelect = vi.fn();
+    render(<KnowledgeMap nodes={[{ id: "lock", label: "字", level: 2, locked: true }]} onSelect={onSelect} />);
+    expect(screen.queryByTestId("kmap-node-lock")).toBeNull();
+  });
+
+  it("有讲解的节点标记 🎬（场景 3：已预生成的讲解直接秒开）", () => {
+    render(<KnowledgeMap nodes={[{ id: "n1", label: "数", level: 5, hasExplainer: true }]} onSelect={vi.fn()} />);
+    expect(screen.getByTestId("kmap-node-n1").textContent).toContain("🎬");
+  });
+
+  it("可点节点带 aria-label，读屏能听到掌握度与动作", () => {
+    render(<KnowledgeMap nodes={[{ id: "n3", label: "钟", level: 1 }]} onSelect={vi.fn()} />);
+    expect(screen.getByTestId("kmap-node-n3").getAttribute("aria-label")).toBe(
+      "钟，未接触，打开讲解",
+    );
+  });
 });
 
 describe("QuestionCard", () => {

@@ -3,4 +3,7 @@
  *   Tailwind v4 先建立 @theme/@custom-variant 上下文，再引入三层令牌。
  */
 @import "tailwindcss";
+/* 本文件就在 ui 包内，扫描范围天然覆盖；但显式声明是为了让「为什么需要这行」
+ * 有一个可搜索的落点——apps/desktop 与 apps/web 都要靠它才能扫到本目录。 */
+@source "./";
 @import "@xueban/config/tokens/theme.css";

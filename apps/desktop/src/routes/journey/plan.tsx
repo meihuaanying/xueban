@@ -9,6 +9,7 @@ import { useJourney } from "../../journey/journey-context";
 import { GRADE_BANDS } from "../../journey/stages";
 import { useAsync, useMastery } from "../../journey/use-journey-data";
 import { api, type PathPhase } from "../../lib/api";
+import { KnowledgeMapCard } from "./knowledge-map-card";
 
 export default function PlanStagePage() {
   const { band, theme, mark, goTo } = useJourney();
@@ -89,6 +90,10 @@ export default function PlanStagePage() {
             </AsyncFeedback>
           </CardContent>
         </Card>
+
+        {/* 场景 3（§5.1）：知识地图节点 → 已预生成的讲解直接秒开。
+            放在这一站是因为侧边栏在儿童模式下没有地图——那是妹妹真正用的主题。 */}
+        <KnowledgeMapCard subject={preset.subject} speakable={theme === "kids"} />
 
         {hasPath ? (
           <Button

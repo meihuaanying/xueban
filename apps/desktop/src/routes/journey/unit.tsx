@@ -32,7 +32,8 @@ export default function UnitStagePage() {
   const speakable = theme === "kids";
 
   // 讲解绑定到当前题的第一个知识点；没有题时不自动开，避免空知识点生成垃圾讲解。
-  const knowledgeId = current?.knowledge_points?.[0] ?? "";
+  // 必须用 knowledge_point_ids（库内 UUID）：讲解接口只认 id，显示名会被判 404。
+  const knowledgeId = current?.knowledge_point_ids?.[0] ?? "";
   const suggested = practice.wrongStreak >= SUGGEST_AFTER_WRONG && Boolean(knowledgeId);
 
   return (

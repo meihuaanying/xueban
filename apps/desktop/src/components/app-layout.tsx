@@ -8,8 +8,11 @@ import { GuardianGate } from "@/components/guardian-gate";
 import { JourneyNav } from "@/components/journey-nav";
 import { KidsNavBar } from "@/components/kids-navigation";
 import { RestBreakGate } from "@/components/rest-break";
+import { useExplainer } from "@/journey/use-explainer";
 import { useJourney } from "@/journey/journey-context";
-import { STAGES } from "@/journey/stages";
+import { useKnowledgeMastery } from "@/journey/use-knowledge-mastery";
+import { STAGES, GRADE_BANDS } from "@/journey/stages";
+import { ExplainerDock } from "@/routes/journey/explainer-launcher";
 import { SyncIndicator } from "@/lib/sync";
 
 const KIDS_NAV_ITEMS = STAGES.map((stage) => ({ id: stage.id, label: stage.label }));
@@ -21,7 +24,12 @@ const SKIN_LABEL = {
 
 export function AppLayout() {
   const { user, logout } = useAuth();
-  const { theme, mode, stage, goTo, setTheme, setMode } = useJourney();
+  const { theme, mode, stage, band, goTo, setTheme, setMode } = useJourney();
+  // 场景 3：知识地图节点 → 已预生成的讲解直接秒开。
+  // 必须按学段带科目去取：不带的话小学数学一二年级 38 个知识点会全糊在侧边栏。
+  const preset = band ? GRADE_BANDS[band] : GRADE_BANDS.primary;
+  const mastery = useKnowledgeMastery(preset.subject);
+  const explainer = useExplainer();
 
   return (
     <div className="flex min-h-screen bg-background text-foreground">
@@ -30,7 +38,17 @@ export function AppLayout() {
         // 家长/老师仍可切回专注模式，两套导航各有适用人群。
         <KidsNavBar items={KIDS_NAV_ITEMS} active={stage} onNavigate={goTo} speakable />
       ) : (
-        <JourneyNav />
+        <JourneyNav
+          nodes={mastery.nodes}
+          loading={mastery.loading}
+          error={mastery.error}
+          total={mastery.total}
+          onRetryNodes={() => void mastery.reload()}
+          onSelectNode={(id) => {
+            mastery.select(id);
+            void explainer.open(id);
+          }}
+        />
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
@@ -76,10 +94,17 @@ export function AppLayout() {
           </div>
         </header>
         <main className="min-w-0 flex-1">
+          {/* 场景 3 的讲解面板：点知识地图节点后就地展开，跨阶段保留 */}
+          <div className="px-md pt-md">
+            <ExplainerDock
+              explainer={explainer}
+              knowledgeId={mastery.selected}
+              testId="kmap-explainer"
+            />
+          </div>
           {/* 儿童模式才计时：§8 约束 2 的「一年级每次 20 分钟强制休息」。
               GuardianGate 管「今天还能不能学」，RestBreakGate 管「这一次连着学太久要歇」 */}
-          <RestBreakGate enabled={theme === "kids"}>
-            <GuardianGate>
+          <RestBreakGate enabled={theme === "kids"}>            <GuardianGate>
               <Outlet />
             </GuardianGate>
           </RestBreakGate>

@@ -1,2 +1,7 @@
 @import "tailwindcss";
+/* Tailwind v4 的自动内容扫描从本文件所在目录起算，扫不到 monorepo 里的
+ * @xueban/ui —— 于是 ui 组件里独有的 utility 类（sr-only、pointer-events-none
+ * 等）不会进产物。症状很隐蔽：组件 DOM 上带着 className，但样式规则不存在，
+ * 「视觉隐藏文字」退化成可见文本，还会盖在按钮中心点上拦截点击。 */
+@source "../../../packages/ui/src";
 @import "@xueban/config/tokens/theme.css";

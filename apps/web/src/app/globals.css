@@ -1,2 +1,6 @@
 @import "tailwindcss";
+/* Tailwind v4 的自动内容扫描从本文件所在目录起算，扫不到 monorepo 里的
+ * @xueban/ui —— 官网大量组件来自 ui 包，缺了这一行它们独有的 utility 类
+ * 不会进产物，症状是「DOM 上有 className 但没有对应样式」。*/
+@source "../../../packages/ui/src";
 @import "@xueban/config/tokens/theme.css";
