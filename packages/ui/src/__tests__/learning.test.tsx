@@ -2,12 +2,13 @@
  * 学习域组件测试（§4.3）。
  * 覆盖：掌握度条、题卡、三层提示红���、连续打卡、成就徽标、TTS 朗读降级、Explainer 沙箱降级。
  */
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act } from "react";
+import { fireEvent, render, renderHook, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { AchievementBadge } from "../learning/achievement-badge";
 import { AudioButton } from "../learning/audio-button";
-import { ExplainerFrame } from "../learning/explainer-frame";
+import { ExplainerFrame, useExplainerWatchdog } from "../learning/explainer-frame";
 import { HintStack } from "../learning/hint-stack";
 import { KnowledgeMap } from "../learning/knowledge-map";
 import { MasteryBar, toneForValue } from "../learning/mastery-bar";
@@ -219,14 +220,20 @@ describe("ExplainerFrame（沙箱安全）", () => {
     expect(frame.getAttribute("referrerpolicy")).toBe("no-referrer");
   });
 
-  it("超时后降级为图文讲解并回调 onFallback", async () => {
-    const onFallback = vi.fn();
-    render(<ExplainerFrame title="讲解" html={html} timeoutMs={30} onFallback={onFallback} />);
-    // 真实等待超过 timeoutMs，验证 useEffect 定时器触发降级
-    await waitFor(() => {
-      expect(screen.getByText(/已切换为图文分步讲解/)).toBeInTheDocument();
-    }, { timeout: 1000 });
-    expect(onFallback).toHaveBeenCalledWith("timeout");
+  // 注意：超时路径不能在组件测试里断言。jsdom 会自动给 iframe 派发 load 事件，
+  // 而 iframe onLoad 是「渲染完成」的解除武装信号，一旦挂上超时分支永远走不到。
+  // 所以超时逻辑单独测 useExplainerWatchdog（见下方 describe），这里只测接线。
+  it("默认把 iframe 的加载事件视为渲染完成", () => {
+    render(<ExplainerFrame title="讲解" html={html} timeoutMs={30} />);
+    fireEvent.load(screen.getByTitle("讲解"));
+    // 不降级：保持 iframe（而不是降级视图里的说明文字）
+    expect(screen.getByTitle("讲解").tagName).toBe("IFRAME");
+    expect(screen.queryByText(/已切换为图文分步讲解/)).not.toBeInTheDocument();
+  });
+
+  it("健康状态下不渲染 fallback", () => {
+    render(<ExplainerFrame title="讲解" html={html} fallback={<p>图文版在这里</p>} />);
+    expect(screen.queryByText("图文版在这里")).not.toBeInTheDocument();
   });
 
   it("视频模式用 video 元素", () => {
@@ -244,5 +251,77 @@ describe("ExplainerFrame（沙箱安全）", () => {
     render(<ExplainerFrame title="讲解" html={html} onFeedback={onFeedback} />);
     fireEvent.click(screen.getByRole("button", { name: "看懂了" }));
     expect(onFeedback).toHaveBeenCalledWith(true);
+  });
+
+});
+
+describe("useExplainerWatchdog（§5.4 渲染超时）", () => {
+  const base = { armed: true, ready: false, degraded: false, timeoutMs: 60_000 };
+
+  it("armed 且未就绪：超时后触发 onTimeout", () => {
+    vi.useFakeTimers();
+    const onTimeout = vi.fn();
+    renderHook(() => useExplainerWatchdog({ ...base, onTimeout }));
+    expect(onTimeout).not.toHaveBeenCalled();
+    act(() => {
+      vi.advanceTimersByTime(59_999);
+    });
+    expect(onTimeout).not.toHaveBeenCalled();
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+    expect(onTimeout).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
+  });
+
+  it("已就绪（ready）解除武装：跑满超时也不降级", () => {
+    vi.useFakeTimers();
+    const onTimeout = vi.fn();
+    renderHook(() => useExplainerWatchdog({ ...base, ready: true, onTimeout }));
+    act(() => {
+      vi.advanceTimersByTime(120_000);
+    });
+    expect(onTimeout).not.toHaveBeenCalled();
+    vi.useRealTimers();
+  });
+
+  it("未 armed（没有内容）不计时", () => {
+    vi.useFakeTimers();
+    const onTimeout = vi.fn();
+    renderHook(() => useExplainerWatchdog({ ...base, armed: false, onTimeout }));
+    act(() => {
+      vi.advanceTimersByTime(120_000);
+    });
+    expect(onTimeout).not.toHaveBeenCalled();
+    vi.useRealTimers();
+  });
+
+  it("已降级时不重复触发", () => {
+    vi.useFakeTimers();
+    const onTimeout = vi.fn();
+    renderHook(() => useExplainerWatchdog({ ...base, degraded: true, onTimeout }));
+    act(() => {
+      vi.advanceTimersByTime(120_000);
+    });
+    expect(onTimeout).not.toHaveBeenCalled();
+    vi.useRealTimers();
+  });
+
+  it("切换到就绪状态会清掉在跑的定时器", () => {
+    vi.useFakeTimers();
+    const onTimeout = vi.fn();
+    const { rerender } = renderHook(
+      (ready: boolean) => useExplainerWatchdog({ ...base, ready, onTimeout }),
+      { initialProps: false },
+    );
+    act(() => {
+      vi.advanceTimersByTime(30_000);
+    });
+    rerender(true);
+    act(() => {
+      vi.advanceTimersByTime(120_000);
+    });
+    expect(onTimeout).not.toHaveBeenCalled();
+    vi.useRealTimers();
   });
 });

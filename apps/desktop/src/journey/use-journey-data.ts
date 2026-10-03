@@ -150,11 +150,14 @@ export function usePractice(subject: string) {
   const [last, setLast] = useState<PracticeAnswer | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // 连续答错次数。§5.1 触发场景 1：连续 2 次答错即自动建议动画讲解。
+  const [wrongStreak, setWrongStreak] = useState(0);
 
   const generate = useCallback(async () => {
     setBusy(true);
     setError(null);
     setLast(null);
+    setWrongStreak(0);
     try {
       setSet(await api.generatePractice({ subject, count: 5 }));
       setIndex(0);
@@ -176,6 +179,7 @@ export function usePractice(subject: string) {
           source: "practice",
         });
         setLast(result);
+        setWrongStreak((prev) => (result.is_correct ? 0 : prev + 1));
         return result;
       } catch (caught) {
         setError(caught instanceof Error ? caught.message : "提交答案失败。");
@@ -199,6 +203,7 @@ export function usePractice(subject: string) {
     last,
     busy,
     error,
+    wrongStreak,
     generate,
     answer,
     next,

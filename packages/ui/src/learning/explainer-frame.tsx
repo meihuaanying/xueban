@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useState, type HTMLAttributes, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  type HTMLAttributes,
+  type ReactNode,
+} from "react";
 
 import { cn } from "../cn";
 
@@ -26,6 +32,38 @@ export interface ExplainerFrameProps extends Omit<HTMLAttributes<HTMLDivElement>
 const DEFAULT_SANDBOX = "allow-scripts";
 const DEFAULT_TIMEOUT_MS = 60_000;
 
+export interface UseExplainerWatchdogOptions {
+  /** 讲解已就绪：html 或 videoUrl 至少有一个。 */
+  armed: boolean;
+  /** 已渲染成功（iframe onLoad / video loadedmetadata）。就绪后解除武装。 */
+  ready: boolean;
+  /** 已经降级过，降级不可逆。 */
+  degraded: boolean;
+  timeoutMs: number;
+  onTimeout: () => void;
+}
+
+/**
+ * §5.4 的渲染超时看门狗：armed 且未就绪超过 timeoutMs 就降级。
+ *
+ * 单独抽出来是因为这段计时逻辑没法在 jsdom 里靠 iframe 事件测——jsdom 会自动
+ * 派发 load，导致 onLoad 一挂上就解除武装，超时路径永远走不到。做成纯计时逻辑
+ * 后可以直接用假定时器断言，也方便别的宿主（比如 React Native WebView）复用。
+ */
+export function useExplainerWatchdog({
+  armed,
+  ready,
+  degraded,
+  timeoutMs,
+  onTimeout,
+}: UseExplainerWatchdogOptions): void {
+  useEffect(() => {
+    if (!armed || ready || degraded) return;
+    const timer = window.setTimeout(onTimeout, timeoutMs);
+    return () => window.clearTimeout(timer);
+  }, [armed, degraded, onTimeout, ready, timeoutMs]);
+}
+
 /**
  * Explainer 沙箱内嵌框（§5.4 安全红线）。
  * - AI 生成的 HTML 只能在此渲染，禁止网络出站由宿主 CSP 负责（`default-src 'none'`）。
@@ -44,15 +82,27 @@ export function ExplainerFrame({
   ...props
 }: ExplainerFrameProps) {
   const [degraded, setDegraded] = useState<"timeout" | "empty" | "error" | null>(null);
+  // 已渲染成功。iframe 的 onLoad 是唯一可靠的"渲染完成"信号——onError 对 iframe
+  // 基本不触发，而只靠超时会在讲解正常跑满 60s 后误判为超时并把好内容换成降级页。
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (!html || degraded) return;
-    const timer = window.setTimeout(() => {
-      setDegraded("timeout");
-      onFallback?.("timeout");
-    }, timeoutMs);
-    return () => window.clearTimeout(timer);
-  }, [degraded, html, onFallback, timeoutMs]);
+    setLoaded(false);
+  }, [html, videoUrl]);
+
+  // 已就绪就不再计时：§5.4 的 60s 是"渲染超时"上限，不是"展示时长"上限。
+  const handleTimeout = useCallback(() => {
+    setDegraded("timeout");
+    onFallback?.("timeout");
+  }, [onFallback]);
+
+  useExplainerWatchdog({
+    armed: Boolean(html || videoUrl),
+    ready: loaded,
+    degraded: degraded !== null,
+    timeoutMs,
+    onTimeout: handleTimeout,
+  });
 
   const degradedView = fallback ?? (
     <div className="rounded-control border border-border-strong bg-surface-sunken p-sm text-app-sm text-muted-foreground">
@@ -95,16 +145,23 @@ export function ExplainerFrame({
         degradedView
       ) : videoUrl ? (
         // 视频走 <video>，不注入远程脚本
-        <video className="w-full rounded-control" controls preload="metadata" src={videoUrl} />
+        <video
+          className="w-full rounded-control"
+          controls
+          preload="metadata"
+          src={videoUrl}
+          onLoadedMetadata={() => setLoaded(true)}
+        />
       ) : html ? (
         <iframe
           title={title}
           // 关键安全约束：sandbox 不给 allow-same-origin/allow-popups，
-          // 任何网络出站由宿主 CSP（default-src 'none'）阻断
+          // 网络出站由后端注入的 CSP（default-src 'none'）阻断
           sandbox={sandbox}
           referrerPolicy="no-referrer"
           className="h-[420px] w-full rounded-control border border-border"
           srcDoc={html}
+          onLoad={() => setLoaded(true)}
           onError={() => {
             setDegraded("error");
             onFallback?.("error");

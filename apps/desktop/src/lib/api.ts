@@ -434,6 +434,33 @@ export interface MicroLesson {
   error: string | null;
 }
 
+/* --------------------------- Explainer 交互讲解（§5.5） --------------------------- */
+
+export type ExplainerStatus = "pending" | "generating" | "ready" | "failed";
+
+export interface ExplainerContent {
+  id: string;
+  knowledge_id: string;
+  stage: string;
+  title: string;
+  status: ExplainerStatus;
+  /** 消毒后的单文件 HTML（内联 CSS/JS，无外链）；未就绪时为空串。 */
+  html: string;
+  /** true 表示这是 §5.4 的图文分步降级产物，交互页没生成出来。 */
+  degraded: boolean;
+  byte_size: number;
+  /** 教学脚本（≤4 幕），供无脚本兜底与朗读。 */
+  script: Record<string, unknown>;
+  render_timeout_seconds: number;
+}
+
+export interface ExplainerJob {
+  job_id: string;
+  status: ExplainerStatus;
+  error: string | null;
+  content: ExplainerContent | null;
+}
+
 export interface ExamQuestion {
   id: string;
   stem: string;
@@ -589,6 +616,24 @@ export const api = {
     get<{ lesson_id: string; url: string; mime: string; expires_in: number }>(
       `/v1/micro-lessons/${lessonId}/audio`,
     ),
+
+  // Explainer 交互讲解（§5.5）：缓存命中时 generate 直接带 content 返回 200
+  generateExplainer: (knowledgeId: string, mode: "interactive" | "video" = "interactive") =>
+    post<{ job_id: string; status: ExplainerStatus; cache_hit: boolean; content: ExplainerContent | null }>(
+      "/v1/explainer/generate",
+      { knowledge_id: knowledgeId, mode },
+    ),
+  explainerJob: (jobId: string) => get<ExplainerJob>(`/v1/explainer/${jobId}`),
+  explainerContent: (contentId: string) =>
+    get<{ content: ExplainerContent }>(`/v1/explainer/content/${contentId}`),
+  explainerFeedback: (contentId: string, understood: boolean, note?: string) =>
+    post<{
+      feedback_id: string;
+      content_id: string;
+      understood: boolean;
+      understood_count: number;
+      confused_count: number;
+    }>("/v1/explainer/feedback", { content_id: contentId, understood, note }),
 
   // 多端同步（F-39）
   syncState: () =>
