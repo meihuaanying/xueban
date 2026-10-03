@@ -99,6 +99,70 @@ def test_normalize_and_check_answer() -> None:
     assert not diagnosis_service.check_answer(question, "3")
 
 
+# ---------- 按题型归一的判卷（P1 / §6.1 小学题型） ----------
+
+
+def _question(qtype: QuestionType, answer: str, options: dict[str, str] | None = None) -> Question:
+    return Question(
+        subject="chinese",
+        stage="grade1_2",
+        qtype=qtype,
+        stem="题干",
+        answer=answer,
+        options=options,
+        analysis="",
+        status=QuestionStatus.PUBLISHED,
+    )
+
+
+def test_match_answer_compares_as_mapping_regardless_of_key_order() -> None:
+    """连线题标准答案是 JSON 映射，键序不能影响判定。"""
+    question = _question(
+        QuestionType.MATCH,
+        '{"铅笔盒":"长方形","乒乓球":"圆形","易拉罐":"圆柱","魔方":"正方形"}',
+    )
+    assert diagnosis_service.check_answer(
+        question, '{"魔方":"正方形","铅笔盒":"长方形","乒乓球":"圆形","易拉罐":"圆柱"}'
+    )
+    # 只对上一条不成立（易拉罐换成了圆柱以外的东西）
+    assert not diagnosis_service.check_answer(
+        question, '{"魔方":"正方形","铅笔盒":"长方形","乒乓球":"圆形","易拉罐":"球"}'
+    )
+    # 少配一个也算错
+    assert not diagnosis_service.check_answer(question, '{"铅笔盒":"长方形"}')
+
+
+def test_pick_hanzi_accepts_option_key_and_content() -> None:
+    """点选识字：标准答案存的是汉字内容，前端提交的是选项 key。"""
+    question = _question(
+        QuestionType.PICK_HANZI, "田", {"A": "田", "B": "由", "C": "甲", "D": "申"}
+    )
+    assert diagnosis_service.check_answer(question, "A")
+    assert diagnosis_service.check_answer(question, "田")
+    assert not diagnosis_service.check_answer(question, "B")
+
+
+def test_judge_accepts_symbol_and_word_forms() -> None:
+    """判断题：孩子点的是 √/×，库里存的是对/错。"""
+    truth = _question(QuestionType.JUDGE, "对")
+    assert diagnosis_service.check_answer(truth, "√")
+    assert diagnosis_service.check_answer(truth, "正确")
+    assert diagnosis_service.check_answer(truth, "T")
+    assert not diagnosis_service.check_answer(truth, "×")
+
+    falsehood = _question(QuestionType.JUDGE, "错")
+    assert diagnosis_service.check_answer(falsehood, "×")
+    assert diagnosis_service.check_answer(falsehood, "不对")
+    assert not diagnosis_service.check_answer(falsehood, "√")
+
+
+def test_choice_still_compares_option_key_only() -> None:
+    """选择题不能因为选项内容刚好等于答案就放行——否则等于没做选择。"""
+    question = _question(QuestionType.CHOICE, "B", {"A": "10", "B": "12"})
+    assert diagnosis_service.check_answer(question, "B")
+    assert not diagnosis_service.check_answer(question, "12")
+
+
 # ---------- API 全流程 ----------
 
 

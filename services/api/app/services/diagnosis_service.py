@@ -25,6 +25,7 @@ from app.models import (
     Question,
     QuestionKnowledgePoint,
     QuestionStatus,
+    QuestionType,
     User,
 )
 from app.services import mastery_service
@@ -100,8 +101,86 @@ def normalize_answer(value: str) -> str:
     return value.translate(translation).strip().lower()
 
 
+#: 判断题的口语化写法。库里 answer 存的是「对」/「错」，但孩子会在按钮上
+#: 看到 √ 与 ×，家长也可能口头写 T/F。判定必须认这些同义写法，否则
+#: 判卷会把明显答对的孩子判成错。
+_JUDGE_TRUE = frozenset({"对", "√", "✓", "正确", "是", "t", "true", "yes", "y", "1"})
+_JUDGE_FALSE = frozenset({"错", "×", "✗", "x", "不对", "错误", "否", "f", "false", "no", "n", "0"})
+
+
+def _load_mapping(raw: str) -> dict[str, str] | None:
+    """把 JSON 对象形式的答案解析成映射；不是对象就返回 None。"""
+    import json
+
+    text = raw.strip()
+    if not text.startswith("{") or not text.endswith("}"):
+        return None
+    try:
+        parsed = json.loads(text)
+    except ValueError:
+        return None
+    if not isinstance(parsed, dict):
+        return None
+    return {str(key): str(value) for key, value in parsed.items()}
+
+
+def _matches_link_pairs(answer: str, user_answer: str) -> bool:
+    """连线题判定（P1 / §6.1）。
+
+    库里的标准答案是「左项→右项」的 JSON 映射，而孩子在前端点出来的配对会被
+    序列化成 ``左:右,左:右``。两种形态都要认，而且**键序不能有影响**——JSON 对象
+    在 Python 里的迭代顺序取决于生成时的写入顺序，拿字符串直接比会随机判错。
+    """
+    expected = _load_mapping(answer)
+    actual = _load_mapping(user_answer)
+    if expected is None or actual is None:
+        return False
+    if set(expected) != set(actual):
+        return False
+    return all(
+        normalize_answer(actual[key]) == normalize_answer(value) for key, value in expected.items()
+    )
+
+
+def _matches_option_content(question: Question, user_answer: str) -> bool:
+    """点选识字/口算：标准答案存的是**选项内容**而不是选项 key。
+
+    ``pick_hanzi`` 的 answer 是「田」而不是「B」，孩子从前端提交的是选项 key。
+    所以先把用户提交的 key 翻成选项文本，再和标准答案比。
+    """
+    if not question.options:
+        return False
+    chosen = user_answer.strip()
+    label = question.options.get(chosen)
+    if label is None:
+        return False
+    return normalize_answer(label) == normalize_answer(question.answer)
+
+
 def check_answer(question: Question, user_answer: str) -> bool:
-    """客观题判定（选择题比较选项字母，填空比较归一化文本）。"""
+    """客观题判定（按题型归一后比较）。
+
+    选择/填空保持原有的归一化字符串比较；连线题按映射比对；点选识字支持
+    「提交选项 key」与「直接提交内容」两种形态；判断题认 √/×/T/F 等口语写法。
+    """
+    if question.qtype is QuestionType.MATCH and _matches_link_pairs(
+        question.answer, user_answer
+    ):
+        return True
+    if question.qtype is QuestionType.PICK_HANZI and _matches_option_content(
+        question, user_answer
+    ):
+        return True
+    if question.qtype is QuestionType.JUDGE:
+        left = normalize_answer(question.answer)
+        right = normalize_answer(user_answer)
+        if left == right:
+            return True
+        if left in _JUDGE_TRUE:
+            return right in _JUDGE_TRUE
+        if left in _JUDGE_FALSE:
+            return right in _JUDGE_FALSE
+        return False
     return normalize_answer(question.answer) == normalize_answer(user_answer)
 
 
