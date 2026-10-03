@@ -25,9 +25,27 @@ _BARE_NUMBERS = re.compile(r"-?\d+(?:\.\d+)?")
 _MATH_CHARS = re.compile(r"^[\d\s+\-*/().^_,a-zA-Z{}]+$")
 
 
+def is_pure_math(text: str) -> bool:
+    """文本剥掉定界符后是否已是纯算式（不含中文叙述等噪声）。"""
+    return bool(_MATH_CHARS.match(text.strip()))
+
+
+def strip_latex(text: str) -> str:
+    """剥掉 LaTeX 行内定界符，保留公式内容。
+
+    出题 prompt 明确要求「数学表达式可用 LaTeX（$...$）」，所以模型很自然会写
+    ``$3 + 5 + 4 =$``。而 SymPy 吃不下 ``$`` —— 实测含 ``$`` 的混合运算题
+    会被整批判「无法求值/无法解析」，一年级数学的通过率因此被拖低。
+
+    先剥配对的 ``$...$``（保留内容），再去掉残留的孤立 ``$``（模型偶尔漏写
+    右定界符）。
+    """
+    return _INLINE_MATH.sub(r"\1", text).replace("$", "")
+
+
 def parse_math(text: str) -> Any | None:
     """尝试把文本解析为 SymPy 表达式；失败返回 None。"""
-    cleaned = text.strip().replace("^", "**").replace("\\", "")
+    cleaned = strip_latex(text.strip()).replace("^", "**").replace("\\", "")
     if not cleaned or not _MATH_CHARS.match(cleaned):
         return None
     try:
@@ -78,6 +96,6 @@ def verify_contains_answer(solution_text: str, answer: str) -> bool:
 
 
 def _normalize_text(value: str) -> str:
-    """文本归一化（去空白、全角转半角、大小写统一）。"""
+    """文本归一化（剥定界符、去空白、全角转半角、大小写统一）。"""
     translation = str.maketrans("０１２３４５６７８９（）．，", "0123456789().,")
-    return re.sub(r"\s+", "", value.translate(translation).lower())
+    return re.sub(r"\s+", "", strip_latex(value).translate(translation).lower())

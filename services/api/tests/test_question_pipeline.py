@@ -441,6 +441,45 @@ def test_math_rule_rejects_wrong_arithmetic() -> None:
     assert rule_verify(wrong, MATH_POINT) is not None
 
 
+def test_math_rule_accepts_latex_delimited_expression() -> None:
+    """出题 prompt 要求用 $...$ 写公式，SymPy 必须先剥定界符再求值。
+
+    实测不剥时整批混合运算题被判「无法解析」，一年级数学通过率被拖低。
+    """
+    question = make_question(
+        qtype="fill",
+        stem="混合运算：$3 + 5 + 4 =$ ____",
+        options=None,
+        answer="12",
+        knowledge_point_id=MATH_POINT.id,
+    )
+    assert rule_verify(question, MATH_POINT) is None
+
+
+def test_math_rule_still_rejects_wrong_answer_inside_latex() -> None:
+    """剥定界符不是放水：算式与答案对不上照样拒。"""
+    question = make_question(
+        qtype="fill",
+        stem="混合运算：$3 + 5 + 4 =$ ____",
+        options=None,
+        answer="13",
+        knowledge_point_id=MATH_POINT.id,
+    )
+    assert rule_verify(question, MATH_POINT) is not None
+
+
+def test_math_rule_accepts_latex_answer() -> None:
+    """标准答案带 $ 定界符时也应能求值对拍。"""
+    question = make_question(
+        qtype="fill",
+        stem="$9 - 4 + 6 =$ ?",
+        options=None,
+        answer="$11$",
+        knowledge_point_id=MATH_POINT.id,
+    )
+    assert rule_verify(question, MATH_POINT) is None
+
+
 def test_math_rule_rejects_equal_stem_with_wrong_answer() -> None:
     question = make_question(
         qtype="fill",

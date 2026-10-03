@@ -41,6 +41,28 @@ def test_extract_expressions() -> None:
     assert any(item.startswith("2") for item in expressions)
 
 
+def test_strip_latex_keeps_content_drops_delimiters() -> None:
+    assert math_verify.strip_latex("$3 + 5 + 4 =$") == "3 + 5 + 4 ="
+    # 模型偶尔漏写右定界符，孤立 $ 也要去掉
+    assert math_verify.strip_latex("$x + 1") == "x + 1"
+    assert math_verify.strip_latex("没有定界符") == "没有定界符"
+
+
+def test_parse_math_accepts_latex_delimited() -> None:
+    assert math_verify.parse_math("$2 + 3$") == 5
+    assert math_verify.parse_math("$12$") == 12
+
+
+def test_are_equivalent_ignores_latex_delimiters() -> None:
+    """字符串回退分支也必须剥定界符，否则 $2$ 与 2 会被判不等。"""
+    assert math_verify.are_equivalent("答案：$2$", "答案：2") is True
+
+
+def test_is_pure_math() -> None:
+    assert math_verify.is_pure_math("3 + 5 + 4") is True
+    assert math_verify.is_pure_math("混合运算：3 + 5 + 4") is False
+
+
 def test_parse_math_invalid() -> None:
     assert math_verify.parse_math("") is None
     assert math_verify.parse_math("不是数学") is None

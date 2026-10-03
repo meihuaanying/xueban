@@ -25,7 +25,7 @@ import sympy
 from app.config import Settings
 from app.data.curriculum import KnowledgePoint
 from app.services.llm_client import LlmClient
-from app.services.math_verify import parse_math
+from app.services.math_verify import is_pure_math, parse_math, strip_latex
 from app.services.prompts import CONTENT_JUDGE_SYSTEM_PROMPT, CONTENT_JUDGE_USER_TEMPLATE
 from app.services.question_generator import GeneratedQuestion
 
@@ -179,15 +179,24 @@ def _normalize_math_text(text: str) -> str:
     return text.translate(table)
 
 
+#: 题干里可能夹着中文叙述（「混合运算：3 + 5 + 4」），求值前要先抽出纯算式段。
+_MATH_SEGMENT = re.compile(r"[\d][\d\s+\-*/().^]*[\d)]|\d")
+
+
 def _math_left_side(stem: str) -> str | None:
     """取出题干里最后一个等号的左侧算式（"9 + 5 = ？" → "9 + 5"）。"""
     if "=" not in stem:
         return None
     left, _, _ = stem.rpartition("=")
-    left = left.strip()
+    # 剥掉 $ 定界符：出题 prompt 要求用 $...$，SymPy 吃不下（见 math_verify.strip_latex）。
+    left = strip_latex(left).strip()
     if not left or not re.search(r"\d", left):
         return None
-    return left
+    if is_pure_math(left):
+        return left
+    # 左侧混着中文叙述时取最长的一段纯算式
+    segment = max(_MATH_SEGMENT.findall(left), key=len, default="")
+    return segment.strip() or None
 
 
 def _check_math_answer(question: GeneratedQuestion) -> str | None:
