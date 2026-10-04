@@ -10,7 +10,12 @@ test.describe("P0 旅程骨架与路由守卫", () => {
   });
 
   test("注册后进入旅程首站（6 站导航 + 当前用户）", async ({ page, request }) => {
-    await signInAsLearner(page, request);
+    // 用 focus 学段：儿童模式下侧边栏换成 KidsNavBar（aria-label="学习导航"，
+    // 图标 + 🐼），这条断言的是学院派 JourneyNav（aria-label="学习旅程"，文字标签
+    // + 阶段序号 + 「需先完成…」提示）。两套导航各有各的用例，kids 那套见
+    // kids-journey.spec.ts 第 1 条 —— 所以这里必须显式选 focus，而不是让默认的
+    // primary/kids 决定断言对象（REBUILD §4.1）。
+    await signInAsLearner(page, request, { stage: "today", hasProfile: true }, SEEDED_BAND);
     await page.goto("/journey/today");
 
     const nav = page.getByRole("navigation", { name: "学习旅程" });
@@ -34,7 +39,9 @@ test.describe("P0 旅程骨架与路由守卫", () => {
   });
 
   test("未满足前置条件的阶段被禁用（禁止孤立跳转）", async ({ page, request }) => {
-    await signInAsLearner(page, request, { stage: "today", hasProfile: true });
+    // 同上：focus 主题。「需先完成：…」这段提示只有 JourneyNav 的 StageItem 会渲染，
+    // KidsNavBar 没有，所以这条断言天然要求学院派导航。
+    await signInAsLearner(page, request, { stage: "today", hasProfile: true }, SEEDED_BAND);
     await page.goto("/journey/today");
 
     const nav = page.getByRole("navigation", { name: "学习旅程" });

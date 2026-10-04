@@ -561,16 +561,21 @@
     "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, -apple-system,
     "Segoe UI", sans-serif;
 
-  /* 8pt 间距语义名（p-xs / gap-md / w-2xl …），数字 utility 保持 Tailwind 默认 */
+  /* 8pt 间距语义名（p-xs / gap-md …），数字 utility 保持 Tailwind 默认。
+   *
+   * 只暴露 hair..lg 这四档，**刻意不暴露 xl/2xl/3xl/4xl**：
+   * Tailwind v4 里 `--spacing-<name>` 同时是 spacing 与 `max-w-<name>` 的取值来源，
+   * 一旦定义了 `--spacing-4xl`，`max-w-4xl` 就不再走容器刻度（56rem）而是取
+   * `var(--spacing-4xl)`，于是 `<ul class="max-w-4xl">` 实测只有 96px 宽，
+   * onboarding 三张卡被压成 16px 竖条、按钮互相重叠（desktop onboarding / settings、
+   * 官网 help 页都中招）。这四档间距在仓库里零使用，所以直接不导出，
+   * 把容器刻度还给 Tailwind；真要用 40/48/64/96px 请显式写 `[96px]` 之类。
+   */
   --spacing-hair: var(--space-hair);
   --spacing-xs: var(--space-xs);
   --spacing-sm: var(--space-sm);
   --spacing-md: var(--space-md);
   --spacing-lg: var(--space-lg);
-  --spacing-xl: var(--space-xl);
-  --spacing-2xl: var(--space-2xl);
-  --spacing-3xl: var(--space-3xl);
-  --spacing-4xl: var(--space-4xl);
 }
 
 @theme static inline {
