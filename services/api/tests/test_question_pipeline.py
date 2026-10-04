@@ -137,6 +137,19 @@ CHINESE_POINT = KnowledgePoint(
     prerequisites=(),
 )
 
+ENGLISH_POINT = KnowledgePoint(
+    id="g1e-letter-a-d",
+    name="字母 A~D 的认读",
+    subject="english",
+    grade="grade1",
+    unit_code="g1e-u1",
+    unit_name="26 个字母",
+    objective="认读字母 A 到 D",
+    question_types=("choice",),
+    difficulty_band=1,
+    prerequisites=(),
+)
+
 
 def question_payload(**overrides: Any) -> dict[str, Any]:
     payload: dict[str, Any] = {
@@ -491,6 +504,94 @@ def test_math_rule_rejects_equal_stem_with_wrong_answer() -> None:
     assert rule_verify(question, MATH_POINT) is not None
 
 
+# ---------------------------------------------------------------- 数值归一边界
+# 这几条钉死的是 2026-10 排障时争论过的口径：数值归一到底放宽到什么程度。
+# 口径是「砍掉浮点尾巴，但不放宽数值本身」。
+
+
+def test_math_rule_accepts_integer_written_with_float_tail() -> None:
+    """出题模型把整数答案写成 14.0000000000000 这类带尾巴形式时必须通过。"""
+    question = make_question(
+        qtype="fill",
+        stem="计算：7 + 7 = ____",
+        options=None,
+        answer="14.0000000000000",
+        knowledge_point_id=MATH_POINT.id,
+    )
+    assert rule_verify(question, MATH_POINT) is None
+
+
+def test_math_rule_does_not_truncate_a_real_fraction() -> None:
+    """14.5 绝不能被当成 14 收进来——这是最危险的一种放宽。"""
+    question = make_question(
+        qtype="fill",
+        stem="计算：7 + 7.5 = ____",
+        options=None,
+        answer="14",
+        knowledge_point_id=MATH_POINT.id,
+    )
+    assert rule_verify(question, MATH_POINT) is not None
+
+    correct = make_question(
+        qtype="fill",
+        stem="计算：3.5 + 4 = ____",
+        options=None,
+        answer="7.5",
+        knowledge_point_id=MATH_POINT.id,
+    )
+    assert rule_verify(correct, MATH_POINT) is None
+
+
+def test_math_rule_rejects_fraction_written_as_rounded_decimal() -> None:
+    """1/3 的 0.333 是四舍五入、不是同一个数，必须拒。
+
+    口径：精确比较，不用浮点容差。所以「1/3 ≈ 0.333」在题库里是错答案。
+    """
+    question = make_question(
+        qtype="fill",
+        stem="计算：1 / 3 = ____",
+        options=None,
+        answer="0.333",
+        knowledge_point_id=MATH_POINT.id,
+    )
+    assert rule_verify(question, MATH_POINT) is not None
+
+
+def test_math_rule_accepts_same_fraction_in_two_notations() -> None:
+    """上一条的反向守卫：同一个数的不同写法仍然要通过。"""
+    exact = make_question(
+        qtype="fill",
+        stem="计算：1 / 3 = ____",
+        options=None,
+        answer="1/3",
+        knowledge_point_id=MATH_POINT.id,
+    )
+    assert rule_verify(exact, MATH_POINT) is None
+
+    via_decimal = make_question(
+        qtype="fill",
+        stem="计算：5 / 2 = ____",
+        options=None,
+        answer="2.5",
+        knowledge_point_id=MATH_POINT.id,
+    )
+    assert rule_verify(via_decimal, MATH_POINT) is None
+
+
+def test_math_rejection_message_carries_the_answer() -> None:
+    """拒收消息必须自带标准答案——原来只说「不一致」，线上等于没用。"""
+    question = make_question(
+        qtype="fill",
+        stem="计算：12 + 7 = ____",
+        options=None,
+        answer="20",
+        knowledge_point_id=MATH_POINT.id,
+    )
+    reason = rule_verify(question, MATH_POINT)
+    assert reason is not None
+    assert "20" in reason
+
+
 def test_math_rule_rejects_unparseable_oral() -> None:
     question = make_question(
         qtype="oral",
@@ -754,6 +855,86 @@ async def test_pipeline_skips_point_already_at_target(
         assert calls["n"] == 0
 
 
+async def test_pipeline_counts_only_published_questions(
+    sessionmaker: async_sessionmaker[AsyncSession],
+) -> None:
+    """待人审的题不算达标——取题只认 PUBLISHED。
+
+    早先 `_count_for_point` 只数 `QuestionKnowledgePoint` 行数，于是入库时按
+    `human_review_rate` 抽走的 5%（写成 REVIEW）也被算进「已有题量」：管线认为
+    30 题已达标直接跳过，学生端实际只抽得到 28~29 道。实测 41 个一年级知识点里
+    32 个中招，所以这里必须钉住口径。
+    """
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        return chat_body(json.dumps({"questions": [question_payload()]}))
+
+    async with sessionmaker() as session:
+        pipeline = QuestionPipeline(
+            make_client(handler), make_settings(), request_interval_seconds=0
+        )
+        kp_id = await pipeline._ensure_knowledge_point(session, CHINESE_POINT, 0)
+        # 1 道 PUBLISHED + 1 道 REVIEW，关联行共 2 条，但可取用的只有 1 道
+        for index, status in enumerate(
+            (QuestionStatus.PUBLISHED, QuestionStatus.REVIEW)
+        ):
+            record = QuestionModel(
+                subject="chinese",
+                stage=ELEMENTARY_STAGE,
+                qtype=QuestionType.CHOICE,
+                stem=f"预置题目 {index}",
+                answer="A",
+                status=status,
+            )
+            session.add(record)
+            await session.flush()
+            session.add(QuestionKnowledgePoint(question_id=record.id, knowledge_point_id=kp_id))
+        await session.commit()
+
+        assert await pipeline._count_for_point(session, kp_id) == 1
+
+        # target=2：只按关联行数会误判为已达标并跳过，按 PUBLISHED 口径则要继续补
+        outcome = await pipeline.process_point(session, CHINESE_POINT, target=2)
+        assert outcome.existed_before == 1
+        assert outcome.skipped is False
+        assert calls["n"] > 0
+
+
+async def test_pipeline_asks_enough_to_cover_human_review_sampling(
+    sessionmaker: async_sessionmaker[AsyncSession],
+) -> None:
+    """补题量要把 5% 人审抽走的部分补回来。
+
+    只按存活率放大还不够：入库时抽 5% 进 REVIEW，target 记的是「可抽到的题数」，
+    所以生成本身还得再除以 (1 - human_review_rate)。
+    """
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["n"] += 1
+        return chat_body(json.dumps({"questions": [question_payload()]}))
+
+    async def run(human_review_rate: float, point: KnowledgePoint) -> int:
+        nonlocal calls
+        calls = {"n": 0}
+        async with sessionmaker() as session:
+            pipeline = QuestionPipeline(
+                make_client(handler),
+                make_settings(human_review_rate=human_review_rate),
+                request_interval_seconds=0,
+            )
+            await pipeline.process_point(session, point, target=20)
+            await session.commit()
+            return calls["n"]
+
+    # 人审率越高，同样补到 20 道可用的题就得问模型更多次
+    sampled = await run(0.5, CHINESE_POINT)
+    unsampled = await run(0.0, ENGLISH_POINT)
+    assert sampled > unsampled
+
+
 async def test_pipeline_inserts_published_questions(
     sessionmaker: async_sessionmaker[AsyncSession],
 ) -> None:
@@ -808,7 +989,11 @@ async def test_pipeline_inserts_published_questions(
         assert outcome.generated >= len(stems)
         assert outcome.inserted + outcome.deduped_away == outcome.verified
         assert outcome.inserted >= 1
-        assert outcome.verified == len(stems), "规则 + judge 都应放行这批题"
+        # 不能写 == len(stems)：content_expected_survival_rate=0.7 时 target=6
+        # 会向上取整成 ask_total=9，生成量按存活率留了余量。这批夹具题全部
+        # 合规是本用例的断言（规则 + judge 都放行），但数量随余量变，
+        # 所以只断言「至少放行了这批题」。
+        assert outcome.verified >= len(stems), "规则 + judge 都应放行这批题"
         assert outcome.for_review == pytest.approx(outcome.inserted * HUMAN_REVIEW_RATE, abs=1)
 
         rows = (
@@ -904,6 +1089,101 @@ async def test_pipeline_backs_off_instead_of_spinning_when_generation_fails(
     assert all(value > 0 for value in sleeps)
     assert any(value >= 5.0 for value in sleeps), "失败后的退避应显著长于正常请求间隔"
     assert any("未产出任何题目" in message for message in outcome.errors)
+
+
+async def test_pipeline_overgenerates_to_offset_rejection_rate(
+    sessionmaker: async_sessionmaker[AsyncSession],
+) -> None:
+    """只差 1 题的知识点也必须真的补上 1 题。
+
+    这是个真踩过的坑：生成循环原本以「生成量」为收敛目标，而验证/去重/入库
+    全部发生在循环**之后**。于是只差 1 题时只生成 1 道，那道题一旦被规则拒收
+    （或被去重剔除），入库量就是 0——知识点永远卡在 29，反复重跑也没用。
+    实测有 5 个知识点就是这样长期补不上的。
+
+    所以要按存活率（默认 0.7，与实测管线通过率 ~0.71 对齐）**多要几道**。
+    """
+    stem_pool = [
+        "「b」读的时候嘴唇要闭起来吗？",
+        "「p」发音时嘴唇是闭着还是张着？",
+        "「m」和「n」读起来最大的不同在哪？",
+        "「f」和「h」都是气流摩擦音，它们怎么区分？",
+        "「l」发音时舌尖顶住哪里？",
+        "「g」和「k」都是舌根音，位置一样吗？",
+    ]
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        payload = request.content.decode("utf-8")
+        if "verdict" in payload or "质检" in payload:
+            return chat_body(json.dumps({"verdict": "pass", "score": 90, "reason": "ok"}))
+        return chat_body(
+            json.dumps(
+                {
+                    "questions": [
+                        question_payload(stem=stem, answer="A")
+                        for stem in stem_pool
+                    ]
+                },
+                ensure_ascii=False,
+            )
+        )
+
+    # 只差 1 题：这是最容易复现原缺陷的场景
+    settings = make_settings(
+        content_batch_size=10,
+        content_expected_survival_rate=0.7,
+    )
+    pipeline = QuestionPipeline(
+        make_client(handler), settings, request_interval_seconds=0, rng=random.Random(11)
+    )
+    async with sessionmaker() as session:
+        outcome = await pipeline.process_point(session, CHINESE_POINT, target=1)
+
+    # 关键断言：生成量必须大于缺口（ask_total = ceil(1/0.7) = 2）
+    assert outcome.existed_before == 0
+    assert outcome.generated >= 2, "只差 1 题时也必须多要几道，否则一被拒收就补不上"
+    assert outcome.inserted >= 1, "只差 1 题的知识点必须真的补上 1 题"
+
+
+async def test_pipeline_asks_more_when_survival_rate_is_lower(
+    sessionmaker: async_sessionmaker[AsyncSession],
+) -> None:
+    """存活率假设越保守，要生成的量越多——参数必须真的起作用，不是摆设。"""
+    calls = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        payload = request.content.decode("utf-8")
+        if "verdict" in payload or "质检" in payload:
+            return chat_body(json.dumps({"verdict": "pass", "score": 90, "reason": "ok"}))
+        calls["n"] += 1
+        # 每轮都给满一整批，且题干按轮次递增以避开去重——这样 generated
+        # 就等于「管线要了多少道」，可以直接拿存活率反推。
+        batch = [
+            question_payload(stem=f"第 {calls['n']} 轮第 {index} 题：拼音声母辨析", answer="A")
+            for index in range(10)
+        ]
+        return chat_body(json.dumps({"questions": batch}, ensure_ascii=False))
+
+    async def run(survival: float, point: KnowledgePoint) -> Any:
+        # 每次跑用不同的知识点：上一次入库的题会让下一次 existed>=target 直接跳过，
+        # 那样就测不到「要多生成多少」了。
+        settings = make_settings(
+            content_batch_size=10,
+            content_expected_survival_rate=survival,
+        )
+        pipeline = QuestionPipeline(
+            make_client(handler), settings, request_interval_seconds=0, rng=random.Random(3)
+        )
+        async with sessionmaker() as session:
+            return await pipeline.process_point(session, point, target=10)
+
+    pessimistic = await run(0.25, CHINESE_POINT)
+    optimistic = await run(1.0, ENGLISH_POINT)
+    # 0.25 → ask_total = ceil(10/0.25) = 40；1.0 → ask_total = 10
+    assert pessimistic.generated >= 40
+    assert optimistic.generated >= 10
+    assert pessimistic.generated > optimistic.generated
+    assert calls["n"] > 1, "至少应发出一次生成请求"
 
 
 async def test_pipeline_record_rates_are_consistent() -> None:

@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import math
 import random
 import uuid
 from dataclasses import dataclass, field
@@ -194,10 +195,22 @@ class QuestionPipeline:
     async def _count_for_point(
         self, session: AsyncSession, knowledge_point_id: uuid.UUID
     ) -> int:
+        """这个知识点**真正能被抽到**的题量：只算 PUBLISHED。
+
+        不能简单按 `QuestionKnowledgePoint` 行数算：入库时会按 `human_review_rate`
+        抽 5% 写成 `QuestionStatus.REVIEW` 留给人工审阅，而练习/诊断/考试取题一律
+        `status == PUBLISHED`（见 practice_service、diagnosis_service、exam_service）。
+        早先这里不过滤，于是「30 题」里有 1~2 道躺在 review 区——管线认为已达标跳过，
+        学生端却只能抽到 28~29 道。实测 41 个一年级知识点里有 32 个中招。
+        """
         result = await session.execute(
             select(func.count())
             .select_from(QuestionKnowledgePoint)
-            .where(QuestionKnowledgePoint.knowledge_point_id == knowledge_point_id)
+            .join(QuestionModel, QuestionModel.id == QuestionKnowledgePoint.question_id)
+            .where(
+                QuestionKnowledgePoint.knowledge_point_id == knowledge_point_id,
+                QuestionModel.status == QuestionStatus.PUBLISHED,
+            )
         )
         return int(result.scalar_one())
 
@@ -245,11 +258,23 @@ class QuestionPipeline:
         need = target - existed
         generated: list[GeneratedQuestion] = []
         rounds = 0
-        max_rounds = max(1, need // max(1, self._settings.content_batch_size) + 2)
-        while len(generated) < need and rounds < max_rounds:
+        # 收敛目标是「生成量」而不是「入库量」，所以必须按存活率放大要生成的量。
+        # 否则只差 1 题的知识点只会生成 1 道题，那道题一旦被验证拒收或被去重剔除，
+        # 入库量就停在 29——实测有 5 个知识点正是这样卡住的，反复重跑也补不上。
+        survival = min(1.0, max(0.1, self._settings.content_expected_survival_rate))
+        # 存活率还要再乘一道「人审抽走」的折扣：入库时按 human_review_rate 抽 5%
+        # 写成 REVIEW，而取题只认 PUBLISHED（见 _count_for_point）。不把这一层算进去，
+        # 补出来的题量会系统性地少 5%，又是一轮「跑了仍没达标」。
+        publish_rate = 1.0 - min(0.9, max(0.0, self._settings.human_review_rate))
+        ask_total = math.ceil(need / (survival * publish_rate))
+        max_rounds = max(1, ask_total // max(1, self._settings.content_batch_size) + 2)
+        while len(generated) < ask_total and rounds < max_rounds:
             rounds += 1
             batch, report = await self._generator.generate(
-                point, count=min(self._settings.content_batch_size, need - len(generated))
+                point,
+                count=min(
+                    self._settings.content_batch_size, ask_total - len(generated)
+                ),
             )
             outcome.generated += len(batch)
             outcome.errors.extend(report.errors)

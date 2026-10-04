@@ -31,7 +31,7 @@ from _common import database_session
 from sqlalchemy import func, select
 
 from app.config import settings
-from app.models import KnowledgePoint, Question, QuestionKnowledgePoint
+from app.models import KnowledgePoint, Question, QuestionKnowledgePoint, QuestionStatus
 from app.services.llm_client import LlmClient
 from app.services.observability import ObservabilityService
 from app.services.question_pipeline import (
@@ -137,7 +137,12 @@ async def _db_totals(session: object) -> dict[str, int]:
                 Question,
                 Question.id == QuestionKnowledgePoint.question_id,
             )
-            .where(Question.stage == ELEMENTARY_STAGE)
+            .where(
+                Question.stage == ELEMENTARY_STAGE,
+                # 只数 PUBLISHED：这个口径必须和 practice_service 取题口径一致，
+                # 否则报告说「都达标了」，学生端实际少 5% 的题。
+                Question.status == QuestionStatus.PUBLISHED,
+            )
             .group_by(QuestionKnowledgePoint.knowledge_point_id)
             .having(func.count() < settings.content_min_per_point)
         )

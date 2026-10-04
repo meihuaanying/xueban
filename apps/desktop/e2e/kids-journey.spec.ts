@@ -16,9 +16,16 @@ import {
  * 2. 儿童模式外壳：吉祥物 + 图标导航常驻，文字不再是唯一导航途径
  * 3. 一年级强制休息（§8 约束 2）：连续学满 20 分钟必须挡住整屏，不给跳过
  * 4. §5.1 触发场景 1：连续 2 次答错自动建议动画讲解
- * 5. §5.4 降级契约：讲解生成中/失败都必须有可见状态，**永不白屏**
+ * 5. §5.1 触发场景 2：错题详情里点「动画讲解这个知识点」
+ * 6. §5.1 触发场景 3：知识地图节点开讲解（专注模式侧边栏 + 儿童模式规划站两条路径）
+ * 7. §5.4 降级契约：讲解生成中/失败都必须有可见状态，**永不白屏**
  *
- * band 用默认值 `primary`（kids 主题）；题库已有 2196 道 grade1_2 题，
+ * 讲解一律用「pending / ready / failed 任一可见」作为断言，因为真实模型生成要几十秒，
+ * 硬等 ready 会让门禁变成一条耗时且不稳定的用例；但**不允许**把 failed 也算通过——
+ * 那正是 `knowledge_point_ids` 缺陷能藏这么久的原因（见 §4 复盘）。所以下面
+ * 另有 vitest + 后端 pytest 两条精确断言守住「id 传对了」，见 test_explainer.py。
+ *
+ * band 用默认值 `primary`（kids 主题）；题库已有 2000+ 道 grade1_2 题，
  * `SEEDED_BAND="junior"` 那条「primary 无题可出」的旧前提已过时。
  */
 test.describe("妹妹旅程 · 一年级全流程（儿童模式）", () => {
@@ -170,6 +177,34 @@ test.describe("妹妹旅程 · 一年级全流程（儿童模式）", () => {
     const node = page.locator('[data-testid^="kmap-node-"]').first();
     await expect(node).toBeVisible({ timeout: 20_000 });
     await node.click();
+    await expect(
+      page
+        .locator(
+          '[data-testid="explainer-pending"], [data-testid="explainer-ready"], [data-testid="explainer-failed"]',
+        )
+        .first(),
+    ).toBeVisible({ timeout: 30_000 });
+  });
+
+  test("场景 3：儿童模式下也能从知识地图节点开讲解（规划站）", async ({
+    page,
+    request,
+  }) => {
+    // 侧边栏在 kids 主题是图标导航、没有地图，所以场景 3 在儿童模式下的落点是
+    // 「规划」这一站的 KnowledgeMapCard。这条用例专门守住它——否则妹妹用的
+    // 那套主题里，场景 3 是进不去的，而侧边栏那条用例照样全绿。
+    const account = await signInWithProgress(page, request, "plan");
+    await seedJourneyData(request, account);
+    await page.goto("/journey/plan");
+
+    await expect(page.getByTestId("theme-badge")).toHaveText("儿童模式");
+    const card = page.getByTestId("knowledge-map-card");
+    await expect(card).toBeVisible({ timeout: 20_000 });
+
+    const node = card.locator('[data-testid^="kmap-node-"]').first();
+    await expect(node).toBeVisible({ timeout: 20_000 });
+    await node.click();
+    await expect(page.getByTestId("kmap-card-explainer")).toBeVisible({ timeout: 30_000 });
     await expect(
       page
         .locator(

@@ -105,6 +105,14 @@ class Settings(BaseSettings):
     human_review_rate: float = 0.05
     # 每知识点首批最少题量（§6.1 红线：禁止硬编码题目充数）
     content_min_per_point: int = 30
+    # 预期「生成→入库」存活率，用来给缺口留余量。留余量的原因：验证会拒收、
+    # 去重会再剔一道、人审抽走的题学生端也拿不到（见 ask_total 里的 publish_rate），
+    # 所以实际入库量必然小于生成量。
+    # 为什么必须留余量：管线原本按「生成量 == 缺口」收敛，于是只差 1 题的知识点
+    # 只生成 1 道——那道一旦被拒就永远补不上，卡在 29（实测有 5 个点长期停在 28/29）。
+    # 取 0.7 是保守估计：修好 status 口径后实测整轮通过率约 0.90，但拒收分布不均，
+    # 某些知识点（语文提示层泄露答案那一类）单点通过率明显更低，留余量更稳。
+    content_expected_survival_rate: float = 0.7
 
     # ----- Explainer 交互网页讲解（P1 / §5） -----
     # 风格版本进缓存 key：改教学风格就换版本号，历史讲解自然失效，不会新旧混用。
@@ -156,10 +164,14 @@ class Settings(BaseSettings):
     dev_admin_password: str = ""
 
     # ----- CORS（官网 / 桌面端 / 移动端 WebView 直连） -----
-    # 逗号分隔的允许来源；生产由网关同源代理时可留空
+    # 逗号分隔的允许来源；生产由网关同源代理时可留空。
+    # 1420 是 Tauri 开发模式的前端端口（apps/desktop 的 vite dev server），
+    # 必须放行：漏了它症状不是「接口报错」，而是 /v1/auth/me 被拦 → 前端判未登录
+    # → 路由守卫把用户踢回 /login，看起来像「登录功能坏了」。
     cors_allow_origins: str = (
         "http://localhost:3000,http://127.0.0.1:3000,"
         "http://127.0.0.1:4173,http://localhost:4173,"
+        "http://127.0.0.1:1420,http://localhost:1420,"
         "http://tauri.localhost,tauri://localhost"
     )
 

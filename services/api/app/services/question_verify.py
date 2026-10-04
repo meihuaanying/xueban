@@ -16,9 +16,11 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import re
 from dataclasses import dataclass
 from enum import StrEnum
+from fractions import Fraction
 
 import sympy
 
@@ -199,12 +201,84 @@ def _math_left_side(stem: str) -> str | None:
     return segment.strip() or None
 
 
+def normalize_math_number(value: sympy.Expr) -> sympy.Expr:
+    """把 sympy 数值归一：整数值的浮点尾巴砍掉（``14.0000000000000`` → ``14``）。
+
+    只在**确实是整数**时收成 ``Integer``，非整数一律保持原值（``14.5`` 绝不能被
+    收成 ``14``）。
+
+    要说清楚这个函数的**实际**作用，避免后人重复我的误判：它**不是**为了救
+    「整数 11 vs 浮点 11.0000000000000」——实测 sympy 的 ``simplify`` 会走
+    ``.equals()`` 的容差判断，本来就判相等。归一真正换来的是两件事：
+
+    1. **错误消息可读**：不再把 ``11.0000000000000`` 印进「与标准答案不一致」里
+       干扰排障（这才是线上真正被看到的那条消息）；
+    2. **比较走精确路径时不受浮点表示影响**（:func:`numbers_agree` 的补充分支）。
+
+    历史上真正的数学拒收主因不是浮点尾巴，而是题干带 LaTeX 定界符与中文前缀
+    （``混合运算：$3 + 5 + 4 =$``），已由 ``36e3c14`` 的 ``strip_latex`` +
+    ``_MATH_SEGMENT`` 修掉，实测通过率 60.7% → 71.0%。
+    """
+    if getattr(value, "is_number", False) and value.is_integer:
+        return sympy.Integer(int(value))
+    return value
+
+
+def exact_fraction(value: sympy.Expr) -> Fraction | None:
+    """把 sympy 数值转成精确分数；不是数值（含符号变量）返回 None。
+
+    用于**精确比较**，刻意不用浮点容差：``Fraction`` 表示的是精确有理数，
+    所以 ``1/3`` 与 ``0.333`` 判不等——这是我们要的口径。一年级题库全是整数与
+    有限小数，两边都能精确表示，用容差反而会放过「该是 1/3 却写成 0.33」的错答案。
+    """
+    if not getattr(value, "is_number", False):
+        return None
+    if value.is_Rational:
+        # Integer / Rational：p、q 就是精确分子分母
+        return Fraction(int(value.p), int(value.q))
+    try:
+        number = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if not math.isfinite(number):
+        return None
+    return Fraction(number)
+
+
+def numbers_agree(expected: sympy.Expr, answer: sympy.Expr) -> bool:
+    """判断两个 sympy 数值是否相等。
+
+    **以 ``simplify`` 为主判**，精确分数只作补充（仅能把"不等"翻成"等"）。
+
+    这个顺序是实测定的，不是偏好：``simplify`` 内部会走 ``.equals()`` 的容差判断，
+    所以 ``1/3`` 与 ``1/3``（evalf 出来是 ``0.333...``，精确二进制分数是
+    ``6004799503160661/18014398509481984``）本来就判相等；反过来把
+    :func:`exact_fraction` 当主判会把这种"同一分数的两种写法"误拒成不等。
+    而 ``1/3`` 与 ``0.333`` 两边都不对，``simplify`` 判不等、精确分数也判不等，
+    照样拒——精确口径并没有被牺牲。
+    """
+    try:
+        if bool(sympy.simplify(expected - answer) == 0):
+            return True
+    except (TypeError, ValueError):
+        pass
+    # 补充：两边都能精确表示成有理数且完全相同（例如 Float(2.5) 与 Rational(5,2)）
+    left_fraction = exact_fraction(expected)
+    right_fraction = exact_fraction(answer)
+    return left_fraction is not None and right_fraction is not None and (
+        left_fraction == right_fraction
+    )
+
+
 def _check_math_answer(question: GeneratedQuestion) -> str | None:
     """数学题：用 SymPy 求值题干算式，与标准答案对拍。
 
     求值**等号左侧**而不是比较等号两侧，是因为中文题面里右侧常常是"？"（答案留空）
     或与答案重复；从左侧算更可靠，也能同时覆盖 "12 + 7 = 19" 这种右侧已给值
     的写法。
+
+    比较前两侧都过 :func:`normalize_math_number`（整数值的浮点尾巴先砍掉），
+    再交给 :func:`numbers_agree`：``simplify`` 主判 + 精确分数补充。
     """
     stem = _normalize_math_text(question.stem)
     left = _math_left_side(stem)
@@ -212,12 +286,17 @@ def _check_math_answer(question: GeneratedQuestion) -> str | None:
         expr = parse_math(left)
         if expr is not None:
             try:
-                expected = expr.evalf()
+                expected = normalize_math_number(expr.evalf())
                 answer_expr = parse_math(question.answer)
                 if answer_expr is None:
                     return f"标准答案 {question.answer} 不是可计算的数学表达式"
-                if not bool(sympy.simplify(expected - answer_expr) == 0):
-                    return f"题干算式 {left} 的结果是 {expected}，与标准答案不一致"
+                if not numbers_agree(expected, normalize_math_number(answer_expr)):
+                    # 消息里必须带上标准答案本身：只说"不一致"而看不出答案是多少，
+                    # 这条消息在线上等于没用（2026-10 排障时就卡在这里）。
+                    return (
+                        f"题干算式 {left} 的结果是 {expected}，"
+                        f"标准答案是 {question.answer}，两者不一致"
+                    )
             except (TypeError, ValueError, ZeroDivisionError):
                 return "题干算式无法求值"
         else:
