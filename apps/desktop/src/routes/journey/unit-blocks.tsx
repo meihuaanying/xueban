@@ -1,6 +1,11 @@
 "use client";
 
-/** 学习单元页（第 4 站）的三块 UI：出题卡、答题反馈卡、讲解三层提示卡。 */
+/** 学习单元页（第 4 站）的 UI 块：出题引导卡、答题反馈卡、讲解三层提示卡。
+ *
+ * 题卡（`QuestionSection`）拆在 `question-section.tsx`——它带着一份独立的题型映射
+ * 责任（qtype → 作答形态），与本文件的两块无关。这里 re-export 保持
+ * 「学习单元页的 UI 块都从 unit-blocks 取」这一个入口。
+ */
 
 import type { ReactNode } from "react";
 import {
@@ -13,11 +18,11 @@ import {
   CorrectBurst,
   HintStack,
   type HintLevel,
-  QuestionCard,
 } from "@xueban/ui";
 
-import type { PracticeQuestion, TutorHint } from "@/lib/api";
-import { parseLinkItems, resolveKind, toLinkSubmit, toOptions } from "./question-kinds";
+import type { TutorHint } from "@/lib/api";
+
+export { QuestionSection } from "./question-section";
 
 /** 未出题时的引导卡。 */
 export function GenerateCard({
@@ -47,53 +52,7 @@ export function GenerateCard({
   );
 }
 
-/** 已出题时的题卡容器（`unit-question` 仅在有题时渲染）。
- *
- * 六种小学题型各有各的作答形态，不能一律当 choice 渲染——那样生成的
- * judge/match/oral/pick_hanzi 题孩子根本没法答（match 会把形状池当单选，
- * judge/oral 因为没有 options 会掉进文本框）。
- */
-export function QuestionSection({
-  question,
-  index,
-  total,
-  busy,
-  speakable,
-  onAnswer,
-}: {
-  question: PracticeQuestion;
-  index: number;
-  total: number;
-  busy: boolean;
-  speakable: boolean;
-  onAnswer: (value: string) => void;
-}) {
-  const kind = resolveKind(question.qtype);
-  const options = toOptions(question.options);
-  const linkItems = kind === "link" ? parseLinkItems(question.stem) : [];
-  // 取不到左项就别硬撑连线台，退回普通选项形态，至少还能选
-  const usableKind = kind === "link" && linkItems.length === 0 ? "choice" : kind;
-  return (
-    <div className="flex flex-col gap-sm" data-testid="unit-question">
-      <p className="text-app-xs text-muted-foreground">
-        第 {index + 1} / {total} 题
-      </p>
-      <QuestionCard
-        stem={question.stem}
-        meta={`难度 ${question.difficulty}`}
-        kind={usableKind}
-        options={options}
-        linkItems={linkItems}
-        onLinkPairs={(pairs, complete) => {
-          if (complete) onAnswer(toLinkSubmit(pairs));
-        }}
-        speakable={speakable}
-        disabled={busy}
-        onSelect={onAnswer}
-      />
-    </div>
-  );
-}
+
 
 /** 答题反馈卡：即时反馈 + 「看讲解」/「下一题」两个出口。 */
 export function FeedbackCard({

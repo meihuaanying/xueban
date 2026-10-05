@@ -1,57 +1,15 @@
 "use client";
 
-/** 交互讲解卡（§5.3 触发 → §5.4 安全与降级）。 */
+/** 交互讲解卡（§5.3 触发 → §5.4 安全与降级）：idle / pending / ready / failed 四态。
+ *
+ * 降级的图文分步视图拆在 `script-fallback.tsx`——它是交互页彻底跑不起来时的最后一道
+ * 防线，必须独立于卡片的状态机单独维护。
+ */
 
 import { AudioButton, Badge, Button, Card, CardContent, CardHeader, CardTitle, ExplainerFrame } from "@xueban/ui";
 
 import type { ExplainerContent } from "@/lib/api";
-
-/** 教学脚本的一幕（后端 prompts.py 的 EXPLAINER 脚本结构）。 */
-interface ExplainerAct {
-  name?: string;
-  goal?: string;
-  narration?: string;
-}
-
-function readActs(script: Record<string, unknown>): ExplainerAct[] {
-  const acts = script.acts;
-  return Array.isArray(acts) ? (acts as ExplainerAct[]) : [];
-}
-
-/**
- * 图文分步降级视图（§5.4「渲染超时或失败必须降级，禁止白屏」）。
- * 直接复用后端产出的教学脚本：即使交互页没跑起来，讲解词也还能读给孩子听。
- */
-function ScriptFallback({
-  content,
-  speakable,
-}: {
-  content: ExplainerContent;
-  speakable: boolean;
-}) {
-  const acts = readActs(content.script);
-  if (acts.length === 0) {
-    return (
-      <p className="text-app-sm text-muted-foreground" data-testid="explainer-steps">
-        这段讲解暂时放不出来，换个时间再看看吧。
-      </p>
-    );
-  }
-  return (
-    <ol className="flex flex-col gap-sm" data-testid="explainer-steps">
-      {acts.map((act, index) => (
-        <li key={index} className="rounded-control border border-border-strong p-sm">
-          <p className="text-app-xs font-semibold">
-            第 {index + 1} 幕 · {act.name ?? "讲解"}
-          </p>
-          <p className="text-app-sm">{act.narration ?? act.goal ?? ""}</p>
-          {speakable && act.narration ? <AudioButton text={act.narration} /> : null}
-        </li>
-      ))}
-    </ol>
-  );
-}
-
+import { ScriptFallback, narrationOf } from "./script-fallback";
 /** 讲解卡：空闲/生成中/失败重试/已就绪四种状态，缺一不可。 */
 export function ExplainerCard({
   status,
@@ -120,9 +78,7 @@ export function ExplainerCard({
     );
   }
 
-  const narration = readActs(content.script)
-    .map((act) => act.narration ?? "")
-    .join("");
+  const narration = narrationOf(content);
 
   return (
     <Card data-testid="explainer-ready">
