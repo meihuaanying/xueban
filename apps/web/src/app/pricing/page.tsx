@@ -135,14 +135,24 @@ export default async function PricingPage() {
                   </ul>
                 </CardContent>
                 <CardFooter>
-                  <Link
-                    href="/register"
+                  {/* 支付未开通：这里渲染成不可点的禁用态，而不是一个「点了没反应」
+                      的假按钮——后者会让家长以为是自己操作错了。
+                      免费注册不受影响，所以另给一个真的能点的入口。 */}
+                  <span
+                    aria-disabled="true"
+                    data-testid="pricing-pay-soon"
                     className={cn(
-                      buttonVariants({ variant: highlighted ? "primary" : "outline" }),
-                      "w-full",
+                      buttonVariants({ variant: "outline" }),
+                      "w-full cursor-not-allowed opacity-60",
                     )}
                   >
-                    开通{plan.title}
+                    支付即将开放
+                  </span>
+                  <p className="mt-2 text-center text-xs text-muted-foreground">
+                    现在可免费注册，注册不需要付费。
+                  </p>
+                  <Link href="/register" className="mt-2 text-center text-sm underline">
+                    先免费注册
                   </Link>
                 </CardFooter>
               </Card>
@@ -153,8 +163,8 @@ export default async function PricingPage() {
         <div className="mt-10 rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">
           <p className="font-semibold text-foreground">支付说明</p>
           <p className="mt-2">
-            当前为开发阶段 mock 支付收银台，仅用于验证订阅流程；正式支付渠道（微信 /
-            支付宝）开通后， 所有价格与权益以收银台页面为准。未成年人购买需取得监护人同意。
+            在线支付渠道（微信 / 支付宝）正在接入，尚未开放；在此之前学伴的全部功能都可免费使用。
+            价格与权益以正式开通时的说明为准。未成年人购买需取得监护人同意。
           </p>
         </div>
       </section>
