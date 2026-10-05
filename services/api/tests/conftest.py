@@ -87,11 +87,47 @@ def _run_migrations() -> None:
     command.upgrade(config, "head")
 
 
+def _truncate_statement() -> str:
+    """清空全部业务表的 TRUNCATE 语句（无 RETURNING，不能进参数化查询）。"""
+    tables = ", ".join(f'"{name}"' for name in Base.metadata.tables)
+    return f"TRUNCATE {tables} RESTART IDENTITY CASCADE"
+
+
+async def _wipe_test_database() -> None:
+    """把测试库清成空库（会话开始时调用）。
+
+    会话开始前必须清：``clean_database`` 只在**每个用例之后**清，而一次被中断的
+    运行（服务器重启、进程被杀）不会执行到 teardown，残留数据就会成为下一次运行
+    第一个测试的输入。这类污染的特征是「单跑通过、全量失败」，且失败点看起来
+    与真正的原因毫无关系（本次实测：账号注销的 purge 用例报 ``purged == []``）。
+
+    这里不做 DROP DATABASE：迁移要保留。清空即可，而且比 DROP 便宜得多。
+    """
+    engine = create_async_engine(TEST_DATABASE_URL, poolclass=NullPool)
+    try:
+        async with engine.begin() as conn:
+            await conn.execute(text(_truncate_statement()))
+            # 清完必须复查：漏掉的表会让残留溜进本次运行，而症状出现在某个毫不
+            # 相干的测试里。宁可在这里直接炸，也不要事后逐个用例地猜。
+            for name in Base.metadata.tables:
+                left = await conn.scalar(
+                    text(f'SELECT count(*) FROM "{name}"')
+                )
+                if left:
+                    raise RuntimeError(
+                        f"测试库清空失败：{name} 仍有 {left} 行。"
+                        "通常是 Base.metadata 未导入某个模型导致 TRUNCATE 漏表。"
+                    )
+    finally:
+        await engine.dispose()
+
+
 @pytest_asyncio.fixture(scope="session", autouse=True)
 async def prepare_database() -> AsyncIterator[None]:
-    """会话级：建库 + 迁移到最新。"""
+    """会话级：建库 + 迁移到最新 + 清空上一次运行的残留。"""
     await _ensure_test_database()
     await asyncio.to_thread(_run_migrations)
+    await _wipe_test_database()
     yield
 
 
@@ -133,9 +169,8 @@ async def client(app) -> AsyncIterator[AsyncClient]:  # type: ignore[no-untyped-
 async def clean_database(sessionmaker: async_sessionmaker[AsyncSession]) -> AsyncIterator[None]:
     """用例结束后清库（保留失败现场于用例执行期间）。"""
     yield
-    tables = ", ".join(f'"{name}"' for name in Base.metadata.tables)
     async with sessionmaker() as session:
-        await session.execute(text(f"TRUNCATE {tables} RESTART IDENTITY CASCADE"))
+        await session.execute(text(_truncate_statement()))
         await session.commit()
 
 
