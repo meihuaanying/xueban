@@ -51,6 +51,19 @@ const api = mockedApi as unknown as {
   path: jest.Mock;
 };
 
+/**
+ * 等待异步数据加载完成的超时（毫秒）。
+ *
+ * 默认 1000ms 在「五个包并行跑」（turbo run test --force）时不够用：CPU 被
+ * 抢占后 React 的调度被推迟，页面还停在「加载学习数据」的转圈状态，断言就
+ * 报「找不到 今日任务」。单跑 `pnpm test` 时永远复现不出来——这类 flaky 会被
+ * turbo 的缓存彻底掩盖（`pnpm test` 直接回 `Cached: 5/5`），所以质量门一律用
+ * `turbo run test --force`。
+ *
+ * 这里放宽的是**等待预算**，不是断言强度：仍然必须等到真实内容渲染出来。
+ */
+const LOAD_WAIT = { timeout: 5000 };
+
 describe("学习 Tab（T6.2）", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -61,7 +74,7 @@ describe("学习 Tab（T6.2）", () => {
 
   it("展示今日任务与学情画像", async () => {
     render(<LearnHomeScreen />);
-    await waitFor(() => expect(screen.getByText("今日任务")).toBeTruthy());
+    await waitFor(() => expect(screen.getByText("今日任务")).toBeTruthy(), LOAD_WAIT);
     expect(screen.getAllByText("打卡")).toHaveLength(2);
     expect(screen.getByText(/有理数加法 · 42%/)).toBeTruthy();
   });
@@ -71,9 +84,9 @@ describe("学习 Tab（T6.2）", () => {
       today: { ...today, completed_count: 1, streak_days: 1, tasks: today.tasks.map((task) => (task.id === "t1" ? { ...task, status: "done" } : task)) },
     });
     render(<LearnHomeScreen />);
-    await waitFor(() => expect(screen.getAllByText("打卡")).toHaveLength(2));
+    await waitFor(() => expect(screen.getAllByText("打卡")).toHaveLength(2), LOAD_WAIT);
     fireEvent.press(screen.getAllByText("打卡")[0]!);
-    await waitFor(() => expect(screen.getByText(/连续 1 天/)).toBeTruthy());
+    await waitFor(() => expect(screen.getByText(/连续 1 天/)).toBeTruthy(), LOAD_WAIT);
     expect(screen.getByText("已完成")).toBeTruthy();
   });
 
@@ -83,7 +96,7 @@ describe("学习 Tab（T6.2）", () => {
       phases: [{ name: "base", title: "第一阶段 · 补前置", knowledge_points: [{ id: "k1", name: "有理数加法", mastery: 0.42 }] }],
     });
     render(<PlanScreen />);
-    await waitFor(() => expect(screen.getByText("第一阶段 · 补前置")).toBeTruthy());
+    await waitFor(() => expect(screen.getByText("第一阶段 · 补前置")).toBeTruthy(), LOAD_WAIT);
   });
 
   it("诊断作答后展示反馈", async () => {
@@ -115,9 +128,9 @@ describe("学习 Tab（T6.2）", () => {
     });
     render(<DiagnosisScreen />);
     fireEvent.press(screen.getByTestId("start-diagnosis"));
-    await waitFor(() => expect(screen.getByText("计算 18 × 5 = ？")).toBeTruthy());
+    await waitFor(() => expect(screen.getByText("计算 18 × 5 = ？")).toBeTruthy(), LOAD_WAIT);
     fireEvent.press(screen.getByTestId("option-A"));
     fireEvent.press(screen.getByTestId("submit-answer"));
-    await waitFor(() => expect(screen.getByText(/回答错误 · 正确答案 A/)).toBeTruthy());
+    await waitFor(() => expect(screen.getByText(/回答错误 · 正确答案 A/)).toBeTruthy(), LOAD_WAIT);
   });
 });
