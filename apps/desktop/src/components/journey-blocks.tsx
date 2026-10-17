@@ -1,7 +1,7 @@
 "use client";
 
 /** 旅程页面通用状态块：加载 / 空态 / 错误 + 步骤条，避免六个页面各写一套。 */
-import { Button, Card, CardContent, CardHeader, CardTitle, Spinner } from "@xueban/ui";
+import { AudioButton, Button, Card, CardContent, CardHeader, CardTitle, Spinner } from "@xueban/ui";
 
 import { useJourney } from "../journey/journey-context";
 import { nextStage, stageDefinition } from "../journey/stages";
@@ -74,12 +74,22 @@ export function JourneyStepper() {
   // 这种导航信息本就吃力，小字更读不清。基准 18px 起步（§4.1）。
   const hintClass = theme === "kids" ? "text-app" : "text-app-xs";
 
+  // §4.1「所有文本支持 TTS」+ §7「无文字依赖导航」：一年级孩子很可能还不识字，
+  // 步骤条却是每一站都要看的导航信息。
+  //
+  // 只在 kids 档挂朗读，且**只挂一个喇叭**：这是六个阶段页共用组件，给两处提示
+  // 各挂一个会在每页多出两个图标——对专注模式是噪音，对 7 岁孩子则是
+  // 「到底该点哪一个」的新困惑。把两处提示合成一句读，一个入口最清楚。
+  const speakable = theme === "kids";
+  const spoken = `当前在第 ${definition.order} 站，${definition.label}。下一站，${nextDefinition.label}。`;
+
   return (
     <div className="flex flex-wrap items-center justify-between gap-sm border-t border-border pt-sm">
       <p className={`${hintClass} text-muted-foreground`}>
         当前：第 {definition.order} 站 · {definition.label}
       </p>
       <div className="flex items-center gap-sm">
+        {speakable ? <AudioButton data-testid="journey-speak" text={spoken} /> : null}
         <span className={`${hintClass} text-muted-foreground`} data-testid="journey-next">
           下一站：{nextDefinition.label}
         </span>

@@ -15,8 +15,9 @@ export interface AudioButtonProps extends React.ButtonHTMLAttributes<HTMLButtonE
 
 /**
  * TTS 朗读按钮（一年级可用性硬要求：所有文本可朗读）。
- * 优先 Web Speech API；不支持时降级为无操作并标记 disabled，
- * 不抛错、不影响主流程（见 P1 门禁「无文字依赖导航」）。
+ * 优先 Web Speech API；浏览器不支持时**整只按钮返回 null 自行隐藏**（而不是渲染一个
+ * 点了没反应的按钮——那会让孩子以为自己点错了），不抛错、不影响主流程
+ * （见 P1 门禁「无文字依赖导航」）。
  */
 export function AudioButton({
   className,

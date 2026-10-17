@@ -41,9 +41,17 @@ test.describe("妹妹旅程 · 一年级全流程（儿童模式）", () => {
       await expect(page.getByTestId(`kids-nav-${id}`)).toBeVisible();
     }
 
+    // §7「无文字依赖导航」：步骤条的「当前 / 下一站」在 kids 档必须能听。
+    // 只断言按钮在（图标在、读的内容不对等于没做），并确认它挨着导航提示。
+    await expect(page.getByTestId("journey-speak")).toBeVisible();
+    await expect(page.getByTestId("journey-next")).toBeVisible();
+
     // 图标导航：点图标就能换站，不依赖文字按钮
     await page.getByTestId("kids-nav-unit").click();
     await expect(page).toHaveURL(/\/journey\/unit$/);
+
+    // 换站后步骤条还在，且仍是可朗读的（六页共用组件，不能在某一站掉）
+    await expect(page.getByTestId("journey-speak")).toBeVisible();
 
     await page.getByTestId("kids-nav-mistakes").click();
     await expect(page).toHaveURL(/\/journey\/mistakes$/);
