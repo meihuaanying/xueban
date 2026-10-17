@@ -62,7 +62,10 @@ const api = mockedApi as unknown as {
  *
  * 这里放宽的是**等待预算**，不是断言强度：仍然必须等到真实内容渲染出来。
  */
-const LOAD_WAIT = { timeout: 5000 };
+// 等待预算要**小于**用例超时，否则 waitFor 永远等不到就整条用例先挂：
+// 这里取 15s，`jest` 配置里 `testTimeout` 是 20s，两者留出 5s 余量。
+// （此前取 5000，恰好等于 jest 默认 testTimeout，五包并行抢 CPU 时必然超时。）
+const LOAD_WAIT = { timeout: 15000 };
 
 describe("学习 Tab（T6.2）", () => {
   beforeEach(() => {
