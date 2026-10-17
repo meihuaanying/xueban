@@ -7,4 +7,5 @@ export * from "./hint-stack";
 export * from "./knowledge-map";
 export * from "./mastery-bar";
 export * from "./question-card";
+export * from "./sound";
 export * from "./streak-flame";

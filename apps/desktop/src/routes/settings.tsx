@@ -8,11 +8,13 @@ import {
   AccountSection,
   BehaviorSection,
   NotificationSection,
+  SoundSection,
   SubscriptionSection,
 } from "@/components/settings-sections";
 import { ErrorBlock, LoadingBlock, SectionTitle } from "@/components/state";
 import { ApiError, api, type BehaviorProfile, type SubscriptionState } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { useSoundPreference } from "@/journey/use-sound";
 
 export default function SettingsPage() {
   const { user, refreshUser } = useAuth();
@@ -20,6 +22,7 @@ export default function SettingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [reviewNotify, setReviewNotify] = useState(true);
   const [taskNotify, setTaskNotify] = useState(true);
+  const sound = useSoundPreference();
 
   const subscriptionQuery = useQuery<SubscriptionState>({
     queryKey: ["billing", "subscription"],
@@ -78,6 +81,8 @@ export default function SettingsPage() {
         onReviewChange={setReviewNotify}
         onTaskChange={setTaskNotify}
       />
+
+      <SoundSection enabled={sound.enabled} onChange={sound.setEnabled} />
 
       <AboutSection />
     </div>

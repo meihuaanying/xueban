@@ -10,6 +10,7 @@ import { useExplainer } from "../../journey/use-explainer";
 import { useJourney } from "../../journey/journey-context";
 import { GRADE_BANDS } from "../../journey/stages";
 import { usePractice } from "../../journey/use-journey-data";
+import { useSoundPreference } from "../../journey/use-sound";
 import { useTutorHints } from "../../journey/use-tutor";
 import { ExplainerCard } from "./explainer-blocks";
 import {
@@ -28,6 +29,7 @@ export default function UnitStagePage() {
   const practice = usePractice(preset.subject);
   const tutor = useTutorHints();
   const explainer = useExplainer();
+  const sound = useSoundPreference();
   const current = practice.current;
   const speakable = theme === "kids";
 
@@ -67,6 +69,8 @@ export default function UnitStagePage() {
             isCorrect={practice.last.is_correct}
             explanation={practice.last.explanation}
             mistakeCollected={practice.last.mistake_collected}
+            sound={sound.enabled}
+            answerKey={practice.index}
             onOpenTutor={() => {
               if (current) void tutor.openTutor(current.id);
             }}

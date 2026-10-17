@@ -7,7 +7,7 @@
  * 「学习单元页的 UI 块都从 unit-blocks 取」这一个入口。
  */
 
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import {
   Badge,
   Button,
@@ -18,6 +18,7 @@ import {
   CorrectBurst,
   HintStack,
   type HintLevel,
+  playCorrectChime,
 } from "@xueban/ui";
 
 import type { TutorHint } from "@/lib/api";
@@ -61,13 +62,28 @@ export function FeedbackCard({
   mistakeCollected,
   onOpenTutor,
   onNext,
+  sound = false,
+  answerKey,
 }: {
   isCorrect: boolean;
   explanation: string | null | undefined;
   mistakeCollected: boolean;
   onOpenTutor: () => void;
   onNext: () => void;
+  /** 是否播放答题音效（§4.1；由设置页的开关决定） */
+  sound?: boolean;
+  /**
+   * 本次作答的身份。只用来当音效 effect 的依赖：同一道题答两次不该响两次，
+   * 但换一道题答对必须再响一次——而 `isCorrect` 本身从 true 到 true 是不变的。
+   */
+  answerKey?: number;
 }) {
+  useEffect(() => {
+    // 只在答对时响。答错不发声：做错时的引导在文字与三层提示里，
+    // 加一声提示音只会让孩子收到「你又错了」。
+    if (sound && isCorrect) playCorrectChime();
+  }, [answerKey, isCorrect, sound]);
+
   return (
     // relative + overflow-hidden：让撒花层绝对定位在卡片内，且不溢出到页面
     <Card className="relative overflow-hidden" data-testid="unit-feedback">

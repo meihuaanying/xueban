@@ -181,6 +181,37 @@ export function NotificationSection({
   );
 }
 
+/** 声音卡：儿童主题的答题音效开关（§4.1「答对撒花/音效」）。 */
+export function SoundSection({
+  enabled,
+  onChange,
+}: {
+  enabled: boolean;
+  onChange: (next: boolean) => void;
+}) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>声音</CardTitle>
+        <CardDescription>儿童模式下答对会有一声轻快的提示音；不想听可以在这里关掉。</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3 text-sm">
+        <label className="flex items-center justify-between gap-4">
+          <span>答题音效</span>
+          <Switch
+            checked={enabled}
+            data-testid="settings-sound-toggle"
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => onChange(event.target.checked)}
+          />
+        </label>
+        <p className="text-muted-foreground">
+          音效只在答对时响一次，答错不发声——做错时的引导在文字与提示里，不该用声音强调失败。
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+
 /** 关于卡：版本与红线说明。 */
 export function AboutSection({ children }: { children?: ReactNode }) {
   return (
