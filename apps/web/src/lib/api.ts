@@ -305,12 +305,27 @@ export const adminApi = {
     apiRequest<Coverage>("/v1/admin/questions/coverage", { headers: authHeaders(token) }),
   createQuestion: (
     token: string,
-    payload: { subject: string; stem: string; answer: string; analysis: string; difficulty?: number },
+    payload: {
+      subject: string;
+      stem: string;
+      answer: string;
+      analysis: string;
+      difficulty?: number;
+      /**
+       * 题型。默认 `fill`（填空）。
+       *
+       * 这里曾经写死为选择题，并补一个伪造的干扰项凑出「至少两个选项」：后台表单只
+       * 收集题干与答案、没有收集干扰项，做成选择题就只能编一个假选项，违反 §8 约束 4。
+       * 表单收集的内容本来就是填空题的形态，所以按填空题提交。将来若后台要支持选择题，
+       * 应当让表单真的收集干扰项。
+       */
+      qtype?: string;
+    },
   ) =>
     apiRequest<AdminQuestion>("/v1/admin/questions", {
       method: "POST",
       headers: authHeaders(token),
-      body: JSON.stringify({ qtype: "choice", options: { A: payload.answer, B: "占位" }, ...payload }),
+      body: JSON.stringify({ ...payload, qtype: payload.qtype ?? "fill" }),
     }),
   transition: (token: string, questionId: string, target: string) =>
     apiRequest<AdminQuestion>(`/v1/admin/questions/${questionId}/transition`, {
