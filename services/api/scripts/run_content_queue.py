@@ -41,12 +41,21 @@ class Segment:
     name: str
     subjects: tuple[str, ...]
     grades: tuple[str, ...]
+    # 段级目标题量；None 用全局 --target
+    target: int | None = None
 
 
 def default_queue() -> list[Segment]:
     """按「高中生可用」优先的顺序排列；每段单独可断点续跑。"""
     return [
         Segment("高中数学（收尾）", ("math",), ("grade10", "grade11", "grade12")),
+        # 多选补齐：19 题结构需要每点约 3 道多选；target=33 让已达标点再补 3 题
+        Segment(
+            "高中数学多选补齐",
+            ("math",),
+            ("grade10", "grade11", "grade12"),
+            target=33,
+        ),
         Segment("高中语文", ("chinese",), ("grade10", "grade11", "grade12")),
         Segment("高中英语", ("english",), ("grade10", "grade11", "grade12")),
         Segment("高中物理", ("physics",), ("grade10", "grade11", "grade12")),
@@ -113,7 +122,7 @@ async def main() -> int:
     if start is None:
         start = load_state() if args.resume else 0
     start = max(0, min(start, len(queue)))
-    target = args.target or settings.content_min_per_point
+    global_target = args.target or settings.content_min_per_point
 
     observability = ObservabilityService(settings)
     client = LlmClient(settings, observability)
@@ -135,7 +144,7 @@ async def main() -> int:
                     session,
                     subjects=segment.subjects,
                     grades=segment.grades,
-                    target=target,
+                    target=segment.target or global_target,
                 )
                 summary = {
                     "segment": segment.name,
