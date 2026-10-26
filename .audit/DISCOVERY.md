@@ -1,0 +1,18 @@
+# DISCOVERY
+- project_root: C:\Users\Lenovo\Documents\Default Project\xueban
+- detected_stack: pnpm 9.15.9 + turbo monorepo（Turborepo）。apps/desktop = Tauri 2 + React 19 + Vite 6 + vitest；apps/web = Next.js 15 + vitest + Playwright；apps/mobile = Expo/React Native 0.79 + jest；packages/{core,ui,config} 共享 TS。services/api = Python 3.12 + FastAPI + SQLAlchemy 2(async) + asyncpg + Alembic + ARQ + Langfuse + bleach/tinycss2；services/ocr = PaddleOCR 容器。基础设施 PostgreSQL/pgvector、Redis、MinIO、LiteLLM。包管理器：pnpm（root package.json `packageManager: pnpm@9.15.9`）。
+- baseline_commands:
+  - runner: pnpm（workspace，`--filter <pkg>` 定位包）；Python 命令工作目录为 services/api
+  - test: `pnpm --filter @xueban/desktop test`（vitest）；`pnpm --filter @xueban/web test`（vitest）；`pnpm --filter @xueban/mobile test`（jest）；`pnpm --filter @xueban/core test`；`pnpm --filter @xueban/ui test`；根脚本 `pnpm test:e2e:web`、`pnpm test:e2e:desktop`（Playwright，需 PostgreSQL+已迁移 API）；services/api 下 `pytest`
+  - lint: `pnpm --filter @xueban/desktop lint`；`pnpm --filter @xueban/web lint`；`pnpm --filter @xueban/mobile lint`；services/api 下 `ruff check .`
+  - typecheck: `pnpm --filter @xueban/desktop typecheck`；`pnpm --filter @xueban/web typecheck`；`pnpm --filter @xueban/mobile typecheck`；services/api 下 `mypy --strict app`
+  - build: `pnpm build`（turbo run build）；等价原子命令 `pnpm --filter @xueban/desktop build`、`pnpm --filter @xueban/web build`、`pnpm --filter @xueban/mobile build`
+  - 来源：根 package.json scripts、apps/*/package.json scripts、.github/workflows/ci.yml（api job：`ruff check .` / `mypy --strict app` / `pytest --cov=app --cov-fail-under=85`）
+- intent_sources:
+  - README.md
+  - docs/COMPLIANCE.md
+  - docs/api/openapi.json
+  - docs/adr/001-schema.md
+  - docs/adr/002-rag-storage.md
+  - docs/OPS.md
+- intent_auto_generated: false
