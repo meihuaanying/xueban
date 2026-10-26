@@ -69,3 +69,6 @@ backups/
 
 # 验证证据中的原始日志需入库（覆盖通用 *.log 忽略）
 !docs/verification/*.log
+
+# 题库生成队列的本机断点状态
+services/api/.pipeline_queue_state.json
