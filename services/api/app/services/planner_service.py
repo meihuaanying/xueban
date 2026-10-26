@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass, replace
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -25,11 +25,11 @@ from app.models import (
     PlanKind,
     PlanTask,
     QuestionKnowledgePoint,
-    ReviewCard,
     TaskStatus,
     TaskType,
     User,
 )
+from app.services.fsrs_service import due_count
 from app.services.mastery_service import BktParams, MasteryPoint
 
 MASTERY_THRESHOLD = 0.6
@@ -366,11 +366,61 @@ async def get_or_create_path(
     return await generate_path(session, user_id=user_id, subject=subject)
 
 
+REVIEW_TASK_PREFIX = "复习到期卡片"
+
+
+def _review_title(count: int) -> str:
+    """复习任务标题带张数，便于今日页直接展示工作量。"""
+    return f"{REVIEW_TASK_PREFIX}（{count} 张）" if count else REVIEW_TASK_PREFIX
+
+
+async def _sync_review_task(
+    session: AsyncSession,
+    *,
+    plan: Plan,
+    tasks: list[PlanTask],
+    user_id: uuid.UUID,
+    today: date,
+    review_due: int,
+) -> list[PlanTask]:
+    """让今日计划与当前到期卡片保持一致：缺则补，标题随张数刷新。"""
+    if review_due <= 0:
+        return tasks
+    title = _review_title(review_due)
+    existing = next((task for task in tasks if task.task_type == TaskType.REVIEW), None)
+    if existing is not None:
+        if existing.status == TaskStatus.PENDING and existing.title != title:
+            existing.title = title
+            await session.flush()
+        return tasks
+    if len(tasks) >= 5:
+        return tasks
+    session.add(
+        PlanTask(
+            plan_id=plan.id,
+            user_id=user_id,
+            task_date=today,
+            title=title,
+            task_type=TaskType.REVIEW,
+            ref_type="review_card",
+            ref_id=None,
+            sort_order=len(tasks),
+        )
+    )
+    await session.flush()
+    return await tasks_of_plan(session, plan.id)
+
+
 async def get_or_create_today(
-    session: AsyncSession, *, user_id: uuid.UUID
+    session: AsyncSession, *, user_id: uuid.UUID, now: datetime | None = None
 ) -> tuple[Plan, list[PlanTask]]:
-    """获取/生成今日任务卡（3~5 个：学/练/复习搭配）。"""
-    today = utcnow().date()
+    """获取/生成今日任务卡（3~5 个：学/练/复习搭配）。
+
+    复习任务与 FSRS 到期数量联动：当天第一次打开时按实时数量生成，之后再次打开会补建或
+    刷新标题，保证「今日任务」不会漏掉当天到期的卡片。
+    """
+    current = now or utcnow()
+    today = current.date()
     existing = (
         await session.execute(
             select(Plan).where(
@@ -381,9 +431,17 @@ async def get_or_create_today(
             )
         )
     ).scalars().first()
+    review_due = await due_count(session, user_id=user_id, now=current)
     if existing is not None:
         tasks = await tasks_of_plan(session, existing.id)
-        return existing, tasks
+        return existing, await _sync_review_task(
+            session,
+            plan=existing,
+            tasks=tasks,
+            user_id=user_id,
+            today=today,
+            review_due=review_due,
+        )
 
     path = await get_or_create_path(session, user_id=user_id)
     points: list[PathPoint] = []
@@ -393,16 +451,6 @@ async def get_or_create_today(
             points.append(
                 PathPoint(id=uuid.UUID(str(item["id"])), name=str(item["name"]), mastery=mastery)
             )
-
-    review_due = await session.scalar(
-        select(func.count())
-        .select_from(ReviewCard)
-        .where(
-            ReviewCard.user_id == user_id,
-            ReviewCard.due_at.is_not(None),
-            ReviewCard.due_at <= utcnow(),
-        )
-    )
 
     plan = Plan(
         user_id=user_id,
@@ -421,7 +469,7 @@ async def get_or_create_today(
         for point in points[1:3]:
             specs.append((f"练习：{point.name}", TaskType.PRACTICE, point))
     if review_due:
-        specs.append(("复习到期卡片", TaskType.REVIEW, None))
+        specs.append((_review_title(review_due), TaskType.REVIEW, None))
     while len(specs) < DAILY_TASK_TARGET and points:
         point = points[len(specs) % len(points)]
         specs.append((f"巩固：{point.name}", TaskType.PRACTICE, point))

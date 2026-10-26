@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
 
 from httpx import AsyncClient
 from sqlalchemy import select
@@ -21,9 +21,11 @@ from app.models import (
     QuestionKnowledgePoint,
     QuestionStatus,
     QuestionType,
+    ReviewCard,
+    TaskType,
     User,
 )
-from app.services import planner_service, practice_service
+from app.services import fsrs_service, planner_service, practice_service
 from app.services.planner_service import (
     CountdownPhase,
     PathPoint,
@@ -368,6 +370,104 @@ async def test_today_tasks_and_streak(
     )
     assert repeat.status_code == 200
     assert repeat.json()["today"]["all_completed"] is True
+
+
+async def test_seven_day_review_schedule_drives_today(
+    client: AsyncClient, sessionmaker: async_sessionmaker[AsyncSession]
+) -> None:
+    """连续 7 天模拟：FSRS 到期日决定今日是否出现复习任务，评分后间隔按确定性增长。"""
+    await _seed_basic_knowledge_points(sessionmaker)
+    payload = await register(client)
+    base = datetime(2026, 2, 1, 8, 0, tzinfo=UTC)
+    review_days: list[int] = []
+    async with sessionmaker() as session:
+        user = (
+            await session.execute(select(User).where(User.phone == payload["phone"]))
+        ).scalar_one()
+        question = Question(
+            subject="math",
+            stage="junior",
+            qtype=QuestionType.FILL,
+            stem="7 天复习模拟题",
+            answer="1",
+            analysis="略。",
+            status=QuestionStatus.PUBLISHED,
+        )
+        session.add(question)
+        await session.flush()
+        card = ReviewCard(
+            user_id=user.id,
+            question_id=question.id,
+            state=fsrs_service.STATE_NEW,
+            stability=0.0,
+            difficulty=fsrs_service.INITIAL_DIFFICULTY,
+            due_at=base - timedelta(minutes=1),
+        )
+        session.add(card)
+        await session.flush()
+
+        for offset in range(7):
+            now = base + timedelta(days=offset)
+            plan, tasks = await planner_service.get_or_create_today(
+                session, user_id=user.id, now=now
+            )
+            review_tasks = [task for task in tasks if task.task_type == TaskType.REVIEW]
+            is_due = card.due_at is not None and card.due_at <= now
+            if is_due:
+                review_days.append(offset)
+                assert plan.starts_on == now.date()
+                assert len(review_tasks) == 1
+                assert review_tasks[0].title == "复习到期卡片（1 张）"
+                await fsrs_service.apply_grade(session, card, grade=3, now=now)
+            else:
+                assert review_tasks == []
+        await session.commit()
+
+    assert review_days == [0, 2, 5], "1.6 天 → 2.88 天 → 5.76 天，7 天内只在第 0/2/5 天到期"
+    assert card.stability == 5.76
+    assert card.state == fsrs_service.STATE_REVIEW
+    assert card.due_at == base + timedelta(days=10, hours=18, minutes=14, seconds=24)
+
+
+async def test_today_ignores_suspended_review_card(
+    client: AsyncClient, sessionmaker: async_sessionmaker[AsyncSession]
+) -> None:
+    """暂停卡片不计入今日任务，避免用户看到无法复习的提醒。"""
+    await _seed_basic_knowledge_points(sessionmaker)
+    payload = await register(client)
+    base = datetime(2026, 3, 1, 8, 0, tzinfo=UTC)
+    async with sessionmaker() as session:
+        user = (
+            await session.execute(select(User).where(User.phone == payload["phone"]))
+        ).scalar_one()
+        question = Question(
+            subject="math",
+            stage="junior",
+            qtype=QuestionType.FILL,
+            stem="暂停卡片测试题",
+            answer="1",
+            analysis="略。",
+            status=QuestionStatus.PUBLISHED,
+        )
+        session.add(question)
+        await session.flush()
+        session.add(
+            ReviewCard(
+                user_id=user.id,
+                question_id=question.id,
+                state=fsrs_service.STATE_REVIEW,
+                stability=1.0,
+                difficulty=5.0,
+                due_at=base - timedelta(minutes=1),
+                suspended=True,
+            )
+        )
+        await session.flush()
+        _plan, tasks = await planner_service.get_or_create_today(
+            session, user_id=user.id, now=base
+        )
+        await session.commit()
+    assert [task for task in tasks if task.task_type == TaskType.REVIEW] == []
 
 
 async def test_today_task_complete_other_user_denied(

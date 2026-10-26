@@ -136,6 +136,11 @@ class Settings(BaseSettings):
     # ----- TTS（微课音频） -----
     tts_provider: str = "mock"
     tts_api_key: str = ""
+    # Azure 语音合成：region 与 endpoint 二选一；voice 可换其他中文音色
+    tts_region: str = ""
+    tts_endpoint: str = ""
+    tts_voice: str = "zh-CN-XiaoxiaoNeural"
+    tts_timeout_seconds: float = 15.0
     micro_lesson_min_chars: int = 600
     micro_lesson_max_chars: int = 1000
 
@@ -151,8 +156,13 @@ class Settings(BaseSettings):
     ocr_provider: str = "service"
     ocr_base_url: str = "http://localhost:8100"
     ocr_timeout_seconds: float = 10.0
-    # 口语评测：mock 先行，接入口语评测供应商时切换
+    # 口语评测：mock（仅开发/测试）/ azure / auto（无 key 时开发环境回落 mock）
     speaking_provider: str = "mock"
+    speaking_api_key: str = ""
+    speaking_region: str = ""
+    # 留空则按 region 拼 Azure 默认端点；私有化部署可填完整 URL
+    speaking_endpoint: str = ""
+    speaking_timeout_seconds: float = 15.0
 
     # ----- 运营后台与告警（M7） -----
     alert_webhook_url: str = ""

@@ -26,6 +26,7 @@ from app.models import (
     ExplainerJob,
     ExplainerMode,
     ExplainerStatus,
+    LearningProfile,
     Question,
     QuestionKnowledgePoint,
     QuestionStatus,
@@ -270,6 +271,64 @@ async def test_design_script_caps_act_count() -> None:
         settings=_settings(),
     )
     assert len(script["acts"]) == _settings().explainer_max_acts
+
+
+async def test_design_script_prompt_consumes_three_dimension_profile(
+    sessionmaker: async_sessionmaker[AsyncSession], student: tuple[uuid.UUID, str]
+) -> None:
+    """教学设计的 prompt 必须消费落库的三维画像，而不是只塞掌握度。"""
+    user_id, _token = student
+    async with sessionmaker() as session:
+        session.add(
+            LearningProfile(
+                user_id=user_id,
+                cognitive_profile={
+                    "average_mastery": 0.82,
+                    "sample_count": 5,
+                    "level": "proficient",
+                    "basis": "test",
+                },
+                behavioral_profile={
+                    "learning_style": "independent",
+                    "practice_count": 10,
+                    "accuracy": 0.9,
+                    "hint_requests": 1,
+                    "study_seconds": 2400,
+                    "window_days": 30,
+                    "basis": "test",
+                },
+                affective_profile={
+                    "confidence": 0.85,
+                    "frustration_risk": "low",
+                    "persistence": "high",
+                    "basis": "test",
+                },
+            )
+        )
+        await session.commit()
+
+    point = find_point(POINT_CODE)
+    assert point is not None
+    async with sessionmaker() as session:
+        profile_text = await explainer_service._student_profile(
+            session, user_id, uuid.uuid4()
+        )
+    assert "平均掌握度 82%" in profile_text
+    assert "独立型" in profile_text
+    assert "信心 85%" in profile_text
+    assert "暂无记录" in profile_text  # 近期错误缺失也要显式说明
+
+    llm = _StubLlm([_SCRIPT_JSON])
+    await explainer_service.design_script(
+        llm=llm,  # type: ignore[arg-type]
+        point=point,
+        profile=profile_text,
+        settings=_settings(),
+    )
+    user_prompt = llm.calls[0][1]["content"]
+    assert "平均掌握度 82%" in user_prompt
+    assert "独立型" in user_prompt
+    assert "本知识点掌握度" in user_prompt
 
 
 async def test_design_script_rejects_script_without_acts() -> None:

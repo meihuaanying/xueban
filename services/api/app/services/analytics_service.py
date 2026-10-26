@@ -16,6 +16,7 @@ from app.models import (
     ChatRole,
     ChatSession,
     LearningProfile,
+    MasteryRecord,
     PracticeRecord,
     User,
 )
@@ -36,6 +37,9 @@ class BehaviorProfile:
     evidence: dict[str, object] = field(default_factory=dict)
     independent_score: float | None = None
     assisted_score: float | None = None
+    cognitive_profile: dict[str, object] = field(default_factory=dict)
+    behavioral_profile: dict[str, object] = field(default_factory=dict)
+    affective_profile: dict[str, object] = field(default_factory=dict)
 
 
 async def record_events(
@@ -148,9 +152,31 @@ async def compute_behavior_profile(session: AsyncSession, *, user: User) -> Beha
     else:
         style = "balanced"
 
-    profile = await _get_or_create_profile(session, user.id)
-    profile.learning_style = style
-    profile.behavior_stats = {
+    mastery_rows = (
+        await session.execute(
+            select(MasteryRecord.mastery).where(MasteryRecord.user_id == user.id)
+        )
+    ).scalars()
+    mastery_values = [float(value) for value in mastery_rows]
+    mastery_average = (
+        sum(mastery_values) / len(mastery_values) if mastery_values else None
+    )
+    if mastery_average is None:
+        cognitive_level = "unknown"
+    elif mastery_average < 0.4:
+        cognitive_level = "basic"
+    elif mastery_average < 0.75:
+        cognitive_level = "developing"
+    else:
+        cognitive_level = "proficient"
+    cognitive_profile: dict[str, object] = {
+        "average_mastery": None if mastery_average is None else round(mastery_average, 4),
+        "sample_count": len(mastery_values),
+        "level": cognitive_level,
+        "basis": "MasteryRecord 平均掌握度（BKT）",
+    }
+
+    behavior_stats: dict[str, object] = {
         "practice_count": practice_count,
         "accuracy": round(accuracy, 4),
         "answer_changes": answer_changes,
@@ -158,6 +184,46 @@ async def compute_behavior_profile(session: AsyncSession, *, user: User) -> Beha
         "study_seconds": study_seconds,
         "window_days": BEHAVIOR_WINDOW_DAYS,
     }
+    behavioral_profile: dict[str, object] = {
+        "learning_style": style,
+        **behavior_stats,
+        "basis": "近 30 天练习、改答、求助与学习时长",
+    }
+
+    if practice_count == 0:
+        confidence: float | None = None
+        frustration_risk = "unknown"
+    else:
+        confidence = round(
+            min(1.0, max(0.0, 0.7 * accuracy + 0.3 * (1 - min(hint_rate, 1.0)))), 4
+        )
+        if hint_rate >= HINT_HEAVY_RATE or answer_changes >= max(
+            3, practice_count * IMPULSIVE_CHANGE_RATIO
+        ):
+            frustration_risk = "high"
+        elif hint_rate >= HINT_LIGHT_RATE or answer_changes > 0:
+            frustration_risk = "medium"
+        else:
+            frustration_risk = "low"
+    if study_seconds >= 1800:
+        persistence = "high"
+    elif study_seconds > 0:
+        persistence = "medium"
+    else:
+        persistence = "unknown"
+    affective_profile: dict[str, object] = {
+        "confidence": confidence,
+        "frustration_risk": frustration_risk,
+        "persistence": persistence,
+        "basis": "正确率、求助率、改答频率与学习时长的启发式估计",
+    }
+
+    profile = await _get_or_create_profile(session, user.id)
+    profile.learning_style = style
+    profile.behavior_stats = behavior_stats
+    profile.cognitive_profile = cognitive_profile
+    profile.behavioral_profile = behavioral_profile
+    profile.affective_profile = affective_profile
     await session.flush()
 
     return BehaviorProfile(
@@ -179,4 +245,7 @@ async def compute_behavior_profile(session: AsyncSession, *, user: User) -> Beha
         },
         independent_score=profile.independent_score,
         assisted_score=profile.assisted_score,
+        cognitive_profile=cognitive_profile,
+        behavioral_profile=behavioral_profile,
+        affective_profile=affective_profile,
     )

@@ -12,6 +12,7 @@ import { useJourney } from "@/journey/journey-context";
 import { useMistakes, useReviewDue } from "@/journey/use-journey-data";
 import { ExplainerDock } from "./explainer-launcher";
 import { GradeActions, MistakeList } from "./mistake-blocks";
+import { RepracticePanel } from "./repractice-panel";
 
 export default function MistakesStagePage() {
   const { mark, goTo, theme } = useJourney();
@@ -82,6 +83,18 @@ export default function MistakesStagePage() {
             ))}
           </section>
         </AsyncFeedback>
+
+        <RepracticePanel
+          speakable={speakable}
+          onAnswered={() => {
+            void mistakes.reload();
+            void review.reload();
+          }}
+          onOpenExplainer={(knowledgeId) => {
+            setExplainKnowledgeId(knowledgeId);
+            void explainer.open(knowledgeId);
+          }}
+        />
 
         <AsyncFeedback
           loading={mistakes.loading}

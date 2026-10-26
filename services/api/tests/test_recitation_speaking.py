@@ -2,8 +2,15 @@
 
 from __future__ import annotations
 
+import base64
+import json
+from typing import Any
+
+import httpx
+import pytest
 from httpx import AsyncClient
 
+from app.config import Settings
 from app.services import recitation_service, speaking_service
 from tests.helpers import headers_of, register
 
@@ -89,6 +96,137 @@ async def test_recitation_and_speaking_api(client: AsyncClient) -> None:
     assert payload["provider"] == "mock"
     assert payload["pronunciation"]["score"] > 0
     assert payload["errors"]
+
+    invalid_audio = await client.post(
+        "/v1/grading/speaking",
+        json={
+            "reference": "hello",
+            "transcript": "hello",
+            "audio_base64": "@@@not-base64@@@",
+        },
+        headers=headers_of(user),
+    )
+    assert invalid_audio.status_code == 422
+    assert "Base64" in invalid_audio.json()["message"]
+
+
+def test_speaking_provider_selection_rejects_mock_in_production() -> None:
+    testing = Settings(environment="testing", speaking_provider="mock")
+    provider = speaking_service.get_speaking_provider(testing)
+    assert isinstance(provider, speaking_service.MockSpeakingProvider)
+
+    production = Settings(environment="production", speaking_provider="mock")
+    with pytest.raises(speaking_service.SpeakingConfigurationError):
+        speaking_service.get_speaking_provider(production)
+
+    auto_dev = Settings(environment="development", speaking_provider="auto", speaking_api_key="")
+    fallback = speaking_service.get_speaking_provider(auto_dev)
+    assert isinstance(fallback, speaking_service.MockSpeakingProvider)
+
+    auto_prod = Settings(environment="production", speaking_provider="auto", speaking_api_key="")
+    with pytest.raises(speaking_service.SpeakingConfigurationError):
+        speaking_service.get_speaking_provider(auto_prod)
+
+    missing_region = Settings(
+        environment="production",
+        speaking_provider="azure",
+        speaking_api_key="secret",
+        speaking_region="",
+        speaking_endpoint="",
+    )
+    with pytest.raises(speaking_service.SpeakingConfigurationError):
+        speaking_service.get_speaking_provider(missing_region)
+
+
+async def test_azure_provider_maps_assessment_and_errors() -> None:
+    captured: dict[str, Any] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["url"] = str(request.url)
+        captured["key"] = request.headers["Ocp-Apim-Subscription-Key"]
+        captured["content"] = request.content
+        captured["assessment"] = json.loads(
+            base64.b64decode(request.headers["Pronunciation-Assessment"])
+        )
+        return httpx.Response(
+            200,
+            json={
+                "RecognitionStatus": "Success",
+                "NBest": [
+                    {
+                        "PronunciationAssessment": {
+                            "AccuracyScore": 82.5,
+                            "FluencyScore": 76.0,
+                            "CompletenessScore": 90.0,
+                        },
+                        "Words": [
+                            {
+                                "Word": "coffee",
+                                "PronunciationAssessment": {"ErrorType": "Mispronunciation"},
+                            },
+                            {
+                                "Word": "please",
+                                "PronunciationAssessment": {"ErrorType": "None"},
+                            },
+                        ],
+                    }
+                ],
+            },
+        )
+
+    transport = httpx.MockTransport(handler)
+    async with httpx.AsyncClient(transport=transport) as client:
+        provider = speaking_service.AzureSpeakingProvider(
+            api_key="secret", region="eastasia", client=client
+        )
+        result = await provider.assess(
+            reference="coffee please",
+            transcript="coffee please",
+            audio=b"RIFFfake",
+            content_type="audio/wav",
+            duration_seconds=1.5,
+        )
+
+    assert result.provider == "azure"
+    assert result.pronunciation == 0.825
+    assert result.fluency == 0.76
+    assert result.completeness == 0.9
+    assert [error.word for error in result.errors] == ["coffee"]
+    assert "整体可听" in result.notes["fluency"]
+    assert captured["key"] == "secret"
+    assert "format=detailed" in captured["url"]
+    assert captured["content"] == b"RIFFfake"
+    assessment = captured["assessment"]
+    assert assessment["ReferenceText"] == "coffee please"
+    assert assessment["Granularity"] == "Phoneme"
+    assert assessment["EnableMiscue"] is True
+
+
+async def test_azure_provider_requires_audio_and_reports_bad_response() -> None:
+    def failed_handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(500, json={"error": "upstream"})
+
+    provider = speaking_service.AzureSpeakingProvider(api_key="secret", region="eastasia")
+    with pytest.raises(speaking_service.SpeakingAudioRequired):
+        await provider.assess(
+            reference="hello",
+            transcript="hello",
+            audio=None,
+            content_type="audio/wav",
+        )
+
+    transport = httpx.MockTransport(failed_handler)
+    async with httpx.AsyncClient(transport=transport) as client:
+        failing = speaking_service.AzureSpeakingProvider(
+            api_key="secret", region="eastasia", client=client
+        )
+        with pytest.raises(speaking_service.SpeakingProviderError):
+            await failing.assess(
+                reference="hello",
+                transcript="hello",
+                audio=b"RIFFfake",
+                content_type="audio/wav",
+            )
 
 
 async def test_code_judge_api(client: AsyncClient) -> None:

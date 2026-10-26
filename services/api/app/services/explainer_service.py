@@ -44,6 +44,7 @@ from app.models import (
     ExplainerJob,
     ExplainerMode,
     ExplainerStatus,
+    LearningProfile,
     MasteryRecord,
     MistakeBookEntry,
     Question,
@@ -167,11 +168,61 @@ async def resolve_point(
 # ---------------------------------------------------------------- 学生画像
 
 #: 没有用户上下文（如后台预生成）时的占位画像。
-_EMPTY_PROFILE = "- 当前掌握度：暂无记录\n- 近期错误：暂无记录"
+_EMPTY_PROFILE = (
+    "- 认知画像：暂无记录\n- 行为画像：暂无记录\n- 情感画像：暂无记录\n- 近期错误：暂无记录"
+)
+
+_STYLE_NAMES = {
+    "independent": "独立型",
+    "balanced": "均衡型",
+    "guided": "依赖引导型",
+    "impulsive": "冲动型",
+}
+
+
+def _profile_lines(profile: LearningProfile | None) -> list[str]:
+    """把落库的三维画像转成给模型看的短文本，缺数据时明确写「暂无记录」。"""
+    cognitive = profile.cognitive_profile if profile is not None else {}
+    behavioral = profile.behavioral_profile if profile is not None else {}
+    affective = profile.affective_profile if profile is not None else {}
+
+    average = cognitive.get("average_mastery")
+    cognitive_text = (
+        f"平均掌握度 {float(average):.0%}（{cognitive.get('level', 'unknown')}，"
+        f"{cognitive.get('sample_count', 0)} 个知识点）"
+        if isinstance(average, (int, float))
+        else "暂无记录（按新知识点讲）"
+    )
+
+    style = behavioral.get("learning_style")
+    style_text = _STYLE_NAMES.get(style, str(style)) if style else "暂无记录"
+    if behavioral:
+        accuracy = behavioral.get("accuracy")
+        accuracy_text = f"{float(accuracy):.0%}" if isinstance(accuracy, (int, float)) else "-"
+        behavioral_text = (
+            f"{style_text}；近 {behavioral.get('window_days', 30)} 天练习 "
+            f"{behavioral.get('practice_count', 0)} 次，正确率 {accuracy_text}，"
+            f"求助 {behavioral.get('hint_requests', 0)} 次"
+        )
+    else:
+        behavioral_text = "暂无记录"
+
+    confidence = affective.get("confidence")
+    affective_text = (
+        f"信心 {float(confidence):.0%}，挫败风险 {affective.get('frustration_risk', 'unknown')}，"
+        f"坚持度 {affective.get('persistence', 'unknown')}"
+        if isinstance(confidence, (int, float))
+        else "暂无记录"
+    )
+    return [
+        f"- 认知画像：{cognitive_text}",
+        f"- 行为画像：{behavioral_text}",
+        f"- 情感画像：{affective_text}",
+    ]
 
 
 async def _student_profile(session: AsyncSession, user_id: uuid.UUID, kp_id: uuid.UUID) -> str:
-    """拼一段给教学设计用的学生画像文字（掌握度 + 近期错误）。
+    """拼一段给教学设计用的学生画像文字（三维画像 + 本知识点掌握度 + 近期错误）。
 
     画像只取「最近 3 条错题的题干」，不落用户原文，避免把未脱敏的输入喂给模型。
     """
@@ -181,6 +232,11 @@ async def _student_profile(session: AsyncSession, user_id: uuid.UUID, kp_id: uui
         )
     )
     mastery = mastery_row.scalar_one_or_none()
+    profile = (
+        await session.execute(
+            select(LearningProfile).where(LearningProfile.user_id == user_id)
+        )
+    ).scalar_one_or_none()
 
     error_rows = await session.execute(
         select(Question.stem, MistakeBookEntry.error_reason)
@@ -200,7 +256,10 @@ async def _student_profile(session: AsyncSession, user_id: uuid.UUID, kp_id: uui
 
     mastery_text = "暂无记录（按新知识点讲）" if mastery is None else f"{mastery:.0%}"
     errors_text = "、".join(errors) if errors else "暂无记录"
-    return f"- 当前掌握度：{mastery_text}\n- 近期错误：{errors_text}"
+    lines = _profile_lines(profile)
+    lines.append(f"- 本知识点掌握度：{mastery_text}")
+    lines.append(f"- 近期错误：{errors_text}")
+    return "\n".join(lines)
 
 
 # ---------------------------------------------------------------- ①② 生成
@@ -239,8 +298,7 @@ async def design_script(
                     point_name=point.name,
                     objective=point.objective,
                     prerequisites="、".join(point.prerequisites) or "无",
-                    mastery=profile,
-                    recent_errors=profile,
+                    profile=profile,
                     max_acts=settings.explainer_max_acts,
                 ),
             },

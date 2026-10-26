@@ -44,3 +44,6 @@ class BehaviorResponse(BaseModel):
     evidence: dict[str, object]
     independent_score: float | None = None
     assisted_score: float | None = None
+    cognitive_profile: dict[str, object] = Field(default_factory=dict)
+    behavioral_profile: dict[str, object] = Field(default_factory=dict)
+    affective_profile: dict[str, object] = Field(default_factory=dict)

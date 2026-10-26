@@ -16,7 +16,7 @@ from app.services import lesson_service
 from app.services.llm_client import LlmClient
 from app.services.observability import ObservabilityService
 from app.services.storage_service import StorageService
-from app.services.tts import MockTtsProvider, TtsError, VendorTtsProvider
+from app.services.tts import AzureTtsProvider, MockTtsProvider, TtsError, get_tts_provider
 from tests.helpers import headers_of, register
 
 GOOD_SCRIPT = "同学们好，这节课我们学习一元一次方程。" * 40  # ≈ 760 字
@@ -45,6 +45,15 @@ def _llm(content: str) -> LlmClient:
     )
     observability = ObservabilityService(settings)
     return LlmClient(settings, observability, transport=httpx.MockTransport(_handler(content)))
+
+
+class _FailingTts:
+    """模拟供应商故障，用于验证微课失败路径不会误报 ready。"""
+
+    name = "failing"
+
+    async def synthesize(self, text: str) -> tuple[bytes, str]:
+        raise TtsError(f"合成失败：{text[:8]}")
 
 
 async def _seed_kp(sessionmaker: async_sessionmaker[AsyncSession]) -> uuid.UUID:
@@ -183,7 +192,7 @@ async def test_generate_lesson_tts_failure(
                 session,
                 lesson_id=lesson_id,
                 llm=llm,
-                tts=VendorTtsProvider(""),  # 未接入 → 抛 TtsError
+                tts=_FailingTts(),  # 供应商故障 → TtsError
                 storage=StorageService(Settings()),
             )
             await session.commit()
@@ -232,7 +241,66 @@ def test_mock_tts_produces_wav() -> None:
     assert data[:4] == b"RIFF"
 
 
-def test_vendor_tts_not_implemented() -> None:
-    provider = VendorTtsProvider("key")
-    with pytest.raises(TtsError):
-        asyncio.run(provider.synthesize("测试"))
+def test_get_tts_provider_rejects_mock_in_production() -> None:
+    with pytest.raises(TtsError, match="生产环境禁止"):
+        get_tts_provider(Settings(environment="production", tts_provider="mock"))
+    assert isinstance(
+        get_tts_provider(Settings(environment="testing", tts_provider="mock")),
+        MockTtsProvider,
+    )
+    with pytest.raises(TtsError, match="TTS_API_KEY"):
+        get_tts_provider(
+            Settings(environment="production", tts_provider="azure", tts_api_key="")
+        )
+    with pytest.raises(TtsError, match="TTS_REGION"):
+        get_tts_provider(
+            Settings(environment="production", tts_provider="azure", tts_api_key="key")
+        )
+    provider = get_tts_provider(
+        Settings(
+            environment="production",
+            tts_provider="azure",
+            tts_api_key="key",
+            tts_region="eastasia",
+        )
+    )
+    assert isinstance(provider, AzureTtsProvider)
+
+
+async def test_azure_tts_posts_ssml_and_returns_mp3() -> None:
+    captured: dict[str, str] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["url"] = str(request.url)
+        captured["key"] = request.headers["Ocp-Apim-Subscription-Key"]
+        captured["format"] = request.headers["X-Microsoft-OutputFormat"]
+        captured["body"] = request.content.decode()
+        return httpx.Response(
+            200, content=b"ID3fake-mp3", headers={"content-type": "audio/mpeg"}
+        )
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        provider = AzureTtsProvider(
+            "key", region="eastasia", voice="zh-CN-YunxiNeural", client=client
+        )
+        audio, mime = await provider.synthesize("你好 <世界>")
+
+    assert audio == b"ID3fake-mp3"
+    assert mime == "audio/mpeg"
+    assert captured["url"] == (
+        "https://eastasia.tts.speech.microsoft.com/cognitiveservices/v1"
+    )
+    assert captured["key"] == "key"
+    assert captured["format"] == "audio-24khz-48kbitrate-mono-mp3"
+    assert "<voice name='zh-CN-YunxiNeural'>" in captured["body"]
+    assert "你好 &lt;世界&gt;" in captured["body"]
+
+
+async def test_azure_tts_reports_http_error() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(500, text="boom")
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        provider = AzureTtsProvider("key", region="eastasia", client=client)
+        with pytest.raises(TtsError, match="HTTP 500"):
+            await provider.synthesize("测试")

@@ -16,6 +16,7 @@ from app.models import (
     ChatSession,
     KnowledgePoint,
     LearningProfile,
+    MasteryRecord,
     Question,
     QuestionKnowledgePoint,
     QuestionStatus,
@@ -211,6 +212,65 @@ async def test_behavior_persists_profile(
         ).scalar_one_or_none()
     assert profile is not None
     assert profile.learning_style == "balanced"
+    assert profile.cognitive_profile["level"] == "unknown"
+    assert profile.behavioral_profile["learning_style"] == "balanced"
+    assert profile.affective_profile["frustration_risk"] == "unknown"
+
+
+async def test_behavior_profile_three_dimensions(
+    client: AsyncClient, sessionmaker: async_sessionmaker[AsyncSession]
+) -> None:
+    """认知/行为/情感三维画像必须落库，并通过接口原样返回。"""
+    bank = await _seed_bank(sessionmaker, count=2)
+    payload = await register(client)
+    headers = headers_of(payload)
+    for question_id, answer in bank:
+        response = await client.post(
+            "/v1/practice/answer",
+            json={"question_id": str(question_id), "answer": answer},
+            headers=headers,
+        )
+        assert response.status_code == 200, response.text
+
+    async with sessionmaker() as session:
+        user = (
+            await session.execute(select(User).where(User.phone == payload["phone"]))
+        ).scalar_one()
+        record = (
+            await session.execute(
+                select(MasteryRecord).where(MasteryRecord.user_id == user.id)
+            )
+        ).scalar_one()
+        record.mastery = 0.82
+        await session.commit()
+
+    events = await client.post(
+        "/v1/analytics/events",
+        json={"events": [{"name": "study.session", "payload": {"duration_seconds": 1800}}]},
+        headers=headers,
+    )
+    assert events.status_code == 200, events.text
+
+    response = await client.get("/v1/profile/behavior", headers=headers)
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["cognitive_profile"]["average_mastery"] == 0.82
+    assert body["cognitive_profile"]["level"] == "proficient"
+    assert body["behavioral_profile"]["practice_count"] == 2
+    assert body["behavioral_profile"]["accuracy"] == 1.0
+    assert body["affective_profile"]["confidence"] == 1.0
+    assert body["affective_profile"]["frustration_risk"] == "low"
+    assert body["affective_profile"]["persistence"] == "high"
+
+    async with sessionmaker() as session:
+        profile = (
+            await session.execute(
+                select(LearningProfile).where(LearningProfile.user_id == user.id)
+            )
+        ).scalar_one()
+    assert profile.cognitive_profile == body["cognitive_profile"]
+    assert profile.behavioral_profile == body["behavioral_profile"]
+    assert profile.affective_profile == body["affective_profile"]
 
 
 async def test_analytics_requires_auth(client: AsyncClient) -> None:

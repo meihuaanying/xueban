@@ -17,6 +17,7 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    text,
 )
 from sqlalchemy import (
     Enum as SAEnum,
@@ -75,6 +76,15 @@ class LearningProfile(Base, TimestampMixin):
     )
     learning_style: Mapped[str | None] = mapped_column(String(32))
     behavior_stats: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, nullable=False)
+    cognitive_profile: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, default=dict, server_default=text("'{}'::jsonb"), nullable=False
+    )
+    behavioral_profile: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, default=dict, server_default=text("'{}'::jsonb"), nullable=False
+    )
+    affective_profile: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, default=dict, server_default=text("'{}'::jsonb"), nullable=False
+    )
     independent_score: Mapped[float | None] = mapped_column(Float)
     assisted_score: Mapped[float | None] = mapped_column(Float)
 

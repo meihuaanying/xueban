@@ -58,6 +58,9 @@ async def behavior_profile(
         evidence=profile.evidence,
         independent_score=profile.independent_score,
         assisted_score=profile.assisted_score,
+        cognitive_profile=profile.cognitive_profile,
+        behavioral_profile=profile.behavioral_profile,
+        affective_profile=profile.affective_profile,
     )
     await session.commit()
     return response

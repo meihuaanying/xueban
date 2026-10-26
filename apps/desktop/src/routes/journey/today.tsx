@@ -17,7 +17,7 @@ const TASK_LABEL: Record<string, string> = {
 };
 
 export default function TodayStagePage() {
-  const { theme, mark } = useJourney();
+  const { theme, mark, goTo } = useJourney();
   const today = useToday();
   const tasks = today.data?.tasks ?? [];
   const done = today.data?.completed_count ?? 0;
@@ -74,9 +74,19 @@ export default function TodayStagePage() {
                     </CardTitle>
                   </CardHeader>
                   {task.status !== "done" ? (
-                    <CardContent>
+                    <CardContent className="flex flex-wrap gap-sm">
+                      {task.task_type === "review" ? (
+                        <Button
+                          type="button"
+                          data-testid={`today-review-${task.id}`}
+                          onClick={() => goTo("mistakes")}
+                        >
+                          去复习
+                        </Button>
+                      ) : null}
                       <Button
                         type="button"
+                        variant={task.task_type === "review" ? "outline" : "primary"}
                         data-testid={`today-complete-${task.id}`}
                         onClick={() => void today.complete(task.id)}
                       >

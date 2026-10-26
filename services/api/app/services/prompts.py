@@ -209,8 +209,7 @@ EXPLAINER_DESIGN_USER_TEMPLATE = """学科：{subject}（{subject_name}）
 前置知识：{prerequisites}
 
 学生画像：
-- 当前掌握度：{mastery}
-- 近期错误：{recent_errors}
+{profile}
 
 请设计不超过 {max_acts} 幕的教学脚本，幕之间要有递进。JSON 结构：
 {{"title": "不超过 20 字的标题",

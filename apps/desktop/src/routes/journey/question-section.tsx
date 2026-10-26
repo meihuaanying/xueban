@@ -27,7 +27,7 @@ export function QuestionSection({
   speakable,
   onAnswer,
 }: {
-  question: PracticeQuestion;
+  question: Pick<PracticeQuestion, "stem" | "qtype" | "options" | "difficulty">;
   index: number;
   total: number;
   busy: boolean;
