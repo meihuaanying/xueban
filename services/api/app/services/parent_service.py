@@ -32,6 +32,7 @@ from app.models import (
     User,
     WeeklyReport,
 )
+from app.services.parent_controls import ensure_controls_row
 from app.services.security import verify_password
 
 DASHBOARD_SHARE_KIND = "parent_dashboard"
@@ -93,6 +94,7 @@ async def update_controls(
     if allowed_start is not None and allowed_end is not None and allowed_start >= allowed_end:
         raise AuthError("允许时段起始时间必须早于结束时间", code="PARENT_CONTROL_TIME_INVALID")
 
+    await ensure_controls_row(session, child_id=child_id)
     control = await get_controls(session, child_id=child_id)
     control.updated_by = parent.id
     control.is_enabled = is_enabled
@@ -136,8 +138,14 @@ class GuardianStatus:
 async def guardian_status(
     session: AsyncSession, *, user: User, now: datetime | None = None
 ) -> GuardianStatus:
-    """服务端判定是否锁屏（F-40：防本地篡改）。"""
+    """服务端判定是否锁屏（F-40：防本地篡改）。
+
+    入口先做幂等初始化：首屏并发请求时两个请求都可能走到 get_controls，
+    若各自 INSERT 会撞 child_id 唯一约束（500 → 浏览器 Failed to fetch）。
+    ``ensure_controls_row`` 用 ON CONFLICT DO NOTHING，把这条路径变成并发安全。
+    """
     moment = now or utcnow()
+    await ensure_controls_row(session, child_id=user.id)
     control = await get_controls(session, child_id=user.id)
     if not control.is_enabled:
         return GuardianStatus(False, [], 0, None, False, False, None)

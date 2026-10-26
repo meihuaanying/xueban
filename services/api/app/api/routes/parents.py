@@ -23,6 +23,7 @@ from app.schemas import (
     SafetyReportResponse,
 )
 from app.services import parent_service
+from app.services.parent_controls import ensure_controls_row
 
 router = APIRouter(prefix="/v1", tags=["parents"])
 
@@ -65,6 +66,7 @@ async def get_controls(
 ) -> ControlsResponse:
     """读取孩子的使用时长/时段设置。"""
     await parent_service.get_bound_child(session, parent=parent, child_id=child_id)
+    await ensure_controls_row(session, child_id=child_id)
     control = await parent_service.get_controls(session, child_id=child_id)
     return _controls_response(control)
 

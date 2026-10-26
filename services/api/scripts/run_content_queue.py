@@ -46,6 +46,7 @@ class Segment:
 def default_queue() -> list[Segment]:
     """按「高中生可用」优先的顺序排列；每段单独可断点续跑。"""
     return [
+        Segment("高中数学（收尾）", ("math",), ("grade10", "grade11", "grade12")),
         Segment("高中语文", ("chinese",), ("grade10", "grade11", "grade12")),
         Segment("高中英语", ("english",), ("grade10", "grade11", "grade12")),
         Segment("高中物理", ("physics",), ("grade10", "grade11", "grade12")),
