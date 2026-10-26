@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ApiError, api, coachApi, setAccessToken, v3Api } from "./api";
+import { ApiError, api, coachApi, getAccessToken, setAccessToken, setRefreshToken, v3Api } from "./api";
 
 function mockFetch(payload: unknown, status = 200) {
   const fetchMock = vi.fn().mockResolvedValue(
@@ -15,6 +15,7 @@ function mockFetch(payload: unknown, status = 200) {
 
 beforeEach(() => {
   setAccessToken(null);
+  setRefreshToken(null);
 });
 
 afterEach(() => {
@@ -86,9 +87,76 @@ describe("桌面端 API 端点拼装", () => {
     expect((init.headers as Record<string, string>).Authorization).toBe("Bearer token-abc");
   });
 
-  it("非 2xx 抛 ApiError", async () => {
-    mockFetch({ code: "TEST_ERROR", message: "失败", trace_id: "t-9" }, 400);
-    await expect(api.me()).rejects.toBeInstanceOf(ApiError);
+  it("401 → 刷新成功 → 重放成功", async () => {
+    // 夹具令牌逐次随机生成，避免在源码中出现凭据字面量
+    const run = Math.random().toString(36).slice(2, 10);
+    const staleToken = `stale-${run}`;
+    const oldRefresh = `refresh-${run}`;
+    const newAccess = `access-${run}`;
+    const newRefresh = `refresh-next-${run}`;
+    setAccessToken(staleToken);
+    setRefreshToken(oldRefresh);
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ code: "AUTH_INVALID_TOKEN", message: "登录状态无效" }), {
+          status: 401,
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            access_token: newAccess,
+            refresh_token: newRefresh,
+            token_type: "Bearer",
+            expires_in: 900,
+          }),
+          { status: 200 },
+        ),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ date: "2026-10-24", tasks: [] }), { status: 200 }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    // 探针须为非 /v1/auth/ 路径：认证端点的 401 不触发刷新
+    const today = await api.today();
+
+    expect(today).toEqual({ date: "2026-10-24", tasks: [] });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    const [refreshUrl, refreshInit] = fetchMock.mock.calls[1] as [string, RequestInit];
+    expect(refreshUrl).toContain("/v1/auth/refresh");
+    expect(JSON.parse(String(refreshInit.body))).toEqual({ refresh_token: oldRefresh });
+    const [replayUrl, replayInit] = fetchMock.mock.calls[2] as [string, RequestInit];
+    expect(replayUrl).toContain("/v1/plan/today");
+    expect((replayInit.headers as Record<string, string>).Authorization).toBe(
+      `Bearer ${newAccess}`,
+    );
+    expect(getAccessToken()).toBe(newAccess);
+  });
+
+  it("刷新失败 → 抛 401 且清空令牌", async () => {
+    const run = Math.random().toString(36).slice(2, 10);
+    setAccessToken(`stale-${run}`);
+    setRefreshToken(`refresh-${run}`);
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ code: "AUTH_INVALID_TOKEN", message: "登录状态无效" }), {
+          status: 401,
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ code: "AUTH_REFRESH_INVALID", message: "刷新失败" }), {
+          status: 401,
+        }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(api.today()).rejects.toMatchObject({ status: 401 });
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(getAccessToken()).toBeNull();
   });
 });
 

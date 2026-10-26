@@ -71,6 +71,25 @@ async function reportUsage(
   if (!response.ok()) throw new Error(`上报时长失败：${await response.text()}`);
 }
 
+/** 绑定孩子须先给孩子手机号发送 bind 验证码（T-001 契约），开发环境回显 debug_code。 */
+async function bindChild(
+  request: APIRequestContext,
+  parent: GuardianAccount,
+  child: GuardianAccount,
+): Promise<void> {
+  const send = await request.post(`${API_ORIGIN}/v1/auth/sms/send`, {
+    data: { phone: child.phone, purpose: "bind" },
+  });
+  if (!send.ok()) throw new Error(`发送绑定验证码失败：${await send.text()}`);
+  const { debug_code: code } = (await send.json()) as { debug_code: string };
+  if (!code) throw new Error("开发环境应返回 debug_code");
+  const bind = await request.post(`${API_ORIGIN}/v1/auth/parents/children`, {
+    headers: { Authorization: `Bearer ${parent.accessToken}` },
+    data: { child_phone: child.phone, sms_code: code },
+  });
+  if (!bind.ok()) throw new Error(`绑定孩子失败：${await bind.text()}`);
+}
+
 async function seedTokens(page: Page, account: GuardianAccount): Promise<void> {
   await page.addInitScript(
     (tokens: { access: string; refresh: string }) => {
@@ -89,11 +108,7 @@ test.describe("T7.2 防沉迷生效链（旅程页同样受守护门控）", () 
   test("超过每日上限后锁屏，放宽后解锁", async ({ page, request }) => {
     const parent = await register(request, "parent");
     const child = await register(request, "student");
-    const bind = await request.post(`${API_ORIGIN}/v1/auth/parents/children`, {
-      headers: { Authorization: `Bearer ${parent.accessToken}` },
-      data: { child_phone: child.phone },
-    });
-    expect(bind.ok()).toBe(true);
+    await bindChild(request, parent, child);
 
     await setControls(request, parent, child.id, { limit: 30, enabled: true });
     await reportUsage(request, child, 1800);
@@ -119,10 +134,7 @@ test.describe("T7.2 防沉迷生效链（旅程页同样受守护门控）", () 
   test("关闭防沉迷后不受时长影响", async ({ page, request }) => {
     const parent = await register(request, "parent");
     const child = await register(request, "student");
-    await request.post(`${API_ORIGIN}/v1/auth/parents/children`, {
-      headers: { Authorization: `Bearer ${parent.accessToken}` },
-      data: { child_phone: child.phone },
-    });
+    await bindChild(request, parent, child);
     await setControls(request, parent, child.id, { limit: 30, enabled: false });
     await reportUsage(request, child, 3600);
 

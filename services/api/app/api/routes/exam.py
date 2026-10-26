@@ -7,7 +7,7 @@ import uuid
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user, get_session
+from app.api.deps import get_session, require_not_locked
 from app.models import ExamKind, Question, User
 from app.schemas.exam import (
     ExamCreateRequest,
@@ -66,7 +66,7 @@ def _report_response(report: exam_service.ExamReport) -> ExamReportResponse:
 )
 async def create_mock_exam(
     payload: ExamCreateRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> ExamCreateResponse:
     """创建全真限时模考。"""
@@ -102,7 +102,7 @@ async def create_mock_exam(
 )
 async def create_solo_assessment(
     payload: ExamCreateRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> ExamCreateResponse:
     """创建独立能力测评；测评期间所有提示/讲解接口返回 403。"""
@@ -138,7 +138,7 @@ async def create_solo_assessment(
 async def submit_exam(
     exam_id: uuid.UUID,
     payload: ExamSubmitRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> ExamReportResponse:
     """提交作答（幂等：重复提交返回既有报告）。"""
@@ -160,7 +160,7 @@ async def submit_exam(
 )
 async def get_exam(
     exam_id: uuid.UUID,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> ExamReportResponse:
     """查询报告；倒计时结束未交卷则自动收卷。"""

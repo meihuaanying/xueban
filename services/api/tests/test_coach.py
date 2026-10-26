@@ -122,3 +122,9 @@ async def test_roleplay_and_interview_and_writing(client: AsyncClient) -> None:
     assert body["suggestions"]
     assert "学术诚信" in body["integrity_notice"]
     assert "不代写" in body["polished_excerpt"]
+
+
+async def test_scenes_requires_auth(client: AsyncClient) -> None:
+    """无 Authorization 头请求场景列表返回 401。"""
+    response = await client.post("/v1/coach/scenes")
+    assert response.status_code == 401

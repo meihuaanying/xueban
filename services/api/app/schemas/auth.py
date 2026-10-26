@@ -94,6 +94,9 @@ class BindChildRequest(BaseModel):
     """家长绑定孩子请求。"""
 
     child_phone: str = Field(pattern=PHONE_PATTERN)
+    sms_code: str = Field(
+        min_length=4, max_length=8, description="发送到孩子手机号的绑定验证码（purpose=bind）"
+    )
 
 
 class ChildResponse(BaseModel):

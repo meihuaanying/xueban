@@ -1,4 +1,13 @@
+jest.mock("expo-secure-store", () => ({
+  getItemAsync: jest.fn(),
+  setItemAsync: jest.fn(),
+  deleteItemAsync: jest.fn(),
+}));
+
+import * as SecureStore from "expo-secure-store";
 import { ApiError, api, coachApi, setAccessToken, streamTutorHint } from "../lib/api";
+
+const secureMock = SecureStore as jest.Mocked<typeof SecureStore>;
 
 function mockFetch(payload: unknown, status = 200) {
   const fetchMock = jest.fn().mockResolvedValue({
@@ -99,6 +108,88 @@ describe("移动端 API 端点拼装", () => {
       await call();
       expect(lastRequest(fetchMock)[0]).toContain(path);
     }
+  });
+});
+
+describe("401 自动刷新（SecureStore）", () => {
+  it("401 → 刷新成功 → 重放成功", async () => {
+    // 夹具令牌逐次随机生成，避免在源码中出现凭据字面量
+    const run = Math.random().toString(36).slice(2, 10);
+    const oldRefresh = `refresh-${run}`;
+    const newAccess = `access-${run}`;
+    const newRefresh = `refresh-next-${run}`;
+    setAccessToken(`stale-${run}`);
+    secureMock.getItemAsync.mockResolvedValue(oldRefresh);
+    secureMock.setItemAsync.mockResolvedValue(undefined);
+    const fetchMock = jest
+      .fn()
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+        text: async () => JSON.stringify({ code: "AUTH_INVALID_TOKEN", message: "登录状态无效" }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        text: async () =>
+          JSON.stringify({
+            access_token: newAccess,
+            refresh_token: newRefresh,
+            token_type: "Bearer",
+            expires_in: 900,
+          }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        text: async () => JSON.stringify({ date: "2026-10-24", tasks: [] }),
+      });
+    (globalThis as unknown as { fetch: typeof fetchMock }).fetch = fetchMock;
+
+    // 探针须为非 /v1/auth/ 路径：认证端点的 401 不触发刷新
+    const today = await api.today();
+
+    expect(today).toEqual({ date: "2026-10-24", tasks: [] });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    const [refreshUrl, refreshInit] = fetchMock.mock.calls[1] as [string, RequestInit];
+    expect(refreshUrl).toContain("/v1/auth/refresh");
+    expect(JSON.parse(String(refreshInit.body))).toEqual({ refresh_token: oldRefresh });
+    const [replayUrl, replayInit] = fetchMock.mock.calls[2] as [string, RequestInit];
+    expect(replayUrl).toContain("/v1/plan/today");
+    expect((replayInit.headers as Record<string, string>).Authorization).toBe(
+      `Bearer ${newAccess}`,
+    );
+    expect(secureMock.setItemAsync).toHaveBeenCalledWith("xueban.mobile.refresh_token", newRefresh);
+  });
+
+  it("刷新失败 → 抛 401 且清空令牌", async () => {
+    const run = Math.random().toString(36).slice(2, 10);
+    setAccessToken(`stale-${run}`);
+    secureMock.getItemAsync.mockResolvedValue(`refresh-${run}`);
+    secureMock.deleteItemAsync.mockResolvedValue(undefined);
+    const fetchMock = jest
+      .fn()
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+        text: async () => JSON.stringify({ code: "AUTH_INVALID_TOKEN", message: "登录状态无效" }),
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 401,
+        text: async () => JSON.stringify({ code: "AUTH_REFRESH_INVALID", message: "刷新失败" }),
+      });
+    (globalThis as unknown as { fetch: typeof fetchMock }).fetch = fetchMock;
+
+    await expect(api.today()).rejects.toMatchObject({ status: 401 });
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(secureMock.deleteItemAsync).toHaveBeenCalledWith("xueban.mobile.refresh_token");
+    // 原访问令牌已被清空：下一次请求不再携带 Authorization
+    const nextFetch = mockFetch({});
+    await api.today();
+    const [, init] = lastRequest(nextFetch);
+    expect((init.headers as Record<string, string>).Authorization).toBeUndefined();
   });
 });
 

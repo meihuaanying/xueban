@@ -14,6 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.db import utcnow
 from app.models import (
     AlertRecord,
+    AuditLog,
     Experiment,
     ExperimentAssignment,
     MasteryRecord,
@@ -169,6 +170,26 @@ async def test_question_transition_invalid_rejected(client: AsyncClient, admin_t
     )
     assert response.status_code == 409
     assert response.json()["code"] == "QUESTION_TRANSITION_INVALID"
+
+
+async def test_transition_writes_audit_log(
+    client: AsyncClient, admin_token: str, sessionmaker: async_sessionmaker[AsyncSession]
+) -> None:
+    """E-010：题目流转写入 audit_logs，操作者为该管理员。"""
+    question = await _create_published_question(
+        client, admin_token, stem="审计用题干", analysis="解析"
+    )
+    question_id = str(question["id"])
+
+    async with sessionmaker() as session:
+        admin = (await session.scalars(select(User).filter_by(role=UserRole.ADMIN))).one()
+        log = (
+            await session.scalars(
+                select(AuditLog).filter_by(action="admin.question.transition", actor_id=admin.id)
+            )
+        ).first()
+        assert log is not None
+        assert log.target_id == question_id
 
 
 # ------------------------------- F-45 巡检 -------------------------------

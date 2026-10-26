@@ -50,6 +50,8 @@ class Settings(BaseSettings):
     sms_provider: str = "mock"
     sms_code_ttl_seconds: int = 300
     sms_code_max_attempts: int = 5
+    sms_send_interval_seconds: int = 60
+    sms_send_daily_limit: int = 10
 
     # ----- 内容安全 -----
     safety_provider: str = "mock"
@@ -143,6 +145,7 @@ class Settings(BaseSettings):
     tts_timeout_seconds: float = 15.0
     micro_lesson_min_chars: int = 600
     micro_lesson_max_chars: int = 1000
+    library_upload_max_bytes: int = 20 * 1024 * 1024
 
     # ----- Embedding / Rerank（RAG） -----
     # mock：本地词面哈希向量（离线开发）；siliconflow：真实 bge-m3 / bge-reranker-v2-m3

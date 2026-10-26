@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
 import logging
+import random
+import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -109,17 +112,33 @@ class YidunProvider:
         """调用易盾文本检测接口。"""
         if not self._settings.yidun_secret_id or not self._settings.yidun_secret_key:
             raise SafetyProviderError("易盾密钥未配置")
+        # 签名按易盾官方文档：SHA1(secretId + secretKey + timestamp + nonce)，十六进制小写
+        timestamp = str(int(time.time()))
+        nonce = str(random.randint(100000, 999999))
+        signature = hashlib.sha1(
+            (self._settings.yidun_secret_id + self._settings.yidun_secret_key + timestamp + nonce)
+            .encode("utf-8")
+        ).hexdigest()
         try:
             async with httpx.AsyncClient(timeout=5.0) as client:
                 response = await client.post(
                     "https://as.dun.163.com/v5/text/check",
-                    data={"secretId": self._settings.yidun_secret_id, "content": text},
+                    data={
+                        "secretId": self._settings.yidun_secret_id,
+                        "timestamp": timestamp,
+                        "nonce": nonce,
+                        "signature": signature,
+                        "content": text,
+                    },
                 )
                 response.raise_for_status()
                 payload = response.json()
         except httpx.HTTPError as exc:
             raise SafetyProviderError(f"易盾接口异常：{exc}") from exc
-        # 响应结构按易盾 v5：result.suggest(0 通过 / 1 嫌疑 / 2 不通过)
+        # 响应结构按易盾 v5：code=200 成功；result.suggest(0 通过 / 1 嫌疑 / 2 不通过)
+        code = int(payload.get("code", 0))
+        if code != 200:
+            raise SafetyProviderError(f"易盾接口错误：{payload.get('msg')}（code={code}）")
         suggest = int(payload.get("result", {}).get("suggest", 0))
         allowed = suggest == 0
         return SafetyDecision(

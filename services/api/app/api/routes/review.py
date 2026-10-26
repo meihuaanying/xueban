@@ -7,7 +7,7 @@ import uuid
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user, get_session
+from app.api.deps import get_session, require_not_locked
 from app.models import Question, User
 from app.schemas.practice import (
     QuestionBriefOut,
@@ -24,7 +24,7 @@ router = APIRouter(prefix="/v1/review", tags=["review"])
 @router.get("/due", response_model=ReviewDueResponse, summary="到期复习卡片（F-19）")
 async def due(
     limit: int = Query(default=20, ge=1, le=100),
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> ReviewDueResponse:
     """返回已到期（含逾期）的复习卡片。"""
@@ -66,7 +66,7 @@ async def due(
 async def grade(
     card_id: uuid.UUID,
     payload: ReviewGradeRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> ReviewGradeResponse:
     """应用一次 FSRS 评分并返回下次间隔。"""

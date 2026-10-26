@@ -5,7 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user, get_session
+from app.api.deps import get_session, require_not_locked
 from app.models import PracticeSource, User
 from app.schemas.practice import (
     PracticeAnswerRequest,
@@ -26,7 +26,7 @@ router = APIRouter(prefix="/v1/practice", tags=["practice"])
 )
 async def generate(
     payload: PracticeGenerateRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> PracticeGenerateResponse:
     """薄弱知识点占比 ≥60%，近 7 天去重。"""
@@ -72,7 +72,7 @@ async def generate(
 )
 async def answer(
     payload: PracticeAnswerRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> PracticeAnswerResponse:
     """判定作答并联动画像、错题本与复习卡。"""

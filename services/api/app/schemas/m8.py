@@ -54,6 +54,11 @@ class SpeakingGradeRequest(BaseModel):
     reference: str = Field(min_length=1, max_length=2000)
     transcript: str = Field(max_length=2000)
     duration_seconds: float | None = Field(default=None, ge=0, le=600)
+    # 真实供应商需要音频；支持原生 Base64 或 data URL。mock 可只传 transcript。
+    audio_base64: str | None = Field(default=None, max_length=8_000_000)
+    audio_content_type: str = Field(
+        default="audio/wav; codecs=audio=pcm; samplerate=16000", max_length=120
+    )
 
 
 class SpeakingError(BaseModel):

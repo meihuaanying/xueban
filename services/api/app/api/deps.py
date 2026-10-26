@@ -54,3 +54,18 @@ def require_roles(*roles: UserRole) -> Callable[..., Awaitable[User]]:
         return user
 
     return dependency
+
+
+async def require_not_locked(
+    user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)
+) -> User:
+    """防沉迷闸门依赖：锁定中的账号拒绝访问学习类资源（423）。"""
+
+    from app.services import parent_service
+
+    status = await parent_service.guardian_status(session, user=user)
+    if status.locked:
+        raise PermissionDeniedError(
+            "休息时间到，今天先到这里", code="GUARDIAN_LOCKED", status_code=423
+        )
+    return user

@@ -14,7 +14,7 @@ from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user, get_session
+from app.api.deps import get_session, require_not_locked
 from app.config import settings
 from app.errors import NotFoundError
 from app.models import ExplainerContent, ExplainerFeedback, ExplainerJob, ExplainerMode, User
@@ -76,7 +76,7 @@ async def _load_content(session: AsyncSession, content_id: uuid.UUID) -> Explain
 async def generate_explainer(
     payload: ExplainerGenerateRequest,
     response: Response,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> ExplainerGenerateResponse:
     """触发讲解生成。缓存命中时改写状态码为 200 并直接带内容。"""
@@ -106,7 +106,7 @@ async def generate_explainer(
 )
 async def get_explainer_job(
     job_id: uuid.UUID,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> ExplainerJobResponse:
     """按 job_id 查进度；就绪时带上消毒后的 HTML。"""
@@ -129,7 +129,7 @@ async def get_explainer_job(
 )
 async def get_explainer_content(
     content_id: uuid.UUID,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> ExplainerContentResponse:
     """取已生成内容（含消毒后 HTML）。
@@ -149,7 +149,7 @@ async def get_explainer_content(
 )
 async def post_explainer_feedback(
     payload: ExplainerFeedbackRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> ExplainerFeedbackResponse:
     """反馈回流画像，并返回该内容的累计看懂/没看懂次数。"""

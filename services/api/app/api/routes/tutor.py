@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user, get_session
+from app.api.deps import get_session, require_not_locked
 from app.models import Question, User
 from app.schemas.tutor import (
     TutorHintRequest,
@@ -53,7 +53,7 @@ async def _question_out(session: AsyncSession, question: Question) -> TutorQuest
 )
 async def create_session(
     payload: TutorSessionStartRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> TutorSessionResponse:
     """创建讲解会话（初始层级 0，不直接给答案）。"""
@@ -79,7 +79,7 @@ async def request_hint(
     session_id: uuid.UUID,
     payload: TutorHintRequest,
     request: Request,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> TutorHintResponse:
     """按状态机返回下一层提示（思路 → 关键步骤 → 全解）。"""
@@ -111,7 +111,7 @@ async def stream_hint(
     session_id: uuid.UUID,
     payload: TutorHintRequest,
     request: Request,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> StreamingResponse:
     """SSE 流式输出：start → delta* → done（校验在流开始前完成）。"""
@@ -141,7 +141,7 @@ async def stream_hint(
 async def alt_solutions(
     session_id: uuid.UUID,
     request: Request,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> AltSolutionsResponse:
     """生成 2~3 种解法并做 SymPy 等价性抽检。"""
@@ -178,7 +178,7 @@ async def alt_solutions(
 async def analogy(
     session_id: uuid.UUID,
     request: Request,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> AnalogyResponse:
     """生成贴近学生生活的类比与对应关系说明。"""
@@ -207,7 +207,7 @@ async def analogy(
 async def variants(
     session_id: uuid.UUID,
     request: Request,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> VariantsResponse:
     """生成 1~2 道同知识点变式题（入库，可作答）。"""
@@ -243,7 +243,7 @@ async def answer_variant(
     session_id: uuid.UUID,
     variant_id: uuid.UUID,
     payload: VariantAnswerRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> VariantAnswerResponse:
     """答对计入掌握度；答错进入错题本并开启回炉讲解会话。"""

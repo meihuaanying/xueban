@@ -145,7 +145,16 @@ class _FakeYidunResponse:
         return None
 
     def json(self) -> dict[str, object]:
-        return {"result": {"suggest": self._suggest}}
+        # 成功响应按易盾契约：code=200 + result.suggest
+        return {"code": 200, "msg": "ok", "result": {"suggest": self._suggest}}
+
+
+class _FakeYidunErrorResponse:
+    def raise_for_status(self) -> None:
+        return None
+
+    def json(self) -> dict[str, object]:
+        return {"code": 401, "msg": "signature error"}
 
 
 class _FakeAsyncClient:
@@ -162,6 +171,11 @@ class _FakeAsyncClient:
 
     async def post(self, url: str, **kwargs: object) -> _FakeYidunResponse:
         return _FakeYidunResponse(_FakeAsyncClient.suggest)
+
+
+class _FakeErrorAsyncClient(_FakeAsyncClient):
+    async def post(self, url: str, **kwargs: object) -> _FakeYidunErrorResponse:
+        return _FakeYidunErrorResponse()
 
 
 async def test_yidun_provider_blocks_when_flagged(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -201,6 +215,23 @@ async def test_yidun_without_keys_falls_back() -> None:
     decision = await service.check("卖淫嫖娼是违法的")
     assert decision.allowed is False
     assert decision.provider == "local-fallback"
+
+
+async def test_yidun_error_response_falls_back_to_local(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """易盾错误响应（如签名缺失被拒）必须走本地兜底，而非默认放行。"""
+    from app.services import safety_service as module
+    from app.services.safety_service import YidunProvider
+
+    monkeypatch.setattr(module.httpx, "AsyncClient", _FakeErrorAsyncClient)
+    provider = YidunProvider(
+        settings.model_copy(update={"yidun_secret_id": "id", "yidun_secret_key": "key"})
+    )
+    service = SafetyService(settings, primary=provider)
+    decision = await service.check("正常内容")
+    assert decision.provider == "local-fallback"
+    assert decision.allowed is True
 
 
 async def test_missing_wordlist_is_empty(monkeypatch: pytest.MonkeyPatch) -> None:

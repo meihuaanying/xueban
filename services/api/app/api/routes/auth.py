@@ -162,7 +162,9 @@ async def bind_child(
     session: AsyncSession = Depends(get_session),
 ) -> ChildResponse:
     """绑定孩子账号（须为学生）。"""
-    child = await auth_service.bind_child(session, parent=parent, child_phone=payload.child_phone)
+    child = await auth_service.bind_child(
+        session, parent=parent, child_phone=payload.child_phone, sms_code=payload.sms_code
+    )
     await session.commit()
     return _to_child_response(child)
 

@@ -4,7 +4,7 @@ import { z } from "zod";
 export const ApiErrorSchema = z.object({
   code: z.string().min(1),
   message: z.string().min(1),
-  trace_id: z.string().optional(),
+  trace_id: z.string().nullable().optional(),
 });
 
 export type ApiError = z.infer<typeof ApiErrorSchema>;

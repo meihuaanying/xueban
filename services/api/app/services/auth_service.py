@@ -7,7 +7,7 @@ import uuid
 from dataclasses import dataclass
 from datetime import timedelta
 
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -171,7 +171,23 @@ def _generate_code() -> str:
 
 
 async def send_sms_code(session: AsyncSession, *, phone: str, purpose: str = "login") -> str:
-    """生成并「发送」验证码（mock 提供商仅落库+日志）。"""
+    """生成并「发送」验证码（mock 提供商仅落库+日志）；发送受频控约束。"""
+    recent = await session.scalar(
+        select(func.count()).select_from(SmsCode).where(
+            SmsCode.phone == phone,
+            SmsCode.created_at >= utcnow() - timedelta(seconds=settings.sms_send_interval_seconds),
+        )
+    )
+    if int(recent or 0) > 0:
+        raise AuthError("发送过于频繁，请稍后再试", code="SMS_SEND_TOO_FREQUENT", status_code=429)
+    day_start = utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    sent_today = await session.scalar(
+        select(func.count()).select_from(SmsCode).where(
+            SmsCode.phone == phone, SmsCode.created_at >= day_start
+        )
+    )
+    if int(sent_today or 0) >= settings.sms_send_daily_limit:
+        raise AuthError("发送过于频繁，请稍后再试", code="SMS_SEND_TOO_FREQUENT", status_code=429)
     code = _generate_code()
     record = SmsCode(
         phone=phone,
@@ -230,7 +246,9 @@ async def sms_login(session: AsyncSession, *, phone: str, code: str) -> User:
 # ---------- 家长-孩子绑定 ----------
 
 
-async def bind_child(session: AsyncSession, *, parent: User, child_phone: str) -> User:
+async def bind_child(
+    session: AsyncSession, *, parent: User, child_phone: str, sms_code: str
+) -> User:
     """家长绑定孩子账号（孩子须为学生）。"""
     child = await get_user_by_phone(session, child_phone)
     if child is None:
@@ -244,6 +262,7 @@ async def bind_child(session: AsyncSession, *, parent: User, child_phone: str) -
     )
     if existing.scalar_one_or_none() is not None:
         raise ConflictError("已绑定该孩子", code="BIND_ALREADY_EXISTS")
+    await verify_sms_code(session, phone=child_phone, code=sms_code, purpose="bind")
     session.add(ParentChild(parent_id=parent.id, child_id=child.id))
     await session.flush()
     return child
@@ -324,4 +343,3 @@ async def purge_deleted_accounts(
         await session.execute(delete(User).where(User.id.in_(user_ids)))
         await session.flush()
     return user_ids
-    await session.flush()

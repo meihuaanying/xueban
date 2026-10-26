@@ -38,6 +38,9 @@ target/
 # Expo / React Native
 .expo/
 .expo-shared/
+
+# Mimosa 安全扫描的本地产物
+.mimosa/
 android/
 ios/
 *.apk

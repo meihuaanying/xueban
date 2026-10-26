@@ -9,8 +9,44 @@ from httpx import AsyncClient
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from app.models import PracticeRecord, Question, QuestionStatus, QuestionType
-from tests.helpers import headers_of, register
+from app.models import PracticeRecord, Question, QuestionStatus, QuestionType, User
+from tests.helpers import headers_of, register, register_user
+
+
+class WebSocketStop(Exception):
+    """推送一帧后主动断开（测试用）。"""
+
+
+class FakeWebSocket:
+    """直连路由函数用的假 WebSocket（首帧携带令牌的新协议）。"""
+
+    def __init__(
+        self,
+        app: object,
+        first_frame: dict[str, object] | None = None,
+        *,
+        stop_after_push: bool = False,
+    ) -> None:
+        self.app = app
+        self.first_frame = first_frame
+        self.stop_after_push = stop_after_push
+        self.sent: list[dict[str, object]] = []
+        self.closed: int | None = None
+
+    async def accept(self) -> None:
+        return None
+
+    async def receive_json(self) -> dict[str, object]:
+        assert self.first_frame is not None
+        return self.first_frame
+
+    async def send_json(self, payload: dict[str, object]) -> None:
+        self.sent.append(payload)
+        if self.stop_after_push:
+            raise WebSocketStop()
+
+    async def close(self, code: int = 1000) -> None:
+        self.closed = code
 
 
 async def _seed_question(sessionmaker: async_sessionmaker[AsyncSession]) -> str:
@@ -67,39 +103,17 @@ async def test_sync_state_requires_auth(client: AsyncClient) -> None:
 
 
 async def test_websocket_pushes_snapshot(client: AsyncClient) -> None:
-    """F-39：WebSocket 推送版本与摘要（3 秒内收到首帧）。"""
+    """F-39：WebSocket 首帧携带令牌，推送版本与摘要（3 秒内收到首帧）。"""
     user = await register(client)
     token = user["access_token"]
-
-    class FakeWebSocket:
-        def __init__(self) -> None:
-            self.app = _app
-            self.sent: list[dict[str, object]] = []
-            self.closed: int | None = None
-            self._first = True
-
-        async def accept(self) -> None:
-            return None
-
-        async def send_json(self, payload: dict[str, object]) -> None:
-            self.sent.append(payload)
-            if self._first:
-                self._first = False
-                raise WebSocketStop()
-
-        async def close(self, code: int = 1000) -> None:
-            self.closed = code
-
-    class WebSocketStop(Exception):
-        pass
 
     # 直接调用路由函数（绕过真实网络），验证推送内容与鉴权
     from app.api.routes import sync as sync_route
 
     _app = client._transport.app  # type: ignore[attr-defined]
-    fake = FakeWebSocket()
+    fake = FakeWebSocket(_app, {"token": token}, stop_after_push=True)
     with pytest.raises(WebSocketStop):
-        await sync_route.sync_ws(fake, token=token)  # type: ignore[arg-type]
+        await sync_route.sync_ws(fake)  # type: ignore[arg-type]
     assert fake.sent and "version" in fake.sent[0]
     assert "summary" in fake.sent[0]
 
@@ -107,16 +121,41 @@ async def test_websocket_pushes_snapshot(client: AsyncClient) -> None:
 async def test_websocket_rejects_bad_token(client: AsyncClient) -> None:
     from app.api.routes import sync as sync_route
 
-    class FakeWebSocket:
-        def __init__(self) -> None:
-            self.app = client._transport.app  # type: ignore[attr-defined]
-            self.closed: int | None = None
+    _app = client._transport.app  # type: ignore[attr-defined]
+    fake = FakeWebSocket(_app, {"token": "invalid-token"})
+    await sync_route.sync_ws(fake)  # type: ignore[arg-type]
+    assert fake.closed == 4401
 
-        async def close(self, code: int = 1000) -> None:
-            self.closed = code
 
-    fake = FakeWebSocket()
-    await sync_route.sync_ws(fake, token="invalid-token")  # type: ignore[arg-type]
+async def test_websocket_rejects_disabled_user(
+    client: AsyncClient, sessionmaker: async_sessionmaker[AsyncSession]
+) -> None:
+    """停用账号的存量访问令牌不能建立同步推送连接（4401）。"""
+    user = await register_user(client)
+    token = user["access_token"]
+    user_id = uuid.UUID(user["id"])
+
+    async with sessionmaker() as session:
+        record = await session.get(User, user_id)
+        assert record is not None
+        record.is_active = False
+        await session.commit()
+
+    from app.api.routes import sync as sync_route
+
+    _app = client._transport.app  # type: ignore[attr-defined]
+    fake = FakeWebSocket(_app, {"token": token})
+    await sync_route.sync_ws(fake)  # type: ignore[arg-type]
+    assert fake.closed == 4401
+
+
+async def test_websocket_rejects_first_frame_without_token(client: AsyncClient) -> None:
+    """首帧未携带 token 直接拒绝（4401）。"""
+    from app.api.routes import sync as sync_route
+
+    _app = client._transport.app  # type: ignore[attr-defined]
+    fake = FakeWebSocket(_app, {})
+    await sync_route.sync_ws(fake)  # type: ignore[arg-type]
     assert fake.closed == 4401
 
 

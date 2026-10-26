@@ -1,5 +1,7 @@
 /** 移动端 API 客户端（与 Web/桌面端同一后端契约）。 */
 
+import * as SecureStore from "expo-secure-store";
+
 import { getApiBaseUrl } from "@xueban/core";
 
 export const API_BASE_URL = getApiBaseUrl("http://localhost:8000");
@@ -30,6 +32,9 @@ export function setAccessToken(token: string | null): void {
   accessToken = token;
 }
 
+// 与 lib/auth.tsx 的 REFRESH_KEY 同值：auth 流程负责写入，这里只读（避免循环依赖）
+const REFRESH_KEY = "xueban.mobile.refresh_token";
+
 function parseBody(text: string): unknown {
   if (!text) return null;
   try {
@@ -39,13 +44,62 @@ function parseBody(text: string): unknown {
   }
 }
 
-async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+/** 单飞刷新：并发 401 共享同一个 Promise，避免旧 refresh token 被轮换吊销后重复用。 */
+let refreshInFlight: Promise<boolean> | null = null;
+
+async function refreshTokens(): Promise<boolean> {
+  if (refreshInFlight) return refreshInFlight;
+  const attempt = (async () => {
+    let stored: string | null = null;
+    try {
+      stored = await SecureStore.getItemAsync(REFRESH_KEY);
+    } catch {
+      stored = null;
+    }
+    if (!stored) return false;
+    try {
+      const pair = await post<TokenPair>("/v1/auth/refresh", { refresh_token: stored });
+      setAccessToken(pair.access_token);
+      try {
+        await SecureStore.setItemAsync(REFRESH_KEY, pair.refresh_token);
+      } catch {
+        // 无 SecureStore 环境（测试/Web）：仅内存令牌生效
+      }
+      return true;
+    } catch {
+      setAccessToken(null);
+      try {
+        await SecureStore.deleteItemAsync(REFRESH_KEY);
+      } catch {
+        // 忽略
+      }
+      return false;
+    }
+  })();
+  refreshInFlight = attempt;
+  void attempt.finally(() => {
+    if (refreshInFlight === attempt) refreshInFlight = null;
+  });
+  return attempt;
+}
+
+async function fetchWithAuth(path: string, init: RequestInit): Promise<Response> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...((init.headers as Record<string, string> | undefined) ?? {}),
   };
   if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
-  const response = await fetch(`${API_BASE_URL}${path}`, { ...init, headers });
+  return fetch(`${API_BASE_URL}${path}`, { ...init, headers });
+}
+
+async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  let response = await fetchWithAuth(path, init);
+  if (!response.ok && response.status === 401 && !path.startsWith("/v1/auth/")) {
+    if (await refreshTokens()) {
+      // 用新头重放一次原请求
+      response = await fetchWithAuth(path, init);
+    }
+  }
   const body = parseBody(await response.text());
   if (!response.ok) throw new ApiError(response.status, (body ?? {}) as ApiErrorBody);
   return body as T;

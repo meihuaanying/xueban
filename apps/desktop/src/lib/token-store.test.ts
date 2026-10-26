@@ -51,15 +51,26 @@ describe("keyring 通道（Tauri 环境）", () => {
     expect(window.localStorage.getItem("xueban.desktop.access_token")).toBeNull();
   });
 
-  it("keyring 异常时静默回退本地存储", async () => {
+  it("keyring 异常时 access 回退本地存储、refresh 仅存内存", async () => {
+    // 夹具令牌逐次随机生成，避免在源码中出现凭据字面量
+    const run = Math.random().toString(36).slice(2, 10);
+    const tokens = {
+      access_token: `access-${run}`,
+      refresh_token: `refresh-${run}`,
+      token_type: "bearer",
+      expires_in: 900,
+    };
     const invoke = vi.fn().mockRejectedValue(new Error("keyring unavailable"));
     vi.stubGlobal("__TAURI_INTERNALS__", {});
     vi.doMock("@tauri-apps/api/core", () => ({ invoke }));
 
     const store = await import("./token-store");
-    await store.saveTokens(TOKENS);
+    await store.saveTokens(tokens);
+    expect(window.localStorage.getItem("xueban.desktop.access_token")).toBe(tokens.access_token);
+    expect(window.localStorage.getItem("xueban.desktop.refresh_token")).toBeNull();
     const loaded = await store.loadTokens();
-    expect(loaded?.accessToken).toBe("access-1");
+    expect(loaded?.accessToken).toBe(tokens.access_token);
+    expect(loaded?.refreshToken).toBe(tokens.refresh_token);
     await store.clearTokens();
     expect(await store.loadTokens()).toBeNull();
   });

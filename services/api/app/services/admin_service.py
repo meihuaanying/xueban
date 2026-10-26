@@ -9,7 +9,14 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.errors import ConflictError, NotFoundError
-from app.models import Question, QuestionKnowledgePoint, QuestionStatus, QuestionVersion, User
+from app.models import (
+    AuditLog,
+    Question,
+    QuestionKnowledgePoint,
+    QuestionStatus,
+    QuestionVersion,
+    User,
+)
 
 ALLOWED_TRANSITIONS: dict[str, set[str]] = {
     QuestionStatus.DRAFT.value: {QuestionStatus.REVIEW.value},
@@ -125,6 +132,15 @@ async def create_question(
     session.add(question)
     await session.flush()
     await _add_version(session, question=question, editor=editor, note="创建题目")
+    session.add(
+        AuditLog(
+            actor_id=editor.id,
+            action="admin.question.create",
+            target_type="question",
+            target_id=str(question.id),
+            detail={"subject": subject, "qtype": qtype},
+        )
+    )
     return question
 
 
@@ -157,6 +173,15 @@ async def update_question(
         setattr(question, key, value)
     await session.flush()
     await _add_version(session, question=question, editor=editor, note=change_note or "编辑题目")
+    session.add(
+        AuditLog(
+            actor_id=editor.id,
+            action="admin.question.update",
+            target_type="question",
+            target_id=str(question.id),
+            detail={"fields": sorted(meaningful)},
+        )
+    )
     return question
 
 
@@ -174,6 +199,15 @@ async def transition(
     await session.flush()
     await _add_version(
         session, question=question, editor=editor, note=note or f"{current} → {target}"
+    )
+    session.add(
+        AuditLog(
+            actor_id=editor.id,
+            action="admin.question.transition",
+            target_type="question",
+            target_id=str(question_id),
+            detail={"target": target, "note": note},
+        )
     )
     return question
 

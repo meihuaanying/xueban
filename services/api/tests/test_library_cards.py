@@ -78,6 +78,33 @@ async def test_library_upload_ask_with_citations(client: AsyncClient) -> None:
     assert all(item["answer"] and item["page"] >= 1 for item in questions)
 
 
+async def test_library_upload_rejects_oversized(client: AsyncClient) -> None:
+    """超过 20MB 的上传体返回 413。"""
+    user = await register(client)
+    oversized = b"\x00" * (20 * 1024 * 1024 + 1)
+    response = await client.post(
+        "/v1/library/docs",
+        data={"title": "超大文件"},
+        files={"file": ("huge.pdf", oversized, "application/pdf")},
+        headers=headers_of(user),
+    )
+    assert response.status_code == 413
+    assert response.json()["code"] == "UPLOAD_TOO_LARGE"
+
+
+async def test_library_upload_rejects_non_pdf(client: AsyncClient) -> None:
+    """非 .pdf 文件名返回 415。"""
+    user = await register(client)
+    response = await client.post(
+        "/v1/library/docs",
+        data={"title": "文本笔记"},
+        files={"file": ("notes.txt", "纯文本内容".encode(), "text/plain")},
+        headers=headers_of(user),
+    )
+    assert response.status_code == 415
+    assert response.json()["code"] == "UPLOAD_TYPE_INVALID"
+
+
 async def test_library_rbac_other_user_denied(client: AsyncClient) -> None:
     owner = await register(client)
     other = await register(client)

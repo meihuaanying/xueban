@@ -181,6 +181,16 @@ async def test_sms_send_returns_debug_code_in_development(client: AsyncClient) -
     assert body["debug_code"] and len(body["debug_code"]) == 6
 
 
+async def test_sms_send_rate_limited(client: AsyncClient) -> None:
+    """同一手机号 60 秒内第二次发送返回 429。"""
+    phone = next_phone()
+    first = await client.post("/v1/auth/sms/send", json={"phone": phone, "purpose": "login"})
+    assert first.status_code == 200
+    second = await client.post("/v1/auth/sms/send", json={"phone": phone, "purpose": "login"})
+    assert second.status_code == 429
+    assert second.json()["code"] == "SMS_SEND_TOO_FREQUENT"
+
+
 async def test_sms_login_auto_registers_student(client: AsyncClient) -> None:
     payload, phone = await sms_login(client)
     me = await client.get("/v1/auth/me", headers=auth_headers(payload["access_token"]))
@@ -197,15 +207,27 @@ async def test_sms_login_wrong_code(client: AsyncClient) -> None:
     assert response.json()["code"] == "SMS_CODE_INVALID"
 
 
-async def test_sms_code_consumed_once(client: AsyncClient) -> None:
+async def test_sms_code_consumed_once(
+    client: AsyncClient, sessionmaker: async_sessionmaker[AsyncSession]
+) -> None:
     payload, phone = await sms_login(client)
     assert payload["access_token"]
-    # 再次使用同一验证码不可行（已消费）；直接复用原码应报未找到
-    send = await client.post("/v1/auth/sms/send", json={"phone": phone, "purpose": "login"})
-    code = send.json()["debug_code"]
-    first = await client.post("/v1/auth/sms/login", json={"phone": phone, "code": code})
+    # 再次发送受频控限制（见 test_sms_send_rate_limited）；改为直插一条新验证码验证一次性
+    from app.db import utcnow
+
+    async with sessionmaker() as session:
+        session.add(
+            SmsCode(
+                phone=phone,
+                purpose="login",
+                code_hash=hash_token("654321"),
+                expires_at=utcnow() + timedelta(seconds=300),
+            )
+        )
+        await session.commit()
+    first = await client.post("/v1/auth/sms/login", json={"phone": phone, "code": "654321"})
     assert first.status_code == 200
-    second = await client.post("/v1/auth/sms/login", json={"phone": phone, "code": code})
+    second = await client.post("/v1/auth/sms/login", json={"phone": phone, "code": "654321"})
     assert second.status_code == 400
     assert second.json()["code"] in {"SMS_CODE_NOT_FOUND", "SMS_CODE_INVALID"}
 
@@ -266,9 +288,11 @@ async def test_admin_ping_requires_admin(client: AsyncClient, admin_token: str) 
 async def test_parent_binds_and_lists_child_with_masked_phone(client: AsyncClient) -> None:
     child = await register(client)
     parent = await register(client, role="parent")
+    send = await client.post("/v1/auth/sms/send", json={"phone": child["phone"], "purpose": "bind"})
+    assert send.status_code == 200, send.text
     response = await client.post(
         "/v1/auth/parents/children",
-        json={"child_phone": child["phone"]},
+        json={"child_phone": child["phone"], "sms_code": send.json()["debug_code"]},
         headers=headers_of(parent),
     )
     assert response.status_code == 201
@@ -284,7 +308,7 @@ async def test_parent_bind_unknown_child(client: AsyncClient) -> None:
     parent = await register(client, role="parent")
     response = await client.post(
         "/v1/auth/parents/children",
-        json={"child_phone": next_phone()},
+        json={"child_phone": next_phone(), "sms_code": "123456"},
         headers=headers_of(parent),
     )
     assert response.status_code == 404
@@ -296,7 +320,7 @@ async def test_parent_bind_non_student_rejected(client: AsyncClient) -> None:
     parent = await register(client, role="parent")
     response = await client.post(
         "/v1/auth/parents/children",
-        json={"child_phone": other_parent["phone"]},
+        json={"child_phone": other_parent["phone"], "sms_code": "123456"},
         headers=headers_of(parent),
     )
     assert response.status_code == 409
@@ -306,7 +330,9 @@ async def test_parent_bind_non_student_rejected(client: AsyncClient) -> None:
 async def test_parent_bind_duplicate_rejected(client: AsyncClient) -> None:
     child = await register(client)
     parent = await register(client, role="parent")
-    body = {"child_phone": child["phone"]}
+    send = await client.post("/v1/auth/sms/send", json={"phone": child["phone"], "purpose": "bind"})
+    assert send.status_code == 200, send.text
+    body = {"child_phone": child["phone"], "sms_code": send.json()["debug_code"]}
     first = await client.post("/v1/auth/parents/children", json=body, headers=headers_of(parent))
     assert first.status_code == 201
     second = await client.post("/v1/auth/parents/children", json=body, headers=headers_of(parent))
@@ -317,9 +343,11 @@ async def test_parent_bind_duplicate_rejected(client: AsyncClient) -> None:
 async def test_parent_unbind_child(client: AsyncClient) -> None:
     child = await register(client)
     parent = await register(client, role="parent")
+    send = await client.post("/v1/auth/sms/send", json={"phone": child["phone"], "purpose": "bind"})
+    assert send.status_code == 200, send.text
     bound = await client.post(
         "/v1/auth/parents/children",
-        json={"child_phone": child["phone"]},
+        json={"child_phone": child["phone"], "sms_code": send.json()["debug_code"]},
         headers=headers_of(parent),
     )
     child_id = bound.json()["id"]
@@ -346,9 +374,11 @@ async def test_parent_cannot_see_other_parents_children(client: AsyncClient) -> 
     child = await register(client)
     parent_a = await register(client, role="parent")
     parent_b = await register(client, role="parent")
+    send = await client.post("/v1/auth/sms/send", json={"phone": child["phone"], "purpose": "bind"})
+    assert send.status_code == 200, send.text
     await client.post(
         "/v1/auth/parents/children",
-        json={"child_phone": child["phone"]},
+        json={"child_phone": child["phone"], "sms_code": send.json()["debug_code"]},
         headers=headers_of(parent_a),
     )
     listing = await client.get("/v1/auth/parents/children", headers=headers_of(parent_b))

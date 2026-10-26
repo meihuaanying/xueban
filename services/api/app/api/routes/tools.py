@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user, get_session
 from app.config import settings
+from app.errors import AppError
 from app.models import User
 from app.schemas import (
     CardCreateRequest,
@@ -85,6 +86,10 @@ async def upload_document(
 ) -> LibraryDocOut:
     """PDF 上传 → 解析 → 分块 → 向量化入库。"""
     data = await file.read()
+    if len(data) > settings.library_upload_max_bytes:
+        raise AppError("文件过大，最大 20MB", code="UPLOAD_TOO_LARGE", status_code=413)
+    if not (file.filename or "").lower().endswith(".pdf"):
+        raise AppError("仅支持 PDF 文档", code="UPLOAD_TYPE_INVALID", status_code=415)
     document = await library_service.create_document(
         session,
         user=user,

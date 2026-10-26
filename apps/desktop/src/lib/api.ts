@@ -49,6 +49,7 @@ export class ApiError extends Error {
 }
 
 let accessToken: string | null = null;
+let refreshToken: string | null = null;
 
 export function setAccessToken(token: string | null): void {
   accessToken = token;
@@ -56,6 +57,10 @@ export function setAccessToken(token: string | null): void {
 
 export function getAccessToken(): string | null {
   return accessToken;
+}
+
+export function setRefreshToken(token: string | null): void {
+  refreshToken = token;
 }
 
 function parseBody(text: string): unknown {
@@ -67,13 +72,48 @@ function parseBody(text: string): unknown {
   }
 }
 
-async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+/** 单飞刷新：并发 401 共享同一个 Promise，避免旧 refresh token 被轮换吊销后重复用。 */
+let refreshInFlight: Promise<boolean> | null = null;
+
+async function refreshTokens(): Promise<boolean> {
+  if (!refreshToken) return false;
+  if (refreshInFlight) return refreshInFlight;
+  const attempt = (async () => {
+    try {
+      const pair = await post<TokenPair>("/v1/auth/refresh", { refresh_token: refreshToken });
+      setAccessToken(pair.access_token);
+      setRefreshToken(pair.refresh_token);
+      return true;
+    } catch {
+      setAccessToken(null);
+      setRefreshToken(null);
+      return false;
+    }
+  })();
+  refreshInFlight = attempt;
+  void attempt.finally(() => {
+    if (refreshInFlight === attempt) refreshInFlight = null;
+  });
+  return attempt;
+}
+
+async function fetchWithAuth(path: string, init: RequestInit): Promise<Response> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...((init.headers as Record<string, string> | undefined) ?? {}),
   };
   if (accessToken) headers.Authorization = `Bearer ${accessToken}`;
-  const response = await fetch(`${API_BASE_URL}${path}`, { ...init, headers });
+  return fetch(`${API_BASE_URL}${path}`, { ...init, headers });
+}
+
+async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  let response = await fetchWithAuth(path, init);
+  if (!response.ok && response.status === 401 && !path.startsWith("/v1/auth/")) {
+    if (await refreshTokens()) {
+      // 用新头重放一次原请求
+      response = await fetchWithAuth(path, init);
+    }
+  }
   const body = parseBody(await response.text());
   if (!response.ok) {
     throw new ApiError(response.status, (body ?? {}) as ApiErrorBody);

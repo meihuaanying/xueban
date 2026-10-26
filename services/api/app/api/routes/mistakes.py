@@ -7,7 +7,7 @@ import uuid
 from fastapi import APIRouter, Depends, Query, Request, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user, get_session
+from app.api.deps import get_session, require_not_locked
 from app.models import User
 from app.schemas.diagnosis import AttributionResponse
 from app.schemas.practice import (
@@ -29,7 +29,7 @@ async def list_mistakes(
     state: str | None = Query(default=None, max_length=20),
     error_reason: str | None = Query(default=None, max_length=32),
     limit: int = Query(default=50, ge=1, le=200),
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> MistakeListResponse:
     """返回未移出的错题与错因分组统计。"""
@@ -84,7 +84,7 @@ async def list_mistakes(
 )
 async def repractice(
     payload: MistakeRepracticeRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> MistakeRepracticeResponse:
     """拉取错题用于重练；作答 source=repractice 且答对后自动移出。"""
@@ -112,7 +112,7 @@ async def repractice(
 
 @router.get("/export.pdf", summary="导出错题本 PDF（含题目与解析，F-18）")
 async def export_pdf(
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> Response:
     """生成并返回错题本 PDF。"""
@@ -133,7 +133,7 @@ async def export_pdf(
 async def attribute(
     entry_id: uuid.UUID,
     request: Request,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> AttributionResponse:
     """调用 LLM 归因（限定五类枚举）并写回错题本。"""

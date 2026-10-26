@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user, get_session
+from app.config import get_settings
 from app.models import User
 from app.schemas import (
     CodeJudgeRequest,
@@ -162,12 +163,22 @@ async def grade_speaking(
     payload: SpeakingGradeRequest,
     user: User = Depends(get_current_user),
 ) -> SpeakingGradeResponse:
-    """口语评测（mock 供应商先行；返回三维分数与纠错词列表）。"""
-    result = speaking_service.grade_speaking(
-        reference=payload.reference,
-        transcript=payload.transcript,
-        duration_seconds=payload.duration_seconds,
-    )
+    """口语评测：按配置选择 mock / Azure，返回三维分数与纠错词列表。"""
+    try:
+        result = await speaking_service.assess_speaking(
+            reference=payload.reference,
+            transcript=payload.transcript,
+            duration_seconds=payload.duration_seconds,
+            audio_base64=payload.audio_base64,
+            audio_content_type=payload.audio_content_type,
+            settings=get_settings(),
+        )
+    except speaking_service.SpeakingAudioRequired as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except speaking_service.SpeakingConfigurationError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except speaking_service.SpeakingProviderError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
     return SpeakingGradeResponse(
         provider=result.provider,
         pronunciation=DimensionScore(score=result.pronunciation, comment="发音准确度"),

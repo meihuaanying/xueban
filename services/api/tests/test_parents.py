@@ -16,14 +16,48 @@ from tests.helpers import headers_of, register_user
 
 
 async def _bind(client: AsyncClient, parent: dict[str, str], child: dict[str, str]) -> str:
-    """绑定孩子并返回 child_id。"""
+    """绑定孩子并返回 child_id（绑定前先给孩子手机号发送 bind 验证码）。"""
+    send = await client.post(
+        "/v1/auth/sms/send", json={"phone": child["phone"], "purpose": "bind"}
+    )
+    assert send.status_code == 200, send.text
+    code = send.json()["debug_code"]
+    assert code, "开发环境应返回 debug_code"
     response = await client.post(
         "/v1/auth/parents/children",
-        json={"child_phone": child["phone"]},
+        json={"child_phone": child["phone"], "sms_code": code},
         headers=headers_of(parent),
     )
     assert response.status_code == 201, response.text
     return str(response.json()["id"])
+
+
+async def test_bind_child_requires_sms_code(client: AsyncClient) -> None:
+    """缺少/错误验证码时绑定返回 400。"""
+    parent = await register_user(client, role="parent")
+    child = await register_user(client)
+
+    # 未获取验证码直接绑定：缺少有效验证码
+    missing = await client.post(
+        "/v1/auth/parents/children",
+        json={"child_phone": child["phone"], "sms_code": "123456"},
+        headers=headers_of(parent),
+    )
+    assert missing.status_code == 400
+    assert missing.json()["code"] == "SMS_CODE_NOT_FOUND"
+
+    # 已发送但提交错误验证码
+    sent = await client.post(
+        "/v1/auth/sms/send", json={"phone": child["phone"], "purpose": "bind"}
+    )
+    assert sent.status_code == 200, sent.text
+    wrong = await client.post(
+        "/v1/auth/parents/children",
+        json={"child_phone": child["phone"], "sms_code": "000000"},
+        headers=headers_of(parent),
+    )
+    assert wrong.status_code == 400
+    assert wrong.json()["code"] == "SMS_CODE_INVALID"
 
 
 async def test_rbac_parent_cannot_view_other_child_data(client: AsyncClient) -> None:

@@ -7,7 +7,7 @@ import uuid
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user, get_session
+from app.api.deps import get_session, require_not_locked
 from app.config import settings
 from app.models import Question, User
 from app.schemas import HandwritingDiagnosisRequest, HandwritingDiagnosisResponse, HandwritingStep
@@ -48,7 +48,7 @@ async def _question_out(session: AsyncSession, question: Question) -> DiagnosisQ
 )
 async def start(
     payload: DiagnosisStartRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> DiagnosisStartResponse:
     """创建诊断并按初始难度给出第一题。"""
@@ -77,7 +77,7 @@ async def start(
 async def answer(
     exam_id: uuid.UUID,
     payload: DiagnosisAnswerRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> DiagnosisAnswerResponse:
     """判定作答、更新画像与难度，并返回下一题或收卷。"""
@@ -112,7 +112,7 @@ async def answer(
 )
 async def report(
     exam_id: uuid.UUID,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> DiagnosisReportResponse:
     """返回诊断报告（未结束时 409）。"""
@@ -135,7 +135,7 @@ async def report(
 )
 async def handwriting_diagnosis(
     payload: HandwritingDiagnosisRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
 ) -> HandwritingDiagnosisResponse:
     """OCR 识别手写步骤并与参考解答逐步比对，定位首次出错步骤。"""
     result = await ocr_client.diagnose_handwriting(

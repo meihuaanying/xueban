@@ -7,7 +7,7 @@ import uuid
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_current_user, get_session
+from app.api.deps import get_current_user, get_session, require_not_locked
 from app.models import ChatMessage, ChatRole, ChatScene, ChatSession, User
 from app.schemas import (
     CoachCorrection,
@@ -75,7 +75,7 @@ def _to_response(
 )
 async def companion_turn(
     payload: CoachTurnRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> CoachTurnResponse:
     """陪伴对话：先规则层危机识别（0 漏判），再普通陪伴话术。"""
@@ -103,7 +103,7 @@ async def companion_turn(
 )
 async def roleplay_turn(
     payload: CoachTurnRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> CoachTurnResponse:
     """场景角色扮演：纠错标注 + 同场景追问。"""
@@ -129,7 +129,7 @@ async def roleplay_turn(
     "/scenes",
     summary="口语陪练场景列表（F-32）",
 )
-async def list_scenes() -> list[dict[str, object]]:
+async def list_scenes(user: User = Depends(get_current_user)) -> list[dict[str, object]]:
     """预置场景（≥5）。"""
     return [
         {"key": key, "title": spec["title"], "opening": spec["opening"], "focus": spec["focus"]}
@@ -144,7 +144,7 @@ async def list_scenes() -> list[dict[str, object]]:
 )
 async def interview_turn(
     payload: CoachTurnRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> CoachTurnResponse:
     """结构化面试反馈（含追问）。"""
@@ -169,7 +169,7 @@ async def interview_turn(
 )
 async def writing_assist(
     payload: WritingAssistRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_not_locked),
 ) -> WritingAssistResponse:
     """返回修改建议 + 批注 + 学术诚信提示（不输出整篇代写）。"""
     reply = coach_service.writing_assist(text=payload.text, kind=payload.kind, goal=payload.goal)
