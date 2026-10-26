@@ -49,6 +49,36 @@ alembic revision --autogenerate -m "描述"   # 生成增量迁移
 
 覆盖率门禁：`pytest --cov=app --cov-fail-under=80`（当前实测 97%）。
 
+#### 3.1.1 本地开发补充环境变量
+
+以下键名与 `.env.example` 逐键对应（默认值取自该文件与 `app/config.py`）：
+
+| 变量 | `.env.example` 默认 | 说明 |
+| --- | --- | --- |
+| `DATABASE_URL` | `postgresql+asyncpg://xueban:change-me@localhost:5432/xueban` | 本地开发（Windows）改为 55432 实例，见下方说明。 |
+| `CONTENT_JUDGE_BATCH_SIZE` | `5` | 题库管线 judge 的批量大小。非数学题按批送 LLM judge；批量结果题号缺项/多余/0 基错位时整批作废并逐题回退。调小可降低整批作废概率，但 judge 调用数上升。 |
+| `SPEAKING_API_KEY` | 空 | Azure 口语评测密钥；`SPEAKING_PROVIDER=azure` 时必填（`auto` 在开发环境无 Key 会回落 mock）。 |
+| `SPEAKING_REGION` | 空 | Azure 语音资源区域（如 `eastasia`）；与 `SPEAKING_ENDPOINT` 至少填一个。 |
+| `SPEAKING_ENDPOINT` | 空 | 私有化口语评测端点完整 URL；留空时按 region 拼 Azure 默认端点。 |
+| `SPEAKING_TIMEOUT_SECONDS` | `15` | 口语评测请求超时（秒）。 |
+| `TTS_REGION` | 空 | Azure 语音合成区域；与 `TTS_ENDPOINT` 至少填一个。 |
+| `TTS_ENDPOINT` | 空 | 私有化 TTS 端点完整 URL；留空时按 region 拼 `https://{region}.tts.speech.microsoft.com/cognitiveservices/v1`。 |
+| `TTS_VOICE` | `zh-CN-XiaoxiaoNeural` | 合成音色名。 |
+| `TTS_TIMEOUT_SECONDS` | `15` | TTS 请求超时（秒）。 |
+
+Windows 本机说明：5432 落在 WinNAT 保留端口段（实测排除范围 5427–5526），
+dev compose 的 postgres 无法绑定。本地开发把 `DATABASE_URL` 改为
+`postgresql+asyncpg://xueban:change-me@127.0.0.1:55432/xueban`，指向
+`xueban-audit-pg` 容器；`TEST_DATABASE_URL` 同理指向该实例的 `xueban_test`
+（测试库由 `tests/conftest.py` 自动创建）。容器可用下面的命令启动：
+
+```bash
+docker run -d --name xueban-audit-pg -p 127.0.0.1:55432:5432 \
+  -e POSTGRES_USER=xueban -e POSTGRES_PASSWORD=change-me -e POSTGRES_DB=xueban \
+  pgvector/pgvector:pg16
+```
+
+
 ### 3.2 认证与订阅（M1 已交付）
 
 - `POST /v1/auth/register|login|sms/send|sms/login|refresh|logout`、`GET /v1/auth/me`

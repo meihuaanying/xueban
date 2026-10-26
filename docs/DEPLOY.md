@@ -7,7 +7,7 @@
 
 | 项 | 最低 | 推荐 | 说明 |
 | --- | --- | --- | --- |
-| CPU | 4 vCPU | **16 vCPU 专用核** | API 为 CPU 密集（详见 §8 性能）；压测目标 p95≤300ms@200 并发需 ≥16 核（B-017） |
+| CPU | 4 vCPU | **16 vCPU 专用核** | API 为 CPU 密集（详见 §9 性能）；压测目标 p95≤300ms@200 并发需 ≥16 核（B-017） |
 | 内存 | 8 GB | 16 GB | postgres/litellm/clickhouse（若自建 Langfuse）合计 |
 | 磁盘 | 40 GB SSD | 100 GB SSD | 数据库 + MinIO 附件 + 日志轮转 |
 | 系统 | Ubuntu 22.04+/Debian 12+ | Ubuntu 24.04 LTS | 任何支持 Docker 的 Linux |
@@ -102,7 +102,101 @@ bash scripts/restore_drill.sh          # 演练：备份→临时库→一致性
 
 更多运维主题（日志、模型切换、成本控制、扩缩容）见 `docs/OPS.md`。
 
-## 6. 架构速览
+## 6. 全学段内容扩展（2026-10）运行手册
+
+> 范围：小学/初中/高中三科（语文、数学、英语）课程树与题库。课程树已覆盖
+> `grade1`~`grade12`（三科每个年级均有点位，合计 488 个知识点）；题库按知识点
+> 逐个补齐，受网关用量窗口约束，可反复断点续跑。
+
+### 6.1 数据库迁移
+
+```bash
+cd services/api
+alembic upgrade head
+```
+
+当前 `head` 即 `e8a3c5f2b7d1`（可用 `alembic heads` 复核），迁移内容：
+
+- `knowledge_points` 新增 `grade` 列（`varchar(8)`，可空）与
+  `ix_knowledge_points_grade` 索引；旧自动展开图谱的知识点没有年级，保持 `NULL`。
+- 按课程 JSON 的 `code` 回填课程树知识点的 `grade` 与 `stage`（小学 `primary`、
+  初中 `junior`、高中 `senior`）。
+- 历史 `stage='grade1_2'` 统一改写为 `primary`，`knowledge_points` 与 `questions`
+  两张表都改。只改知识点会让旧小学题按 `Question.stage` 精确过滤时永久查不到，
+  且管线会把它们算作「已有题」而跳过补题。
+- 迁移末尾自检两张表的 `grade1_2` 残留行数，非 0 直接抛 `RuntimeError` 中止迁移，
+  避免「迁移成功但数据不可达」的静默失败。
+
+### 6.2 模型配置
+
+本机开发/验证环境的 `.env` 已统一切到 OpenCode Go 网关（`.env.example` 仍是
+本地 LiteLLM 默认值，上线前以实际 `.env` 为准）：
+
+```dotenv
+LITELLM_BASE_URL=https://opencode.ai/zen/go/v1
+LITELLM_MASTER_KEY=oc_sk_...
+LLM_DEFAULT_MODEL=deepseek-v4.1-flash
+CONTENT_GENERATION_MODEL=deepseek-v4.1-flash
+CONTENT_JUDGE_MODEL=deepseek-v4.1-flash
+```
+
+- 网关按 **5 小时用量窗口** 计费；窗口耗尽返回 HTTP 429（网关错误体为
+  `GoUsageLimitError`，应用侧统一映射为 `LLM_RATE_LIMITED`）。
+- 429 先按 `LLM_RATE_LIMIT_RETRIES`（默认 5）与
+  `LLM_RATE_LIMIT_BACKOFF_SECONDS`（默认 8.0）退避重试；配置了
+  `LLM_FALLBACK_BASE_URL` / `LLM_FALLBACK_MASTER_KEY` / `LLM_FALLBACK_MODEL`
+  时，主网关重试预算耗尽后自动切备用网关。
+- 注意：生产编排 `infra/docker/docker-compose.prod.yml` 会把 `LITELLM_BASE_URL`
+  覆盖为 `http://litellm:4000`。容器内跑管线时模型由 LiteLLM 配置决定；要直连
+  OpenCode Go，可在该编排文件里改回，或用
+  `docker compose run --rm -e LITELLM_BASE_URL=https://opencode.ai/zen/go/v1 api ...`
+  临时覆盖（见 §6.5）。
+
+### 6.3 题库生成
+
+```bash
+cd services/api && .venv/Scripts/python scripts/run_content_pipeline.py --subjects math --grades grade10,grade11,grade12 --target 30 --interval 1.0
+```
+
+- 按学科/年级换参数：`--subjects` 逗号分隔 `chinese,math,english`；`--grades`
+  逗号分隔 `grade1`~`grade12`。默认 `--subjects math,chinese,english`、
+  `--grades grade1,grade2`、`--target` 取 `CONTENT_MIN_PER_POINT`（默认 30）、
+  `--interval` 默认 1.5 秒。Linux/macOS 把 `.venv/Scripts/python` 换成
+  `.venv/bin/python`。
+- **断点续跑**：以知识点为粒度。只统计 `PUBLISHED` 且 `stage` 与目标年级一致的题，
+  达到 `--target` 即跳过；已有题同时作为判重种子，重跑不会重复生成。
+- **限额提前中止**：连续 2 个知识点都因 `LLM_RATE_LIMITED` 失败时立即停止，
+  JSON 汇总里的 `aborted_reason` 写明原因（「配额窗口耗尽……」）。窗口重置后
+  重跑同一命令即可，已达标知识点自动跳过。
+- 入库按 `HUMAN_REVIEW_RATE`（默认 0.05）抽 5% 写成 `REVIEW`，其余 `PUBLISHED`；
+  只有 `PUBLISHED` 计入目标题量。
+
+### 6.4 判题批量化
+
+- `CONTENT_JUDGE_BATCH_SIZE`（默认 5）：非数学题先过规则通道，通过后按该批大小
+  送 LLM judge；数学题只走规则 + SymPy，不进 judge。
+- 批量返回的题号集合必须严格等于 `{1..N}`。缺项、多余或 0 基错位会**整批作废**，
+  该批每道题回退单题 judge，绝不默认放行。调小该值可降低整批作废概率，代价是
+  judge 调用数上升（配额窗口下更费额度）。
+
+### 6.5 部署栈同步（xuebanprod）
+
+新镜像上线后必须先把库迁到 `head`，再按年级重跑题库管线：
+
+```bash
+COMPOSE_PROJECT_NAME=xuebanprod docker compose --env-file .env -f infra/docker/docker-compose.prod.yml exec api alembic upgrade head
+COMPOSE_PROJECT_NAME=xuebanprod docker compose --env-file .env -f infra/docker/docker-compose.prod.yml exec api python scripts/run_content_pipeline.py --subjects math --grades grade10,grade11,grade12 --target 30 --interval 1.0
+```
+
+> 容器内 `LITELLM_BASE_URL` 被编排覆盖为 `http://litellm:4000`（见 §6.2）。
+> 若要让管线直接使用 OpenCode Go 的 `deepseek-v4.1-flash`，可临时覆盖该变量
+> （`LITELLM_MASTER_KEY` 仍从 `.env` 注入，填 OpenCode Zen 的 `oc_sk_...`）：
+>
+> ```bash
+> COMPOSE_PROJECT_NAME=xuebanprod docker compose --env-file .env -f infra/docker/docker-compose.prod.yml run --rm -e LITELLM_BASE_URL=https://opencode.ai/zen/go/v1 api python scripts/run_content_pipeline.py --subjects math --grades grade10,grade11,grade12 --target 30 --interval 1.0
+> ```
+
+## 7. 架构速览
 
 ```
 Internet ──▶ Caddy :80/:443 ──┬── /v1/* /healthz /docs  ──▶ api:8000（2 副本 × API_WORKERS，轮询）
@@ -112,7 +206,7 @@ worker ──▶ arq app.worker.WorkerSettings（03:00 规划重排 / 周日 22:
 数据卷：postgres-data / redis-data / minio-data / caddy-data / caddy-config
 ```
 
-## 7. 常见故障排查
+## 8. 常见故障排查
 
 | 现象 | 排查 | 处理 |
 | --- | --- | --- |
@@ -125,13 +219,13 @@ worker ──▶ arq app.worker.WorkerSettings（03:00 规划重排 / 周日 22:
 | 磁盘占用增长 | `docker system df`；日志已按 20MB×5 轮转 | 清理旧镜像 `docker image prune -f`；备份文件保留策略见 OPS.md |
 | 压测 p95 不达标 | 对照 B-017；`docker stats` 观察 api CPU | 提升 `API_WORKERS`/服务器规格；用 `infra/k6/core_api.js` 复测 |
 
-## 8. 性能与容量（实测基线）
+## 9. 性能与容量（实测基线）
 
 - 单进程 uvicorn（Linux 容器）约 250 rps；8~16 进程约 620~905 rps（本机 16 逻辑核共享环境实测，错误率 0.00%）。
 - 生产建议：≥16 专用 vCPU 时按 `API_WORKERS=4`、`DB_MAX_CONNECTIONS=200` 起步，用 k6 复测后再调。
 - 完整压测方法：`infra/k6/core_api.js`（200 VU × 5 分钟）；LLM 流式首 token：`infra/k6/llm_stream.js`。
 
-## 9. 安全基线
+## 10. 安全基线
 
 - 仅 80/443 暴露；数据库/Redis/MinIO API 不映射宿主端口。
 - Caddy 统一注入安全头；ZAP baseline 0 High（见 `docs/verification/M10_2026-09-16_zap-baseline.md`）。
