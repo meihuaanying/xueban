@@ -81,7 +81,8 @@ class VerificationReport:
 
     @property
     def final_accept_rate(self) -> float:
-        return (self.total - self.rejected - self.judge_errors) / self.total if self.total else 0.0
+        # rejected 已经包含 judge 不可用（judge_errors）的题，不能再减一次
+        return (self.total - self.rejected) / self.total if self.total else 0.0
 
 
 # judge 的通过门槛：低于此分视为不合格（judge 同时要给出 verdict）
@@ -423,6 +424,12 @@ def _parse_judge_batch(raw: str) -> dict[int, tuple[str, int, str]]:
     return parsed
 
 
+def _error_detail(exc: BaseException) -> str:
+    """异常的可读标识：类型名 + 业务错误码（LlmError.code 是限流/上游故障的判据）。"""
+    code = getattr(exc, "code", None)
+    return f"{type(exc).__name__}:{code}" if code else type(exc).__name__
+
+
 class QuestionVerifier:
     """规则 + LLM judge 双通道验证。"""
 
@@ -563,7 +570,9 @@ class QuestionVerifier:
                     outcomes.append(await self.judge(question, point))
                 except Exception as exc:
                     logger.warning("回退单题 judge 失败：%s", exc)
-                    outcomes.append((None, None, f"judge 调用失败：{type(exc).__name__}"))
+                    outcomes.append(
+                        (None, None, f"judge 调用失败：{_error_detail(exc)}")
+                    )
             return outcomes
         outcomes = []
         for index in range(1, len(questions) + 1):
@@ -604,7 +613,7 @@ class QuestionVerifier:
                 rule_passed=True,
                 judge_passed=None,
                 score=None,
-                reason=f"judge 调用失败：{type(exc).__name__}",
+                reason=f"judge 调用失败：{_error_detail(exc)}",
             )
 
         if passed is None:
@@ -659,6 +668,8 @@ class QuestionVerifier:
             if point.subject != _MATH_SUBJECT:
                 judge_targets.append(index)
             else:
+                # 数学题按既有口径只走规则 + SymPy；judge 跳过如实计数
+                report.judge_skipped += 1
                 passed.append(question)
 
         judge_results: dict[int, JudgeOutcome] = {}
@@ -669,7 +680,7 @@ class QuestionVerifier:
                 outcomes = await self.judge_many([questions[i] for i in chunk], point)
             except Exception as exc:
                 logger.warning("批量 judge 调用失败（%s 题）：%s", len(chunk), exc)
-                outcomes = [(None, None, "judge 调用失败：" + type(exc).__name__)] * len(chunk)
+                outcomes = [(None, None, "judge 调用失败：" + _error_detail(exc))] * len(chunk)
             for index, outcome in zip(chunk, outcomes, strict=True):
                 judge_results[index] = outcome
 

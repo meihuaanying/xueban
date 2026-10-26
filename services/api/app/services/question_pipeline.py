@@ -403,6 +403,9 @@ class QuestionPipeline:
                     )
                 except Exception as exc:  # 单点失败不应中断整批
                     logger.exception("知识点处理失败 %s", point.id)
+                    # 失败可能发生在 flush/commit 中途：不回滚会让后续所有知识点
+                    # 在「事务已失效」状态下连环报错，且掩盖真实原因。
+                    await session.rollback()
                     report.outcomes.append(
                         PointOutcome(point_id=point.id, errors=[f"{type(exc).__name__}: {exc}"])
                     )
@@ -425,9 +428,12 @@ class QuestionPipeline:
                     outcome.verified,
                     outcome.deduped_away,
                 )
-                if any("LLM_RATE_LIMITED" in error for error in outcome.errors):
+                # 只有「限流且这一轮一题都没补成」才算一次配额失败；瞬时 429 后
+                # 恢复正常入库的知识点不应计入，否则会误中止健康运行。
+                rate_limited = any("LLM_RATE_LIMITED" in error for error in outcome.errors)
+                if rate_limited and outcome.inserted == 0:
                     consecutive_rate_limited += 1
-                else:
+                elif not rate_limited:
                     consecutive_rate_limited = 0
                 if consecutive_rate_limited >= 2:
                     report.aborted_reason = _QUOTA_ABORT_MESSAGE

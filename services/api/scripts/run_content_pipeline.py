@@ -43,7 +43,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--limit-points", type=int, default=None)
     parser.add_argument("--target", type=int, default=None)
     parser.add_argument("--subjects", default="math,chinese,english")
-    parser.add_argument("--grades", default="grade1,grade2")
+    parser.add_argument(
+        "--grades",
+        default="grade1,grade2",
+        help="逗号分隔年级（grade1~grade12）；全学段示例：grade1,...,grade12",
+    )
     parser.add_argument("--no-judge", action="store_true")
     parser.add_argument(
         "--interval",
@@ -107,7 +111,8 @@ async def run(args: argparse.Namespace) -> int:
             print(json.dumps(totals, ensure_ascii=False, indent=2))
     finally:
         await client.aclose()
-    return 0
+    # 配额窗口耗尽属「可重试的中断」，用独立退出码让 CI/脚本能区分于正常跑完
+    return 2 if report.aborted_reason else 0
 
 
 def _stages_for(grades: tuple[str, ...]) -> tuple[str, ...]:
