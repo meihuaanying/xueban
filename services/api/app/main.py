@@ -25,6 +25,7 @@ from app.api.routes import (
     explainer,
     grading,
     lessons,
+    meta,
     mistakes,
     parents,
     plan,
@@ -181,6 +182,7 @@ def create_app() -> FastAPI:
     register_exception_handlers(application)
 
     application.include_router(system.router)
+    application.include_router(meta.router)
     application.include_router(auth.router)
     application.include_router(billing.router)
     application.include_router(profile.router)

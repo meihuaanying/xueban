@@ -1,0 +1,514 @@
+{
+  "schema_version": "1.0",
+  "subject": "chemistry",
+  "subject_name": "化学",
+  "curriculum_standard": "人教版化学（初中九年级起 + 高中）",
+  "description": "九年级至高三知识点树（广东中考/高考口径，2026-10）。以人教版教材目录为基准，按「单元 → 知识点」两级组织；prerequisites 为知识点 id 列表，构成先修关系；difficulty_band 为难度档（1=入门 2=基础 3=进阶）。",
+  "difficulty_bands": {
+    "1": "入门：物质与基本概念",
+    "2": "基础：方程式与规律应用",
+    "3": "进阶：综合计算与实验设计"
+  },
+  "stages": [
+    {
+      "grade": "grade9",
+      "grade_name": "九年级",
+      "units": [
+        {
+          "code": "g9c-u1",
+          "name": "走进化学世界",
+          "knowledge_points": [
+            {
+              "id": "g9c-matter-change",
+              "name": "物质的变化与性质",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "能区分物理变化与化学变化、物理性质与化学性质。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g9c-lab-basics",
+              "name": "实验基本操作",
+              "difficulty_band": 1,
+              "prerequisites": ["g9c-matter-change"],
+              "objective": "掌握药品取用、加热、仪器洗涤与过滤等基本操作规范。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g9c-u2",
+          "name": "我们周围的空气",
+          "knowledge_points": [
+            {
+              "id": "g9c-air",
+              "name": "空气的组成",
+              "difficulty_band": 1,
+              "prerequisites": ["g9c-lab-basics"],
+              "objective": "知道空气的主要成分与测定方法，了解空气污染与防治。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9c-oxygen",
+              "name": "氧气的性质与制取",
+              "difficulty_band": 2,
+              "prerequisites": ["g9c-air"],
+              "objective": "掌握氧气的物理化学性质、实验室制取原理与检验方法。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9c-u3",
+          "name": "物质构成的奥秘",
+          "knowledge_points": [
+            {
+              "id": "g9c-atom-molecule",
+              "name": "分子与原子",
+              "difficulty_band": 2,
+              "prerequisites": ["g9c-oxygen"],
+              "objective": "理解分子、原子的概念与区别，能用分子原子观点解释现象。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g9c-element",
+              "name": "元素与元素符号",
+              "difficulty_band": 2,
+              "prerequisites": ["g9c-atom-molecule"],
+              "objective": "理解元素的概念，记住常见元素符号与元素周期表简介。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9c-chemical-formula",
+              "name": "化学式与化合价",
+              "difficulty_band": 3,
+              "prerequisites": ["g9c-element"],
+              "objective": "会写常见化学式，会根据化合价计算与书写化学式。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9c-u4",
+          "name": "化学方程式",
+          "knowledge_points": [
+            {
+              "id": "g9c-mass-conservation",
+              "name": "质量守恒定律",
+              "difficulty_band": 2,
+              "prerequisites": ["g9c-atom-molecule"],
+              "objective": "理解质量守恒定律的微观解释，能判断反应前后质量关系。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g9c-equation-writing",
+              "name": "化学方程式的书写与计算",
+              "difficulty_band": 3,
+              "prerequisites": ["g9c-mass-conservation", "g9c-chemical-formula"],
+              "objective": "会正确书写并配平化学方程式，能进行简单化学方程式计算。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9c-u5",
+          "name": "碳、燃料与金属",
+          "knowledge_points": [
+            {
+              "id": "g9c-carbon",
+              "name": "碳和碳的氧化物",
+              "difficulty_band": 2,
+              "prerequisites": ["g9c-equation-writing"],
+              "objective": "掌握碳单质、二氧化碳与一氧化碳的性质、制取与用途。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9c-fuel",
+              "name": "燃料及其利用",
+              "difficulty_band": 2,
+              "prerequisites": ["g9c-carbon"],
+              "objective": "了解燃烧条件与灭火原理，知道化石燃料与新能源。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g9c-metals",
+              "name": "金属和金属材料",
+              "difficulty_band": 3,
+              "prerequisites": ["g9c-carbon"],
+              "objective": "掌握金属活动性顺序，会判断置换反应与金属冶炼。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9c-u6",
+          "name": "溶液、酸碱盐",
+          "knowledge_points": [
+            {
+              "id": "g9c-solution",
+              "name": "溶液与溶解度",
+              "difficulty_band": 3,
+              "prerequisites": ["g9c-metals"],
+              "objective": "理解溶液、饱和溶液与溶解度概念，会进行溶质质量分数计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9c-acid-base",
+              "name": "酸和碱",
+              "difficulty_band": 3,
+              "prerequisites": ["g9c-solution"],
+              "objective": "掌握常见酸碱的性质、中和反应与 pH 的意义。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9c-salt-fertilizer",
+              "name": "盐与化肥",
+              "difficulty_band": 3,
+              "prerequisites": ["g9c-acid-base"],
+              "objective": "掌握常见盐的性质与复分解反应条件，了解常见化肥。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade10",
+      "grade_name": "高一",
+      "units": [
+        {
+          "code": "g10c-u1",
+          "name": "物质及其变化",
+          "knowledge_points": [
+            {
+              "id": "g10c-classification",
+              "name": "物质的分类与转化",
+              "difficulty_band": 2,
+              "prerequisites": ["g9c-chemical-formula"],
+              "objective": "掌握树状分类与交叉分类，理解胶体的性质与应用。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g10c-ion-reaction",
+              "name": "离子反应",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-classification"],
+              "objective": "理解电解质电离，会书写离子方程式并判断离子共存。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10c-redox",
+              "name": "氧化还原反应",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-ion-reaction"],
+              "objective": "理解氧化还原反应的本质，会判断氧化剂还原剂与配平。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g10c-u2",
+          "name": "常见无机物",
+          "knowledge_points": [
+            {
+              "id": "g10c-sodium",
+              "name": "钠及其化合物",
+              "difficulty_band": 2,
+              "prerequisites": ["g10c-redox"],
+              "objective": "掌握钠、氧化钠、过氧化钠、碳酸钠与碳酸氢钠的性质与转化。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10c-chlorine",
+              "name": "氯及其化合物",
+              "difficulty_band": 2,
+              "prerequisites": ["g10c-sodium"],
+              "objective": "掌握氯气、次氯酸与漂白粉的性质与实验室制备。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10c-iron",
+              "name": "铁及其化合物",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-chlorine"],
+              "objective": "掌握铁、亚铁盐与铁盐的相互转化与检验方法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10c-metal-materials",
+              "name": "金属材料与合金",
+              "difficulty_band": 2,
+              "prerequisites": ["g10c-iron"],
+              "objective": "了解合金的性质与常见金属材料的用途。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g10c-u3",
+          "name": "物质的量与计算",
+          "knowledge_points": [
+            {
+              "id": "g10c-mole",
+              "name": "物质的量与摩尔质量",
+              "difficulty_band": 2,
+              "prerequisites": ["g9c-equation-writing"],
+              "objective": "理解物质的量、阿伏加德罗常数与摩尔质量，会进行换算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10c-molar-volume",
+              "name": "气体摩尔体积",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-mole"],
+              "objective": "理解气体摩尔体积与阿伏加德罗定律，会进行气体计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10c-concentration",
+              "name": "物质的量浓度与溶液配制",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-mole"],
+              "objective": "掌握物质的量浓度的计算与一定浓度溶液的配制步骤。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g10c-u4",
+          "name": "结构、能量与有机入门",
+          "knowledge_points": [
+            {
+              "id": "g10c-atomic-structure",
+              "name": "原子结构与元素周期律",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-classification"],
+              "objective": "理解原子结构与核外电子排布，掌握元素周期律与周期表应用。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10c-chemical-bond",
+              "name": "化学键",
+              "difficulty_band": 2,
+              "prerequisites": ["g10c-atomic-structure"],
+              "objective": "理解离子键与共价键，能判断物质中的化学键类型。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g10c-reaction-energy",
+              "name": "化学反应与能量、速率",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-chemical-bond"],
+              "objective": "了解反应热与化学键的关系，理解原电池与化学反应速率影响因素。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10c-organic-basics",
+              "name": "有机化合物入门",
+              "difficulty_band": 2,
+              "prerequisites": ["g10c-chemical-bond"],
+              "objective": "知道甲烷、乙烯、乙醇、乙酸的主要性质与基本营养物质。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade11",
+      "grade_name": "高二",
+      "units": [
+        {
+          "code": "g11c-u1",
+          "name": "化学反应原理",
+          "knowledge_points": [
+            {
+              "id": "g11c-enthalpy",
+              "name": "化学反应的热效应",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-reaction-energy"],
+              "objective": "理解焓变与盖斯定律，会书写热化学方程式并进行计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11c-rate",
+              "name": "化学反应速率",
+              "difficulty_band": 2,
+              "prerequisites": ["g11c-enthalpy"],
+              "objective": "理解反应速率的表示与影响因素，会进行速率计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11c-equilibrium",
+              "name": "化学平衡",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-rate"],
+              "objective": "掌握平衡常数与平衡移动原理，会分析平衡图像。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11c-ion-equilibrium",
+              "name": "水溶液中的离子平衡",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-equilibrium"],
+              "objective": "理解弱电解质电离、盐类水解与沉淀溶解平衡，会进行 pH 计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11c-electrochemistry",
+              "name": "电化学",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-ion-equilibrium"],
+              "objective": "掌握原电池、电解池原理与电极反应式书写，了解金属腐蚀与防护。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g11c-u2",
+          "name": "物质结构与性质",
+          "knowledge_points": [
+            {
+              "id": "g11c-electron-config",
+              "name": "原子结构与电子排布",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-atomic-structure"],
+              "objective": "掌握能层能级、电子排布式与轨道表示式。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11c-periodic-properties",
+              "name": "元素周期律进阶",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-electron-config"],
+              "objective": "理解电离能、电负性与原子半径的周期性变化。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11c-molecular-structure",
+              "name": "分子结构与性质",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-periodic-properties"],
+              "objective": "理解杂化轨道、分子空间构型、极性与氢键。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11c-crystal",
+              "name": "晶体结构与性质",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-molecular-structure"],
+              "objective": "了解离子晶体、分子晶体、共价晶体与金属晶体的结构与性质。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade12",
+      "grade_name": "高三",
+      "units": [
+        {
+          "code": "g12c-u1",
+          "name": "有机化学基础",
+          "knowledge_points": [
+            {
+              "id": "g12c-organic-structure",
+              "name": "有机物的结构与同分异构",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-organic-basics"],
+              "objective": "理解官能团与同分异构现象，会书写同分异构体。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12c-hydrocarbon",
+              "name": "烃",
+              "difficulty_band": 3,
+              "prerequisites": ["g12c-organic-structure"],
+              "objective": "掌握烷烃、烯烃、炔烃与芳香烃的结构与性质。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12c-halide-alcohol",
+              "name": "卤代烃与醇",
+              "difficulty_band": 3,
+              "prerequisites": ["g12c-hydrocarbon"],
+              "objective": "掌握卤代烃的水解与消去、醇的取代与氧化反应。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12c-aldehyde-acid",
+              "name": "醛、羧酸与酯",
+              "difficulty_band": 3,
+              "prerequisites": ["g12c-halide-alcohol"],
+              "objective": "掌握醛的氧化还原、羧酸与酯的性质及酯化反应。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12c-biomolecule",
+              "name": "生物大分子与合成高分子",
+              "difficulty_band": 3,
+              "prerequisites": ["g12c-aldehyde-acid"],
+              "objective": "了解糖类、蛋白质、核酸的结构性质与合成高分子反应。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12c-organic-synthesis",
+              "name": "有机合成路线设计",
+              "difficulty_band": 3,
+              "prerequisites": ["g12c-biomolecule"],
+              "objective": "能根据目标产物设计合理合成路线并判断反应类型。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g12c-u2",
+          "name": "高考综合",
+          "knowledge_points": [
+            {
+              "id": "g12c-experiment",
+              "name": "化学实验综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-electrochemistry"],
+              "objective": "掌握常见分离提纯、定量实验与探究实验的设计与评价。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12c-industrial-flow",
+              "name": "化工流程图题",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-ion-equilibrium"],
+              "objective": "能分析化工流程中的转化、条件控制与产率计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12c-principles-comprehensive",
+              "name": "化学反应原理综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-equilibrium", "g11c-electrochemistry"],
+              "objective": "能综合运用热化学、速率平衡与电化学知识解决高考综合题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12c-structure-comprehensive",
+              "name": "物质结构综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-crystal"],
+              "objective": "能综合运用原子、分子与晶体结构知识解决结构题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12c-calculation",
+              "name": "化学计算与图像分析",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-concentration"],
+              "objective": "掌握守恒法、关系式法与图像数据的化学计算。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

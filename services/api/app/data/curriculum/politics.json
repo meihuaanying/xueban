@@ -1,0 +1,874 @@
+{
+  "schema_version": "1.0",
+  "subject": "politics",
+  "subject_name": "道德与法治（思想政治）",
+  "curriculum_standard": "统编版道德与法治（初中七年级起）+ 统编版思想政治（高中必修与选择性必修）",
+  "description": "七年级、八年级、九年级、高一、高二、高三知识点树（2026-10）。以统编版教材目录为基准，按「单元 → 知识点」两级组织；prerequisites 为知识点 id 列表，构成先修关系；difficulty_band 为难度档（1=入门 2=基础 3=进阶）。",
+  "difficulty_bands": {
+    "1": "入门：概念识记与观点判断",
+    "2": "基础：原理理解与材料分析",
+    "3": "进阶：综合论证与价值辨析"
+  },
+  "stages": [
+    {
+      "grade": "grade7",
+      "grade_name": "七年级",
+      "units": [
+        {
+          "code": "g7p-u1",
+          "name": "成长的节拍",
+          "knowledge_points": [
+            {
+              "id": "g7p-new-start",
+              "name": "中学时代与新的起点",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "能说出中学时代对个人成长的意义，理解适应新环境、规划新生活的基本要求。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g7p-learning",
+              "name": "学习新天地",
+              "difficulty_band": 2,
+              "prerequisites": ["g7p-new-start"],
+              "objective": "理解学习的意义与特点，掌握发现学习、合作学习、探究学习等学会学习的方法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7p-self-discovery",
+              "name": "发现自己与认识自我",
+              "difficulty_band": 2,
+              "prerequisites": ["g7p-learning"],
+              "objective": "能通过自我评价与他人评价认识自己，理解接纳自我、完善自我的重要性。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g7p-u2",
+          "name": "友谊的天空",
+          "knowledge_points": [
+            {
+              "id": "g7p-friendship",
+              "name": "友谊的特质与交友原则",
+              "difficulty_band": 2,
+              "prerequisites": ["g7p-self-discovery"],
+              "objective": "理解友谊的特质，掌握建立友谊、呵护友谊的方法与正确交友的原则。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g7p-online-friendship",
+              "name": "网上交友新时空",
+              "difficulty_band": 2,
+              "prerequisites": ["g7p-friendship"],
+              "objective": "能辩证认识网络交友的利与弊，掌握网络交往的自我保护方法与法律边界。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g7p-u3",
+          "name": "师长情谊",
+          "knowledge_points": [
+            {
+              "id": "g7p-teacher-student",
+              "name": "师生交往与教学相长",
+              "difficulty_band": 2,
+              "prerequisites": ["g7p-online-friendship"],
+              "objective": "理解新型师生关系的特点，掌握与老师沟通、正确对待老师表扬与批评的方法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7p-family-love",
+              "name": "亲情之爱与家庭和睦",
+              "difficulty_band": 2,
+              "prerequisites": ["g7p-teacher-student"],
+              "objective": "理解家的意义与亲情之爱，能分析亲子冲突的原因并掌握化解冲突、建设和谐家庭的方法。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g7p-u4",
+          "name": "生命的思考",
+          "knowledge_points": [
+            {
+              "id": "g7p-life-value",
+              "name": "探问生命与敬畏生命",
+              "difficulty_band": 2,
+              "prerequisites": ["g7p-family-love"],
+              "objective": "理解生命的独特性与不可逆性，树立敬畏生命、珍爱生命的态度。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g7p-life-resilience",
+              "name": "守护生命与增强生命韧性",
+              "difficulty_band": 2,
+              "prerequisites": ["g7p-life-value"],
+              "objective": "掌握守护身体与精神健康的方法，理解挫折的普遍性并学会增强生命韧性。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7p-life-meaning",
+              "name": "绽放生命之花",
+              "difficulty_band": 3,
+              "prerequisites": ["g7p-life-resilience"],
+              "objective": "能说明生命意义的内涵，理解在平凡中创造伟大、实现人生价值的途径。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g7p-u5",
+          "name": "青春与法律初识",
+          "knowledge_points": [
+            {
+              "id": "g7p-youth-growth",
+              "name": "青春的邀约与青春的心弦",
+              "difficulty_band": 2,
+              "prerequisites": ["g7p-self-discovery"],
+              "objective": "能正确认识青春期的生理与心理变化，理解独立思考、批判精神和异性交往的要求。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g7p-emotions",
+              "name": "情绪的管理与情感",
+              "difficulty_band": 2,
+              "prerequisites": ["g7p-youth-growth"],
+              "objective": "能识别基本情绪，理解情绪的作用，掌握调节情绪的方法并培养积极情感。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7p-legal-basics",
+              "name": "法律在我们身边",
+              "difficulty_band": 2,
+              "prerequisites": ["g7p-emotions"],
+              "objective": "理解法律的特征与作用，知道法律与道德、纪律的区别，树立法律意识。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g7p-legal-protection",
+              "name": "法律伴我们成长",
+              "difficulty_band": 3,
+              "prerequisites": ["g7p-legal-basics"],
+              "objective": "知道未成年人保护法与预防未成年人犯罪法的相关规定，掌握依法自我保护的方法。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade8",
+      "grade_name": "八年级",
+      "units": [
+        {
+          "code": "g8p-u1",
+          "name": "走进社会生活",
+          "knowledge_points": [
+            {
+              "id": "g8p-social-life",
+              "name": "我与社会",
+              "difficulty_band": 1,
+              "prerequisites": ["g7p-new-start"],
+              "objective": "理解个人与社会的关系，能说出几种主要的社会关系并认识亲社会行为的意义。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g8p-network-life",
+              "name": "网络生活新空间",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-social-life"],
+              "objective": "能辩证分析网络对社会生活的影响，掌握合理利用网络、遵守网络规则的方法。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g8p-u2",
+          "name": "遵守社会规则",
+          "knowledge_points": [
+            {
+              "id": "g8p-rules-order",
+              "name": "社会秩序与社会规则",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-network-life"],
+              "objective": "理解社会秩序与社会规则的关系，知道维护秩序靠规则，能自觉遵守和改进规则。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g8p-morality",
+              "name": "社会生活讲道德与诚信",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-rules-order"],
+              "objective": "理解尊重、礼、诚信等道德规范的要求，能分析诚信的价值并践行诚信。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g8p-law-abide",
+              "name": "法不可违与预防犯罪",
+              "difficulty_band": 3,
+              "prerequisites": ["g8p-morality", "g7p-legal-basics"],
+              "objective": "能区分一般违法行为与犯罪，理解犯罪的基本特征与刑罚种类，掌握预防犯罪的要求。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8p-u3",
+          "name": "责任与担当",
+          "knowledge_points": [
+            {
+              "id": "g8p-responsibility",
+              "name": "责任与角色同在",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-rules-order"],
+              "objective": "理解责任的含义与来源，能说明不同角色承担的不同责任并学会对自己、对他人负责。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g8p-service-society",
+              "name": "关爱他人与积极奉献社会",
+              "difficulty_band": 3,
+              "prerequisites": ["g8p-responsibility"],
+              "objective": "理解关爱他人的意义与方法，能说明服务社会、奉献社会的途径与价值。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8p-u4",
+          "name": "国家利益与安全",
+          "knowledge_points": [
+            {
+              "id": "g8p-national-interest",
+              "name": "国家利益至上",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-service-society"],
+              "objective": "理解国家利益的内涵与重要性，能说明国家利益与人民利益的关系及维护国家利益的要求。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g8p-national-security",
+              "name": "树立总体国家安全观",
+              "difficulty_band": 3,
+              "prerequisites": ["g8p-national-interest"],
+              "objective": "理解总体国家安全观的内涵，知道国家安全体系的主要内容并掌握维护国家安全的做法。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8p-u5",
+          "name": "宪法与公民",
+          "knowledge_points": [
+            {
+              "id": "g8p-constitution",
+              "name": "宪法是治国安邦的总章程",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-law-abide"],
+              "objective": "理解宪法的地位、作用与基本原则，知道宪法监督与宪法宣誓制度，树立宪法意识。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g8p-citizen-rights",
+              "name": "公民基本权利",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-constitution"],
+              "objective": "能说出公民的基本权利及其内容，理解依法行使权利的要求与界限。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8p-citizen-duties",
+              "name": "公民基本义务",
+              "difficulty_band": 3,
+              "prerequisites": ["g8p-citizen-rights"],
+              "objective": "能说出公民的基本义务，理解权利与义务相统一的关系并自觉履行义务。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8p-state-institutions",
+              "name": "我国的国家机构",
+              "difficulty_band": 3,
+              "prerequisites": ["g8p-citizen-duties", "g8p-constitution"],
+              "objective": "知道国家权力机关、行政机关、监察机关、司法机关的性质与职权，理解国家机构的组织原则。",
+              "question_types": ["choice", "match"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade9",
+      "grade_name": "九年级",
+      "units": [
+        {
+          "code": "g9p-u1",
+          "name": "富强与创新",
+          "knowledge_points": [
+            {
+              "id": "g9p-reform-opening",
+              "name": "踏上强国之路与改革开放",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-national-interest"],
+              "objective": "理解改革开放的历史背景与伟大意义，能说明改革开放是决定当代中国命运的关键一招。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9p-innovation",
+              "name": "创新驱动发展",
+              "difficulty_band": 2,
+              "prerequisites": ["g9p-reform-opening"],
+              "objective": "理解创新的意义与我国创新驱动发展战略，能说明建设创新型国家的主要举措。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g9p-shared-prosperity",
+              "name": "共享发展成果与共同富裕",
+              "difficulty_band": 3,
+              "prerequisites": ["g9p-innovation"],
+              "objective": "理解以人民为中心的发展思想，能说明共享发展成果、促进共同富裕的意义与举措。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9p-u2",
+          "name": "民主与法治",
+          "knowledge_points": [
+            {
+              "id": "g9p-democracy",
+              "name": "追求民主价值",
+              "difficulty_band": 2,
+              "prerequisites": ["g9p-shared-prosperity", "g8p-constitution"],
+              "objective": "理解我国社会主义民主的本质与特点，知道全过程人民民主的内涵与优势。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g9p-rule-of-law",
+              "name": "建设法治中国",
+              "difficulty_band": 3,
+              "prerequisites": ["g9p-democracy"],
+              "objective": "理解全面依法治国的总目标与基本要求，能说明法治国家、法治政府、法治社会一体建设。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9p-citizen-participation",
+              "name": "公民参与民主生活",
+              "difficulty_band": 3,
+              "prerequisites": ["g9p-rule-of-law"],
+              "objective": "知道公民参与民主生活的途径与形式，能依法有序参与民主选举、民主决策、民主管理和民主监督。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9p-u3",
+          "name": "文化与生态",
+          "knowledge_points": [
+            {
+              "id": "g9p-chinese-culture",
+              "name": "中华文化与文化自信",
+              "difficulty_band": 2,
+              "prerequisites": ["g9p-rule-of-law"],
+              "objective": "理解中华优秀传统文化的特点与价值，能说明坚定文化自信、推动文化创新的意义。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g9p-national-spirit",
+              "name": "民族精神与社会主义核心价值观",
+              "difficulty_band": 3,
+              "prerequisites": ["g9p-chinese-culture"],
+              "objective": "理解中华民族精神的内涵与时代价值，能说明培育和践行社会主义核心价值观的途径。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9p-ecological-civilization",
+              "name": "建设美丽中国与生态文明",
+              "difficulty_band": 3,
+              "prerequisites": ["g9p-national-spirit"],
+              "objective": "理解人与自然和谐共生的理念，能说明坚持绿色发展、建设生态文明的政策与行动。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9p-u4",
+          "name": "我们共同的世界",
+          "knowledge_points": [
+            {
+              "id": "g9p-globalization",
+              "name": "经济全球化与开放互动的世界",
+              "difficulty_band": 2,
+              "prerequisites": ["g9p-ecological-civilization"],
+              "objective": "能说明经济全球化的表现与影响，理解文化多样性与文明交流互鉴的意义。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g9p-world-pattern",
+              "name": "复杂多变的关系与和平发展",
+              "difficulty_band": 3,
+              "prerequisites": ["g9p-globalization"],
+              "objective": "能分析世界多极化、经济全球化背景下的国际关系，理解和平与发展是时代主题。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9p-u5",
+          "name": "世界舞台上的中国",
+          "knowledge_points": [
+            {
+              "id": "g9p-china-role",
+              "name": "中国担当与世界深度互动",
+              "difficulty_band": 3,
+              "prerequisites": ["g9p-world-pattern"],
+              "objective": "能举例说明中国在国际事务中的担当与贡献，理解中国与世界深度互动的表现。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9p-china-future",
+              "name": "携手促发展与走向未来",
+              "difficulty_band": 3,
+              "prerequisites": ["g9p-china-role"],
+              "objective": "理解构建人类命运共同体的内涵，能说明青少年面向未来应具备的素质与担当。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade10",
+      "grade_name": "高一",
+      "units": [
+        {
+          "code": "g10p-u1",
+          "name": "社会主义从空想到科学",
+          "knowledge_points": [
+            {
+              "id": "g10p-social-development",
+              "name": "原始社会、奴隶社会与封建社会",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "能按生产力与生产关系的特点说明原始社会、奴隶社会、封建社会的更替过程。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g10p-capitalism",
+              "name": "资本主义社会及其基本矛盾",
+              "difficulty_band": 2,
+              "prerequisites": ["g10p-social-development"],
+              "objective": "理解资本主义社会的产生、发展及其基本矛盾，能说明资本主义被社会主义取代的历史趋势。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10p-utopian-socialism",
+              "name": "空想社会主义",
+              "difficulty_band": 2,
+              "prerequisites": ["g10p-capitalism"],
+              "objective": "能说出空想社会主义的主要代表人物与主张，理解其进步性与历史局限性。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g10p-scientific-socialism",
+              "name": "科学社会主义的创立与实践",
+              "difficulty_band": 3,
+              "prerequisites": ["g10p-utopian-socialism"],
+              "objective": "理解科学社会主义创立的理论基石与标志，能说明社会主义从一国到多国发展的历程。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g10p-u2",
+          "name": "中国特色社会主义",
+          "knowledge_points": [
+            {
+              "id": "g10p-new-china",
+              "name": "新中国成立与社会主义制度的确立",
+              "difficulty_band": 2,
+              "prerequisites": ["g10p-scientific-socialism"],
+              "objective": "理解新中国成立的历史意义，能说明社会主义改造与社会主义制度确立的过程。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10p-reform-opening",
+              "name": "改革开放与中国特色社会主义",
+              "difficulty_band": 2,
+              "prerequisites": ["g10p-new-china"],
+              "objective": "理解改革开放的背景与意义，能说明中国特色社会主义道路的开创与发展。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10p-new-era",
+              "name": "中国特色社会主义新时代",
+              "difficulty_band": 3,
+              "prerequisites": ["g10p-reform-opening"],
+              "objective": "理解中国特色社会主义进入新时代的依据与意义，能说明新时代我国社会主要矛盾的变化。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10p-thought",
+              "name": "习近平新时代中国特色社会主义思想",
+              "difficulty_band": 3,
+              "prerequisites": ["g10p-new-era"],
+              "objective": "理解习近平新时代中国特色社会主义思想的核心内容与历史地位，能说明其世界观和方法论。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g10p-u3",
+          "name": "生产资料所有制与经济体制",
+          "knowledge_points": [
+            {
+              "id": "g10p-ownership",
+              "name": "我国的生产资料所有制",
+              "difficulty_band": 2,
+              "prerequisites": ["g10p-scientific-socialism"],
+              "objective": "理解公有制为主体、多种所有制经济共同发展的基本经济制度，能说明公有制与非公有制经济的地位和作用。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g10p-market-economy",
+              "name": "市场在资源配置中起决定性作用",
+              "difficulty_band": 2,
+              "prerequisites": ["g10p-ownership"],
+              "objective": "理解市场配置资源的机制与优点，能分析市场调节的局限性并说明建设高标准市场体系的要求。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10p-government-function",
+              "name": "更好发挥政府作用与宏观调控",
+              "difficulty_band": 3,
+              "prerequisites": ["g10p-market-economy"],
+              "objective": "理解我国政府的经济职能，能说明财政政策、货币政策等宏观调控手段的运用。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g10p-u4",
+          "name": "经济发展与社会进步",
+          "knowledge_points": [
+            {
+              "id": "g10p-high-quality",
+              "name": "新发展理念与高质量发展",
+              "difficulty_band": 2,
+              "prerequisites": ["g10p-new-era", "g10p-government-function"],
+              "objective": "理解创新、协调、绿色、开放、共享的新发展理念，能说明推动高质量发展的要求与举措。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10p-distribution",
+              "name": "我国的个人收入分配",
+              "difficulty_band": 2,
+              "prerequisites": ["g10p-high-quality"],
+              "objective": "理解按劳分配为主体、多种分配方式并存的分配制度，能说明初次分配、再分配与第三次分配的作用。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10p-social-security",
+              "name": "我国的社会保障",
+              "difficulty_band": 2,
+              "prerequisites": ["g10p-distribution"],
+              "objective": "能说出我国社会保障体系的主要构成，理解完善社会保障体系的意义与要求。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade11",
+      "grade_name": "高二",
+      "units": [
+        {
+          "code": "g11p-u1",
+          "name": "中国共产党的领导",
+          "knowledge_points": [
+            {
+              "id": "g11p-cpc-status",
+              "name": "中国共产党的领导地位",
+              "difficulty_band": 2,
+              "prerequisites": ["g10p-thought"],
+              "objective": "理解中国共产党领导地位的确立是历史和人民的选择，能说明党的领导是中国特色社会主义最本质的特征。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g11p-cpc-purpose",
+              "name": "党的性质宗旨与初心使命",
+              "difficulty_band": 2,
+              "prerequisites": ["g11p-cpc-status"],
+              "objective": "理解中国共产党的性质、宗旨与初心使命，能说明党始终坚持以人民为中心的原因。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11p-cpc-governance",
+              "name": "党的执政方式与全面从严治党",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-cpc-purpose"],
+              "objective": "理解科学执政、民主执政、依法执政的含义，能说明全面从严治党与党的自我革命的意义。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g11p-u2",
+          "name": "人民当家作主",
+          "knowledge_points": [
+            {
+              "id": "g11p-npc-system",
+              "name": "人民代表大会制度",
+              "difficulty_band": 2,
+              "prerequisites": ["g11p-cpc-status", "g8p-state-institutions"],
+              "objective": "理解人民代表大会制度的组织活动原则与基本功能，能说明人大代表的职权与义务。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11p-party-system",
+              "name": "中国共产党领导的多党合作和政治协商制度",
+              "difficulty_band": 2,
+              "prerequisites": ["g11p-npc-system"],
+              "objective": "理解我国政党制度的特点与优势，知道人民政协的性质、职能与作用。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g11p-ethnic-system",
+              "name": "民族区域自治制度",
+              "difficulty_band": 2,
+              "prerequisites": ["g11p-party-system"],
+              "objective": "理解民族区域自治制度的内容与意义，能说明我国处理民族关系的基本原则。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11p-grassroots-democracy",
+              "name": "基层群众自治制度",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-ethnic-system"],
+              "objective": "理解基层群众自治的组织形式与民主实践，能说明发展基层民主的意义。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g11p-u3",
+          "name": "全面依法治国",
+          "knowledge_points": [
+            {
+              "id": "g11p-law-governance",
+              "name": "全面依法治国的基本要求",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-grassroots-democracy", "g9p-rule-of-law"],
+              "objective": "理解全面依法治国的总目标，能说明科学立法、严格执法、公正司法、全民守法的要求。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11p-constitution-governance",
+              "name": "依宪治国与法治政府",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-law-governance"],
+              "objective": "理解依宪治国的要求，能说明法治政府的特征与依法行政的主要内容。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11p-rule-of-law-society",
+              "name": "法治社会与全民守法",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-constitution-governance"],
+              "objective": "理解法治社会的内涵与建设要求，能说明全民守法与依法维权的关系。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g11p-u4",
+          "name": "辩证唯物论与唯物辩证法",
+          "knowledge_points": [
+            {
+              "id": "g11p-materialism-dialectics",
+              "name": "物质、意识与规律",
+              "difficulty_band": 2,
+              "prerequisites": [],
+              "objective": "理解世界的物质性、意识的能动作用与规律的客观性，能说明一切从实际出发、实事求是的要求。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11p-contradiction",
+              "name": "联系、发展与矛盾分析法",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-materialism-dialectics"],
+              "objective": "掌握联系的普遍性、发展的实质与矛盾的普遍性和特殊性，能运用矛盾分析法分析实际问题。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g11p-u5",
+          "name": "认识论与文化",
+          "knowledge_points": [
+            {
+              "id": "g11p-epistemology",
+              "name": "实践、认识与真理",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-contradiction"],
+              "objective": "理解实践是认识的基础，能说明认识的反复性、无限性与真理的具体性、条件性。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11p-culture",
+              "name": "文化传承与文化创新",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-epistemology"],
+              "objective": "理解文化的功能与中华文化的特点，能说明正确对待外来文化、推动文化创新发展的要求。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade12",
+      "grade_name": "高三",
+      "units": [
+        {
+          "code": "g12p-u1",
+          "name": "当代国际政治与经济",
+          "knowledge_points": [
+            {
+              "id": "g12p-international-relations",
+              "name": "国际关系与国家利益",
+              "difficulty_band": 2,
+              "prerequisites": ["g9p-china-role"],
+              "objective": "理解国际关系的基本形式与决定因素，能说明国家利益在国际关系中的核心地位。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12p-international-organizations",
+              "name": "国际组织与世界多极化",
+              "difficulty_band": 2,
+              "prerequisites": ["g12p-international-relations"],
+              "objective": "知道联合国等主要国际组织的性质与作用，能分析世界多极化趋势及其影响。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g12p-globalization-economy",
+              "name": "经济全球化与对外开放",
+              "difficulty_band": 3,
+              "prerequisites": ["g12p-international-organizations"],
+              "objective": "理解经济全球化的表现、影响与应对，能说明我国发展更高层次开放型经济的举措。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12p-china-diplomacy",
+              "name": "中国的外交政策与人类命运共同体",
+              "difficulty_band": 3,
+              "prerequisites": ["g12p-globalization-economy"],
+              "objective": "理解我国独立自主的和平外交政策，能说明推动构建人类命运共同体的内涵与意义。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g12p-u2",
+          "name": "法律与生活",
+          "knowledge_points": [
+            {
+              "id": "g12p-civil-law",
+              "name": "民事权利与义务",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-citizen-rights"],
+              "objective": "理解民事法律关系与民法典的基本原则，能说明民事权利、民事义务与侵权责任的内容。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12p-marriage-family",
+              "name": "家庭与婚姻",
+              "difficulty_band": 2,
+              "prerequisites": ["g12p-civil-law"],
+              "objective": "理解婚姻家庭关系中的权利义务，能说明结婚、离婚与家庭财产关系的法律规定。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g12p-employment-law",
+              "name": "就业与创业",
+              "difficulty_band": 3,
+              "prerequisites": ["g12p-marriage-family"],
+              "objective": "理解劳动法的基本原则与劳动合同制度，能说明劳动者权利保护与依法创业的要求。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12p-dispute-resolution",
+              "name": "社会争议解决",
+              "difficulty_band": 3,
+              "prerequisites": ["g12p-employment-law"],
+              "objective": "能区分和解、调解、仲裁与诉讼等争议解决方式，理解诉讼程序与法律援助制度。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g12p-u3",
+          "name": "逻辑与思维",
+          "knowledge_points": [
+            {
+              "id": "g12p-scientific-thinking",
+              "name": "科学思维观念",
+              "difficulty_band": 2,
+              "prerequisites": ["g11p-epistemology"],
+              "objective": "理解思维的特征与科学思维的基本要求，能区分抽象思维与形象思维。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g12p-concept-judgment",
+              "name": "概念与判断",
+              "difficulty_band": 2,
+              "prerequisites": ["g12p-scientific-thinking"],
+              "objective": "掌握概念的内涵与外延、概念之间的关系，能正确使用性质判断与关系判断。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g12p-reasoning",
+              "name": "推理与论证",
+              "difficulty_band": 3,
+              "prerequisites": ["g12p-concept-judgment"],
+              "objective": "掌握演绎推理、归纳推理与类比推理的基本规则，能识别并分析常见的逻辑谬误。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12p-dialectical-innovative",
+              "name": "辩证思维与创新思维",
+              "difficulty_band": 3,
+              "prerequisites": ["g12p-reasoning", "g11p-contradiction"],
+              "objective": "理解辩证思维的整体性与动态性，掌握发散思维、聚合思维与逆向思维等创新思维方法。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g12p-u4",
+          "name": "综合探究与价值辨析",
+          "knowledge_points": [
+            {
+              "id": "g12p-question-analysis",
+              "name": "政治主观题审题与材料分析",
+              "difficulty_band": 3,
+              "prerequisites": ["g12p-china-diplomacy", "g12p-dispute-resolution"],
+              "objective": "掌握政治主观题的审题步骤，能提取材料有效信息并调动相应知识组织答案。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12p-discourse",
+              "name": "政治论述与价值辨析",
+              "difficulty_band": 3,
+              "prerequisites": ["g12p-question-analysis", "g12p-dialectical-innovative"],
+              "objective": "能运用学科术语进行观点论述与价值辨析，做到观点明确、论据充分、逻辑严密。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

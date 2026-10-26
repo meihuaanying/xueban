@@ -2,7 +2,8 @@
 
 这组用例是「小初高内容做完」的结构性底线：年级 → 学段只有一份权威映射
 （``STAGE_FOR_GRADE``），课程树里每个知识点都必须落在 12 个合法年级内，
-且三科在每个年级都有可出题的内容。全是纯函数断言，不依赖数据库。
+且每学科在**其应覆盖的年级**都有可出题的内容（物理八年级起、化学九年级起、
+其余选考科目七年级起）。全是纯函数断言，不依赖数据库。
 """
 
 from __future__ import annotations
@@ -19,6 +20,20 @@ from app.data.curriculum import (
 
 STAGES = ("primary", "junior", "senior")
 EXPECTED_GRADES = {f"grade{i}" for i in range(1, 13)}
+
+#: 每学科必须覆盖的年级（广东口径：语数英小学起；物理八年级起、化学九年级起）。
+SUBJECT_GRADES: dict[str, set[str]] = {
+    "chinese": EXPECTED_GRADES,
+    "math": EXPECTED_GRADES,
+    "english": EXPECTED_GRADES,
+    "physics": {f"grade{i}" for i in range(8, 13)},
+    "chemistry": {f"grade{i}" for i in range(9, 13)},
+    "biology": {f"grade{i}" for i in (7, 8, 10, 11, 12)},
+    "history": {f"grade{i}" for i in range(7, 13)},
+    # 广东地理在八年级结课（学业水平考试），九年级不开课
+    "geography": {f"grade{i}" for i in (7, 8, 10, 11, 12)},
+    "politics": {f"grade{i}" for i in range(7, 13)},
+}
 
 
 def test_grade_names_and_stage_mapping_cover_same_keys() -> None:
@@ -48,18 +63,19 @@ def test_every_curriculum_point_has_known_grade() -> None:
     assert not unknown, f"存在未知年级：{unknown}"
 
 
-def test_every_subject_has_points_in_all_twelve_grades() -> None:
-    """12 个年级 × 3 科全覆盖：任一组合知识点数量都必须大于 0。"""
+def test_every_subject_has_points_in_expected_grades() -> None:
+    """每学科在其应覆盖的年级里知识点数量都必须大于 0。"""
     counts: Counter[tuple[str, str]] = Counter(
         (curriculum.subject, point.grade)
         for curriculum in all_curricula()
         for point in curriculum.points
     )
     subjects = [curriculum.subject for curriculum in all_curricula()]
+    assert set(subjects) == set(SUBJECT_GRADES), "学科注册与预期清单不一致"
     empty = [
         f"{subject}/{grade}"
         for subject in subjects
-        for grade in sorted(GRADE_NAMES)
+        for grade in sorted(SUBJECT_GRADES[subject])
         if counts[(subject, grade)] <= 0
     ]
     assert not empty, f"以下学科/年级没有知识点：{empty}"

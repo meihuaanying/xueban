@@ -22,7 +22,22 @@ from app.data.curriculum import (
     topological_order,
 )
 
-SUBJECTS = ("chinese", "math", "english")
+SUBJECTS = tuple(SUBJECT_FILES)
+
+#: 每个学科必须覆盖的年级范围（广东口径：语数英小学起；物理八年级起、
+#: 化学九年级起；其余选考科目七年级起）。
+EXPECTED_GRADES: dict[str, tuple[str, ...]] = {
+    "chinese": tuple(f"grade{i}" for i in range(1, 13)),
+    "math": tuple(f"grade{i}" for i in range(1, 13)),
+    "english": tuple(f"grade{i}" for i in range(1, 13)),
+    "physics": tuple(f"grade{i}" for i in range(8, 13)),
+    "chemistry": tuple(f"grade{i}" for i in range(9, 13)),
+    "biology": ("grade7", "grade8", "grade10", "grade11", "grade12"),
+    "history": tuple(f"grade{i}" for i in range(7, 13)),
+    # 广东地理在八年级结课（学业水平考试），九年级不开课
+    "geography": ("grade7", "grade8", "grade10", "grade11", "grade12"),
+    "politics": tuple(f"grade{i}" for i in range(7, 13)),
+}
 
 
 def _minimal_payload(**overrides: object) -> dict:
@@ -93,10 +108,13 @@ def test_each_subject_loads(subject: str) -> None:
 
 
 @pytest.mark.parametrize("subject", SUBJECTS)
-def test_real_data_covers_grade1_and_grade2(subject: str) -> None:
+def test_real_data_covers_expected_grades(subject: str) -> None:
+    """每学科覆盖到广东口径要求的起始年级，且每个应有年级都有知识点。"""
     curriculum = get_curriculum(subject)
     grades = {point.grade for point in curriculum.points}
-    assert {"grade1", "grade2"}.issubset(grades), f"{subject} 必须覆盖一年级与二年级"
+    for grade in EXPECTED_GRADES[subject]:
+        assert grade in grades, f"{subject} 缺 {grade} 的知识点"
+    assert len(curriculum.by_grade(EXPECTED_GRADES[subject][-1])) > 0
 
 
 def test_math_covers_all_twelve_grades() -> None:
@@ -110,6 +128,14 @@ def test_math_covers_all_twelve_grades() -> None:
     expected = {f"grade{i}" for i in range(1, 13)}
     missing = expected - grades
     assert not missing, f"数学缺年级：{sorted(missing)}"
+
+
+def test_high_school_elective_subjects_present() -> None:
+    """广东 3+1+2：物理/历史（首选）+ 化学/生物/政治/地理（再选）都必须有高中课程。"""
+    for subject in ("physics", "history", "chemistry", "biology", "politics", "geography"):
+        curriculum = get_curriculum(subject)
+        senior = [p for p in curriculum.points if p.grade in ("grade10", "grade11", "grade12")]
+        assert len(senior) >= 30, f"{subject} 高中知识点过少：{len(senior)}"
 
 
 def test_math_grades_map_to_valid_stages() -> None:

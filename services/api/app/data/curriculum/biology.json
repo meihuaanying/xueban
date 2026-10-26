@@ -1,0 +1,714 @@
+{
+  "schema_version": "1.0",
+  "subject": "biology",
+  "subject_name": "生物",
+  "curriculum_standard": "人教版生物学（初中七至八年级 + 高中必修1/2与选择性必修1/2/3）",
+  "description": "初中（七年级、八年级）与高中（高一至高三）生物知识点树，2026-10。以人教版教材目录为基准，按「单元 → 知识点」两级组织；prerequisites 为知识点 id 列表，构成先修关系；difficulty_band 为难度档（1=识记与观察 2=概念关联与解释 3=实验分析与综合推理）。",
+  "difficulty_bands": {
+    "1": "入门：识记与观察",
+    "2": "基础：概念关联与解释",
+    "3": "进阶：实验分析与综合推理"
+  },
+  "stages": [
+    {
+      "grade": "grade7",
+      "grade_name": "七年级",
+      "units": [
+        {
+          "code": "g7b-u1",
+          "name": "生物和生物圈",
+          "knowledge_points": [
+            {
+              "id": "g7b-bio-features",
+              "name": "生物的基本特征",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "能说出生物的共同特征，并据此判断一个物体是否属于生物。",
+              "question_types": ["choice", "judge", "fill"]
+            },
+            {
+              "id": "g7b-ecosystem-components",
+              "name": "生态系统的组成",
+              "difficulty_band": 2,
+              "prerequisites": ["g7b-bio-features"],
+              "objective": "说出生态系统的组成成分，理解生产者、消费者和分解者之间的关系。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g7b-food-chain",
+              "name": "食物链与食物网",
+              "difficulty_band": 2,
+              "prerequisites": ["g7b-ecosystem-components"],
+              "objective": "能正确书写食物链，分析食物网中某种生物数量变化带来的影响。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g7b-human-activities-biosphere",
+              "name": "人类活动对生物圈的影响",
+              "difficulty_band": 2,
+              "prerequisites": ["g7b-food-chain"],
+              "objective": "举例说明人类活动对生态环境的影响，提出保护生物圈的具体做法。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g7b-u2",
+          "name": "生物体的结构层次",
+          "knowledge_points": [
+            {
+              "id": "g7b-cell-structure",
+              "name": "细胞的基本结构",
+              "difficulty_band": 1,
+              "prerequisites": ["g7b-bio-features"],
+              "objective": "说出动植物细胞的基本结构，比较二者在结构上的主要异同。",
+              "question_types": ["choice", "match", "fill"]
+            },
+            {
+              "id": "g7b-microscope",
+              "name": "显微镜的使用与细胞观察",
+              "difficulty_band": 2,
+              "prerequisites": ["g7b-cell-structure"],
+              "objective": "掌握显微镜的操作步骤，能制作临时装片并观察细胞结构。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g7b-cell-division-differentiation",
+              "name": "细胞分裂与分化",
+              "difficulty_band": 2,
+              "prerequisites": ["g7b-cell-structure"],
+              "objective": "描述细胞分裂和分化的过程，说明组织形成的原因。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g7b-u3",
+          "name": "生物圈中的绿色植物",
+          "knowledge_points": [
+            {
+              "id": "g7b-seed-germination",
+              "name": "种子的结构与萌发",
+              "difficulty_band": 1,
+              "prerequisites": ["g7b-cell-division-differentiation"],
+              "objective": "说出菜豆种子和玉米种子的结构，说明种子萌发所需的外界条件。",
+              "question_types": ["choice", "match", "fill"]
+            },
+            {
+              "id": "g7b-photosynthesis",
+              "name": "绿色植物的光合作用",
+              "difficulty_band": 3,
+              "prerequisites": ["g7b-seed-germination"],
+              "objective": "说明光合作用的原料、产物和场所，能设计实验验证光合作用的条件。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g7b-respiration-transpiration",
+              "name": "呼吸作用与蒸腾作用",
+              "difficulty_band": 3,
+              "prerequisites": ["g7b-photosynthesis"],
+              "objective": "比较光合作用与呼吸作用，说明蒸腾作用对植物生活的意义。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g7b-u4",
+          "name": "人体生理与健康",
+          "knowledge_points": [
+            {
+              "id": "g7b-human-digestion",
+              "name": "人体的营养与消化",
+              "difficulty_band": 2,
+              "prerequisites": ["g7b-cell-division-differentiation"],
+              "objective": "说出人体需要的营养物质，概述消化系统的组成和食物的消化过程。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g7b-human-breathing",
+              "name": "人体的呼吸",
+              "difficulty_band": 2,
+              "prerequisites": ["g7b-human-digestion"],
+              "objective": "描述呼吸系统的组成，说明肺泡与气体交换相适应的结构特点。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g7b-human-circulation",
+              "name": "血液循环",
+              "difficulty_band": 3,
+              "prerequisites": ["g7b-human-breathing"],
+              "objective": "说出心脏的结构和血管类型，概述体循环与肺循环的途径。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g7b-human-nerve-hormone",
+              "name": "神经调节与激素调节",
+              "difficulty_band": 3,
+              "prerequisites": ["g7b-human-circulation"],
+              "objective": "说明神经调节的基本方式，举例说明激素对人体生命活动的调节。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade8",
+      "grade_name": "八年级",
+      "units": [
+        {
+          "code": "g8b-u1",
+          "name": "动物的主要类群与运动行为",
+          "knowledge_points": [
+            {
+              "id": "g8b-animal-groups",
+              "name": "动物的主要类群",
+              "difficulty_band": 1,
+              "prerequisites": ["g7b-cell-structure"],
+              "objective": "概述无脊椎动物和脊椎动物主要类群的特征，能对常见动物进行分类。",
+              "question_types": ["choice", "match", "judge"]
+            },
+            {
+              "id": "g8b-animal-movement",
+              "name": "动物的运动",
+              "difficulty_band": 2,
+              "prerequisites": ["g8b-animal-groups"],
+              "objective": "说出哺乳动物运动系统的组成，说明骨、关节和肌肉的协调配合。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g8b-animal-behavior",
+              "name": "动物的行为",
+              "difficulty_band": 2,
+              "prerequisites": ["g8b-animal-movement"],
+              "objective": "区分先天性行为和学习行为，举例说明社会行为的主要特征。",
+              "question_types": ["choice", "judge", "match"]
+            }
+          ]
+        },
+        {
+          "code": "g8b-u2",
+          "name": "细菌、真菌与生物多样性",
+          "knowledge_points": [
+            {
+              "id": "g8b-bacteria-fungi",
+              "name": "细菌和真菌",
+              "difficulty_band": 1,
+              "prerequisites": ["g7b-cell-structure"],
+              "objective": "描述细菌和真菌的形态结构与营养方式，比较二者与动植物细胞的区别。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g8b-virus",
+              "name": "病毒",
+              "difficulty_band": 2,
+              "prerequisites": ["g8b-bacteria-fungi"],
+              "objective": "说明病毒的结构特点和繁殖方式，举例说出病毒与人类生活的关系。",
+              "question_types": ["choice", "judge", "fill"]
+            },
+            {
+              "id": "g8b-biodiversity",
+              "name": "生物多样性的内涵",
+              "difficulty_band": 2,
+              "prerequisites": ["g8b-animal-groups", "g8b-bacteria-fungi"],
+              "objective": "说出生物多样性的三个层次，举例说明我国生物多样性的特点。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g8b-biodiversity-protection",
+              "name": "生物多样性的保护",
+              "difficulty_band": 2,
+              "prerequisites": ["g8b-biodiversity"],
+              "objective": "分析生物多样性面临威胁的原因，提出保护生物多样性的具体措施。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8b-u3",
+          "name": "生物的生殖和发育",
+          "knowledge_points": [
+            {
+              "id": "g8b-plant-reproduction",
+              "name": "植物的生殖",
+              "difficulty_band": 2,
+              "prerequisites": ["g7b-photosynthesis"],
+              "objective": "区分植物的有性生殖和无性生殖，说明嫁接、扦插等常用方法。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g8b-animal-reproduction",
+              "name": "动物的生殖和发育",
+              "difficulty_band": 2,
+              "prerequisites": ["g8b-animal-groups"],
+              "objective": "概述昆虫、两栖动物和鸟类的生殖发育过程，说明变态发育的特点。",
+              "question_types": ["choice", "judge", "fill"]
+            },
+            {
+              "id": "g8b-human-reproduction",
+              "name": "人的生殖和发育",
+              "difficulty_band": 2,
+              "prerequisites": ["g7b-human-circulation"],
+              "objective": "描述人体生殖系统的组成，说明受精和胚胎发育的基本过程。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g8b-u4",
+          "name": "遗传、进化与健康",
+          "knowledge_points": [
+            {
+              "id": "g8b-genetics-basics",
+              "name": "基因控制生物的性状",
+              "difficulty_band": 3,
+              "prerequisites": ["g8b-plant-reproduction", "g8b-animal-reproduction"],
+              "objective": "说明基因控制生物的性状，概述基因在亲子代间传递的途径。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g8b-heredity-variation",
+              "name": "遗传与变异",
+              "difficulty_band": 3,
+              "prerequisites": ["g8b-genetics-basics"],
+              "objective": "区分可遗传变异和不可遗传变异，举例说明遗传变异在育种中的应用。",
+              "question_types": ["choice", "judge", "fill"]
+            },
+            {
+              "id": "g8b-origin-evolution",
+              "name": "生命的起源与生物进化",
+              "difficulty_band": 2,
+              "prerequisites": ["g8b-heredity-variation"],
+              "objective": "概述生命起源的过程和生物进化的证据，说明自然选择学说的要点。",
+              "question_types": ["choice", "judge", "fill"]
+            },
+            {
+              "id": "g8b-infectious-immunity",
+              "name": "传染病与免疫",
+              "difficulty_band": 2,
+              "prerequisites": ["g8b-bacteria-fungi", "g8b-virus"],
+              "objective": "说明传染病流行的三个环节，概述人体免疫的类型和计划免疫的意义。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade10",
+      "grade_name": "高一",
+      "units": [
+        {
+          "code": "g10b-u1",
+          "name": "细胞的分子组成",
+          "knowledge_points": [
+            {
+              "id": "g10b-elements-compounds",
+              "name": "细胞中的元素和化合物",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "说出细胞中的元素和化合物种类，说明水和无机盐在细胞中的作用。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g10b-proteins",
+              "name": "蛋白质",
+              "difficulty_band": 2,
+              "prerequisites": ["g10b-elements-compounds"],
+              "objective": "说明蛋白质的元素组成、基本单位和结构多样性，举例说明其功能。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g10b-nucleic-acids",
+              "name": "核酸",
+              "difficulty_band": 2,
+              "prerequisites": ["g10b-elements-compounds"],
+              "objective": "比较 DNA 与 RNA 的组成和结构，说明核酸在细胞中的功能。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g10b-carbs-lipids",
+              "name": "糖类和脂质",
+              "difficulty_band": 2,
+              "prerequisites": ["g10b-elements-compounds"],
+              "objective": "说出糖类和脂质的种类，说明其在细胞生命活动中的作用。",
+              "question_types": ["choice", "fill", "match"]
+            }
+          ]
+        },
+        {
+          "code": "g10b-u2",
+          "name": "细胞的结构与功能",
+          "knowledge_points": [
+            {
+              "id": "g10b-cell-membrane",
+              "name": "细胞膜与物质跨膜运输",
+              "difficulty_band": 2,
+              "prerequisites": ["g10b-proteins"],
+              "objective": "说明细胞膜的流动镶嵌模型，举例说明物质跨膜运输的方式。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g10b-organelles",
+              "name": "细胞器之间的分工合作",
+              "difficulty_band": 2,
+              "prerequisites": ["g10b-proteins"],
+              "objective": "说出主要细胞器的结构和功能，理解细胞器之间的分工合作。",
+              "question_types": ["choice", "match", "fill"]
+            },
+            {
+              "id": "g10b-nucleus",
+              "name": "细胞核的结构和功能",
+              "difficulty_band": 2,
+              "prerequisites": ["g10b-nucleic-acids"],
+              "objective": "说明细胞核的结构和功能，理解核孔与核仁在细胞中的作用。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g10b-u3",
+          "name": "细胞的代谢",
+          "knowledge_points": [
+            {
+              "id": "g10b-enzymes",
+              "name": "酶与酶促反应",
+              "difficulty_band": 2,
+              "prerequisites": ["g10b-proteins"],
+              "objective": "说明酶的本质、特性及影响酶活性的因素，能分析相关实验。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g10b-atp",
+              "name": "ATP 与细胞的能量供应",
+              "difficulty_band": 2,
+              "prerequisites": ["g10b-enzymes"],
+              "objective": "说明 ATP 的结构和功能，概述 ATP 与 ADP 的相互转化。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g10b-cellular-respiration",
+              "name": "细胞呼吸",
+              "difficulty_band": 3,
+              "prerequisites": ["g10b-atp", "g10b-organelles"],
+              "objective": "概述有氧呼吸和无氧呼吸的过程，比较二者的场所、产物和能量释放。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g10b-photosynthesis",
+              "name": "光合作用",
+              "difficulty_band": 3,
+              "prerequisites": ["g10b-atp", "g10b-organelles"],
+              "objective": "说明光合作用的色素、场所和过程，分析影响光合作用速率的环境因素。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g10b-u4",
+          "name": "细胞的生命历程",
+          "knowledge_points": [
+            {
+              "id": "g10b-cell-cycle",
+              "name": "细胞周期",
+              "difficulty_band": 2,
+              "prerequisites": ["g10b-nucleus"],
+              "objective": "说明细胞周期的概念和各阶段的主要特点。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g10b-mitosis",
+              "name": "有丝分裂",
+              "difficulty_band": 3,
+              "prerequisites": ["g10b-cell-cycle"],
+              "objective": "描述有丝分裂各时期的染色体变化，说明有丝分裂的生物学意义。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g10b-differentiation-apoptosis",
+              "name": "细胞分化与细胞凋亡",
+              "difficulty_band": 2,
+              "prerequisites": ["g10b-mitosis"],
+              "objective": "说明细胞分化的实质和细胞凋亡的意义，区分细胞坏死与细胞凋亡。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade11",
+      "grade_name": "高二",
+      "units": [
+        {
+          "code": "g11b-u1",
+          "name": "遗传的基本规律",
+          "knowledge_points": [
+            {
+              "id": "g11b-mendel-laws",
+              "name": "孟德尔的分离定律与自由组合定律",
+              "difficulty_band": 2,
+              "prerequisites": ["g10b-mitosis"],
+              "objective": "阐明分离定律和自由组合定律，会用假说—演绎法分析杂交实验。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g11b-gene-chromosome",
+              "name": "基因在染色体上与减数分裂",
+              "difficulty_band": 2,
+              "prerequisites": ["g11b-mendel-laws"],
+              "objective": "说明基因与染色体的关系，概述减数分裂过程中染色体的行为变化。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g11b-sex-linked",
+              "name": "伴性遗传",
+              "difficulty_band": 3,
+              "prerequisites": ["g11b-gene-chromosome"],
+              "objective": "说明伴性遗传的特点，能分析红绿色盲等遗传系谱。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g11b-u2",
+          "name": "基因的本质与表达",
+          "knowledge_points": [
+            {
+              "id": "g11b-dna-structure",
+              "name": "DNA 的结构",
+              "difficulty_band": 2,
+              "prerequisites": ["g10b-nucleic-acids"],
+              "objective": "说明 DNA 双螺旋结构的主要特点，理解碱基互补配对原则。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g11b-dna-replication",
+              "name": "DNA 的复制",
+              "difficulty_band": 2,
+              "prerequisites": ["g11b-dna-structure"],
+              "objective": "概述 DNA 半保留复制的过程和特点，理解其生物学意义。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g11b-gene-expression",
+              "name": "基因的表达",
+              "difficulty_band": 3,
+              "prerequisites": ["g11b-dna-replication"],
+              "objective": "说明转录和翻译的过程，概述中心法则的内容。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g11b-u3",
+          "name": "变异与进化",
+          "knowledge_points": [
+            {
+              "id": "g11b-mutation-recombination",
+              "name": "基因突变、基因重组与染色体变异",
+              "difficulty_band": 3,
+              "prerequisites": ["g11b-gene-expression"],
+              "objective": "说明基因突变、基因重组和染色体变异的类型及特点。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g11b-evolution-theory",
+              "name": "现代生物进化理论",
+              "difficulty_band": 2,
+              "prerequisites": ["g11b-mutation-recombination"],
+              "objective": "说明现代生物进化理论的主要内容，理解种群基因频率的变化。",
+              "question_types": ["choice", "judge", "fill"]
+            },
+            {
+              "id": "g11b-species-formation",
+              "name": "隔离与物种形成",
+              "difficulty_band": 3,
+              "prerequisites": ["g11b-evolution-theory"],
+              "objective": "说明隔离与物种形成的关系，概述共同进化与生物多样性的形成。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g11b-u4",
+          "name": "稳态与神经调节",
+          "knowledge_points": [
+            {
+              "id": "g11b-homeostasis",
+              "name": "内环境与稳态",
+              "difficulty_band": 2,
+              "prerequisites": ["g10b-cell-membrane"],
+              "objective": "说明内环境的组成和理化性质，概述稳态的调节机制。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g11b-neural-regulation",
+              "name": "神经调节",
+              "difficulty_band": 3,
+              "prerequisites": ["g11b-homeostasis"],
+              "objective": "说明神经冲动的产生和传导，概述突触传递和反射弧的结构。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g11b-endocrine",
+              "name": "体液调节",
+              "difficulty_band": 3,
+              "prerequisites": ["g11b-neural-regulation"],
+              "objective": "说明激素调节的特点，概述血糖、体温和水平衡的调节过程。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g11b-u5",
+          "name": "免疫与植物生命活动调节",
+          "knowledge_points": [
+            {
+              "id": "g11b-immune",
+              "name": "免疫调节",
+              "difficulty_band": 2,
+              "prerequisites": ["g11b-homeostasis"],
+              "objective": "说明免疫系统的组成和功能，区分特异性免疫与非特异性免疫。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g11b-plant-hormones",
+              "name": "植物生命活动的调节",
+              "difficulty_band": 2,
+              "prerequisites": ["g11b-homeostasis"],
+              "objective": "说明生长素等植物激素的作用及特点，概述植物生长调节剂的应用。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade12",
+      "grade_name": "高三",
+      "units": [
+        {
+          "code": "g12b-u1",
+          "name": "种群与群落",
+          "knowledge_points": [
+            {
+              "id": "g12b-population",
+              "name": "种群的数量特征与数量变化",
+              "difficulty_band": 2,
+              "prerequisites": ["g11b-evolution-theory"],
+              "objective": "说明种群的数量特征和增长模型，能分析种群数量的变化。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g12b-community",
+              "name": "群落的结构与演替",
+              "difficulty_band": 2,
+              "prerequisites": ["g12b-population"],
+              "objective": "说明群落的物种组成、种间关系和空间结构，概述群落演替的类型。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g12b-ecosystem-hs",
+              "name": "生态系统的结构与稳定性",
+              "difficulty_band": 3,
+              "prerequisites": ["g12b-community"],
+              "objective": "说明生态系统的组成和结构，理解生态系统具有一定的自我调节能力。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g12b-u2",
+          "name": "生态系统与环境保护",
+          "knowledge_points": [
+            {
+              "id": "g12b-energy-flow",
+              "name": "生态系统的能量流动",
+              "difficulty_band": 3,
+              "prerequisites": ["g12b-ecosystem-hs"],
+              "objective": "说明能量流动的过程和特点，能计算简单的能量传递效率。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g12b-substance-cycle",
+              "name": "生态系统的物质循环",
+              "difficulty_band": 3,
+              "prerequisites": ["g12b-ecosystem-hs"],
+              "objective": "说明碳循环等物质循环的过程和特点，理解物质循环与能量流动的关系。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g12b-ecological-protection",
+              "name": "生态环境保护与可持续发展",
+              "difficulty_band": 2,
+              "prerequisites": ["g12b-ecosystem-hs"],
+              "objective": "说明生态环境的保护措施，理解生物多样性的价值与可持续发展的意义。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g12b-u3",
+          "name": "发酵工程与细胞工程",
+          "knowledge_points": [
+            {
+              "id": "g12b-fermentation",
+              "name": "发酵工程",
+              "difficulty_band": 2,
+              "prerequisites": ["g10b-enzymes"],
+              "objective": "说明传统发酵技术和微生物培养的基本操作，概述发酵工程的生产流程。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g12b-cell-engineering",
+              "name": "细胞工程",
+              "difficulty_band": 3,
+              "prerequisites": ["g10b-differentiation-apoptosis", "g11b-gene-expression"],
+              "objective": "说明植物组织培养和动物细胞培养的条件，概述细胞融合与核移植技术。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g12b-embryo-engineering",
+              "name": "胚胎工程",
+              "difficulty_band": 3,
+              "prerequisites": ["g12b-cell-engineering"],
+              "objective": "说明胚胎工程的主要技术，理解胚胎移植和胚胎分割的应用。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g12b-u4",
+          "name": "基因工程与生物技术安全",
+          "knowledge_points": [
+            {
+              "id": "g12b-gene-engineering",
+              "name": "基因工程",
+              "difficulty_band": 3,
+              "prerequisites": ["g11b-gene-expression"],
+              "objective": "概述基因工程的工具和操作步骤，说明目的基因的获取与检测方法。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g12b-biotech-applications",
+              "name": "生物技术的应用",
+              "difficulty_band": 2,
+              "prerequisites": ["g12b-gene-engineering"],
+              "objective": "举例说明基因工程在农业、医药等领域的应用。",
+              "question_types": ["choice", "judge", "fill"]
+            },
+            {
+              "id": "g12b-biotech-safety",
+              "name": "生物技术安全与伦理",
+              "difficulty_band": 2,
+              "prerequisites": ["g12b-biotech-applications"],
+              "objective": "说明转基因生物的安全性问题，理解生物技术伦理与我国的相关法规。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,708 @@
+{
+  "schema_version": "1.0",
+  "subject": "physics",
+  "subject_name": "物理",
+  "curriculum_standard": "人教版物理（初中八年级起 + 高中）",
+  "description": "八年级至高三知识点树（广东中考/高考口径，2026-10）。以人教版教材目录为基准，按「单元 → 知识点」两级组织；prerequisites 为知识点 id 列表，构成先修关系；difficulty_band 为难度档（1=入门 2=基础 3=进阶）。",
+  "difficulty_bands": {
+    "1": "入门：直接感知与单一概念",
+    "2": "基础：理解规律并能独立套用",
+    "3": "进阶：综合建模与多步推理"
+  },
+  "stages": [
+    {
+      "grade": "grade8",
+      "grade_name": "八年级",
+      "units": [
+        {
+          "code": "g8p-u1",
+          "name": "机械运动与声现象",
+          "knowledge_points": [
+            {
+              "id": "g8p-measurement",
+              "name": "长度与时间的测量",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "会正确使用刻度尺与停表，知道测量结果由数值和单位组成，会估读与求平均值。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8p-motion-description",
+              "name": "运动的描述",
+              "difficulty_band": 1,
+              "prerequisites": ["g8p-measurement"],
+              "objective": "理解参照物与机械运动，能判断物体是运动还是静止。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g8p-speed",
+              "name": "速度与平均速度",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-motion-description"],
+              "objective": "理解速度的定义，会用 v=s/t 及变形公式进行简单计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8p-sound",
+              "name": "声现象",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-speed"],
+              "objective": "知道声音的产生与传播条件，理解音调、响度、音色，知道噪声控制途径。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g8p-u2",
+          "name": "物态变化",
+          "knowledge_points": [
+            {
+              "id": "g8p-temperature",
+              "name": "温度与温度计",
+              "difficulty_band": 1,
+              "prerequisites": ["g8p-measurement"],
+              "objective": "知道温度的概念与摄氏温度的规定，会正确使用温度计。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8p-melting-solidification",
+              "name": "熔化和凝固",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-temperature"],
+              "objective": "理解晶体与非晶体的熔化凝固特点，会读熔化曲线。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8p-vaporization-liquefaction",
+              "name": "汽化和液化",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-melting-solidification"],
+              "objective": "理解蒸发与沸腾的区别及影响因素，知道液化的两种方法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8p-sublimation",
+              "name": "升华和凝华",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-vaporization-liquefaction"],
+              "objective": "能判断生活中的升华与凝华现象并解释其吸放热。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g8p-u3",
+          "name": "光现象与透镜",
+          "knowledge_points": [
+            {
+              "id": "g8p-light-propagation",
+              "name": "光的直线传播",
+              "difficulty_band": 1,
+              "prerequisites": ["g8p-sound"],
+              "objective": "知道光在同种均匀介质中沿直线传播，能解释影子、小孔成像等现象。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8p-reflection",
+              "name": "光的反射与平面镜成像",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-light-propagation"],
+              "objective": "掌握光的反射定律，理解平面镜成像特点并会作图。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8p-refraction",
+              "name": "光的折射",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-reflection"],
+              "objective": "理解光的折射规律，能解释水中筷子变弯、池水变浅等现象。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8p-lens-imaging",
+              "name": "凸透镜成像规律",
+              "difficulty_band": 3,
+              "prerequisites": ["g8p-refraction"],
+              "objective": "掌握凸透镜成像规律及其应用（照相机、投影仪、放大镜）。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8p-u4",
+          "name": "质量密度与力",
+          "knowledge_points": [
+            {
+              "id": "g8p-mass-density",
+              "name": "质量与密度",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-measurement"],
+              "objective": "理解质量与密度的概念，会用天平和量筒测密度并进行计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8p-force",
+              "name": "力、弹力与重力",
+              "difficulty_band": 1,
+              "prerequisites": ["g8p-mass-density"],
+              "objective": "理解力的作用效果与三要素，知道弹力与重力的产生及方向。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8p-newton-first",
+              "name": "牛顿第一定律与惯性",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-force"],
+              "objective": "理解牛顿第一定律与惯性，能解释生活中的惯性现象。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g8p-balance-friction",
+              "name": "二力平衡与摩擦力",
+              "difficulty_band": 3,
+              "prerequisites": ["g8p-newton-first"],
+              "objective": "掌握二力平衡条件，理解滑动摩擦力的影响因素与增大减小方法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8p-pressure",
+              "name": "压强",
+              "difficulty_band": 2,
+              "prerequisites": ["g8p-balance-friction"],
+              "objective": "理解压强概念，掌握固体、液体压强与大气压的简单计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8p-buoyancy",
+              "name": "浮力",
+              "difficulty_band": 3,
+              "prerequisites": ["g8p-pressure"],
+              "objective": "理解阿基米德原理与物体浮沉条件，会进行浮力计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8p-work-energy",
+              "name": "功、功率与机械能",
+              "difficulty_band": 3,
+              "prerequisites": ["g8p-buoyancy"],
+              "objective": "理解功与功率的概念，知道动能、势能与机械能的转化。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8p-simple-machines",
+              "name": "简单机械与机械效率",
+              "difficulty_band": 3,
+              "prerequisites": ["g8p-work-energy"],
+              "objective": "理解杠杆平衡条件与滑轮组特点，会计算机械效率。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade9",
+      "grade_name": "九年级",
+      "units": [
+        {
+          "code": "g9p-u1",
+          "name": "内能与热机",
+          "knowledge_points": [
+            {
+              "id": "g9p-molecular-motion",
+              "name": "分子热运动",
+              "difficulty_band": 1,
+              "prerequisites": ["g8p-mass-density"],
+              "objective": "知道物质的分子构成与热运动，能解释扩散现象。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g9p-internal-energy",
+              "name": "内能与比热容",
+              "difficulty_band": 2,
+              "prerequisites": ["g9p-molecular-motion"],
+              "objective": "理解内能的概念与改变方式，会用比热容进行热量计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9p-heat-engine",
+              "name": "热机与热机效率",
+              "difficulty_band": 2,
+              "prerequisites": ["g9p-internal-energy"],
+              "objective": "了解四冲程内燃机的工作过程，理解热机效率与燃料热值。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9p-u2",
+          "name": "电流与电路",
+          "knowledge_points": [
+            {
+              "id": "g9p-charge-current",
+              "name": "电荷与电流",
+              "difficulty_band": 1,
+              "prerequisites": ["g9p-heat-engine"],
+              "objective": "知道两种电荷与电流的形成，会用电流表测电流。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9p-series-parallel",
+              "name": "串联与并联电路",
+              "difficulty_band": 2,
+              "prerequisites": ["g9p-charge-current"],
+              "objective": "会连接串并联电路，掌握串并联电路电流与电压规律。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9p-ohms-law",
+              "name": "欧姆定律",
+              "difficulty_band": 3,
+              "prerequisites": ["g9p-series-parallel"],
+              "objective": "理解欧姆定律，会用伏安法测电阻并进行简单计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9p-electric-power",
+              "name": "电功率与焦耳定律",
+              "difficulty_band": 3,
+              "prerequisites": ["g9p-ohms-law"],
+              "objective": "理解电功与电功率，会进行电功率与电热的计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9p-home-electricity",
+              "name": "家庭电路与安全用电",
+              "difficulty_band": 2,
+              "prerequisites": ["g9p-electric-power"],
+              "objective": "了解家庭电路组成，知道安全用电与触电急救常识。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g9p-u3",
+          "name": "电与磁、信息与能源",
+          "knowledge_points": [
+            {
+              "id": "g9p-magnetism",
+              "name": "磁场与电生磁",
+              "difficulty_band": 2,
+              "prerequisites": ["g9p-ohms-law"],
+              "objective": "知道磁体与磁场，理解电流的磁效应与电磁铁。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9p-electromagnetic-induction",
+              "name": "磁生电与发电机",
+              "difficulty_band": 3,
+              "prerequisites": ["g9p-magnetism"],
+              "objective": "理解电磁感应现象，知道发电机与电动机的原理区别。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g9p-information",
+              "name": "信息的传递",
+              "difficulty_band": 1,
+              "prerequisites": ["g9p-electromagnetic-induction"],
+              "objective": "了解电磁波与通信方式，知道光纤与网络通信的基本常识。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g9p-energy-sustainability",
+              "name": "能源与可持续发展",
+              "difficulty_band": 2,
+              "prerequisites": ["g9p-information"],
+              "objective": "了解能源分类与能量转化，理解节能与可持续发展的意义。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade10",
+      "grade_name": "高一",
+      "units": [
+        {
+          "code": "g10p-u1",
+          "name": "运动的描述与匀变速直线运动",
+          "knowledge_points": [
+            {
+              "id": "g10p-kinematics-concepts",
+              "name": "质点、参考系与位移",
+              "difficulty_band": 1,
+              "prerequisites": ["g8p-speed"],
+              "objective": "理解质点、参考系、位移与路程，能区分矢量与标量。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g10p-velocity-acceleration",
+              "name": "速度与加速度",
+              "difficulty_band": 2,
+              "prerequisites": ["g10p-kinematics-concepts"],
+              "objective": "理解瞬时速度与加速度，会由 v-t 图象分析运动。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10p-uniform-acceleration",
+              "name": "匀变速直线运动规律",
+              "difficulty_band": 3,
+              "prerequisites": ["g10p-velocity-acceleration"],
+              "objective": "掌握匀变速直线运动的速度公式与位移公式，会解决追及相遇问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10p-free-fall",
+              "name": "自由落体运动",
+              "difficulty_band": 2,
+              "prerequisites": ["g10p-uniform-acceleration"],
+              "objective": "理解自由落体运动的特点，会用相应规律进行计算。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g10p-u2",
+          "name": "相互作用与牛顿运动定律",
+          "knowledge_points": [
+            {
+              "id": "g10p-force-types",
+              "name": "重力、弹力与摩擦力",
+              "difficulty_band": 2,
+              "prerequisites": ["g10p-kinematics-concepts"],
+              "objective": "掌握三种常见力的产生条件、方向与大小计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10p-force-composition",
+              "name": "力的合成与分解",
+              "difficulty_band": 3,
+              "prerequisites": ["g10p-force-types"],
+              "objective": "会用平行四边形定则进行力的合成与分解。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10p-newton-laws",
+              "name": "牛顿运动定律",
+              "difficulty_band": 3,
+              "prerequisites": ["g10p-force-composition"],
+              "objective": "理解牛顿三定律，能用牛顿第二定律解决动力学问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10p-overweight",
+              "name": "超重与失重",
+              "difficulty_band": 2,
+              "prerequisites": ["g10p-newton-laws"],
+              "objective": "理解超重与失重现象的本质，会分析电梯等情境中的受力。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g10p-u3",
+          "name": "曲线运动与万有引力",
+          "knowledge_points": [
+            {
+              "id": "g10p-curvilinear",
+              "name": "曲线运动与运动的合成分解",
+              "difficulty_band": 3,
+              "prerequisites": ["g10p-newton-laws"],
+              "objective": "理解曲线运动的条件，会用运动的合成与分解分析问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10p-projectile",
+              "name": "平抛运动",
+              "difficulty_band": 3,
+              "prerequisites": ["g10p-curvilinear"],
+              "objective": "掌握平抛运动的分解方法与规律，会计算飞行时间与水平位移。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10p-circular-motion",
+              "name": "圆周运动",
+              "difficulty_band": 3,
+              "prerequisites": ["g10p-curvilinear"],
+              "objective": "理解线速度、角速度、周期与向心加速度，会分析向心力来源。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10p-gravitation",
+              "name": "万有引力与航天",
+              "difficulty_band": 3,
+              "prerequisites": ["g10p-circular-motion"],
+              "objective": "掌握万有引力定律，会分析卫星运行与宇宙速度问题。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade11",
+      "grade_name": "高二",
+      "units": [
+        {
+          "code": "g11p-u1",
+          "name": "机械能守恒与动量",
+          "knowledge_points": [
+            {
+              "id": "g11p-work-power",
+              "name": "功与功率",
+              "difficulty_band": 2,
+              "prerequisites": ["g10p-newton-laws"],
+              "objective": "理解功与功率的定义，会计算机车的牵引力与额定功率问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11p-kinetic-theorem",
+              "name": "动能定理",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-work-power"],
+              "objective": "理解动能定理，会用其解决多过程做功问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11p-mechanical-energy",
+              "name": "机械能守恒定律",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-kinetic-theorem"],
+              "objective": "理解机械能守恒的条件，会用它分析系统能量转化。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11p-momentum",
+              "name": "动量定理与动量守恒",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-mechanical-energy"],
+              "objective": "理解冲量与动量，掌握动量守恒定律及其适用条件。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11p-collision",
+              "name": "碰撞与反冲",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-momentum"],
+              "objective": "会分析弹性碰撞与非弹性碰撞，理解反冲现象。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g11p-u2",
+          "name": "电场与恒定电流",
+          "knowledge_points": [
+            {
+              "id": "g11p-coulomb",
+              "name": "库仑定律与电场强度",
+              "difficulty_band": 3,
+              "prerequisites": ["g9p-charge-current"],
+              "objective": "掌握库仑定律，理解电场强度与电场线。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11p-potential",
+              "name": "电势能与电势",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-coulomb"],
+              "objective": "理解电势能、电势与电势差，会分析电场力做功。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11p-capacitor",
+              "name": "电容器与带电粒子在电场中的运动",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-potential"],
+              "objective": "理解电容器的电容，会分析带电粒子在电场中的加速与偏转。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11p-circuits",
+              "name": "闭合电路欧姆定律",
+              "difficulty_band": 3,
+              "prerequisites": ["g9p-ohms-law"],
+              "objective": "掌握闭合电路欧姆定律，会分析路端电压与电源效率。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11p-magnetic-field",
+              "name": "磁场与安培力",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-circuits"],
+              "objective": "理解磁感应强度与安培力，会用左手定则判断方向。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11p-lorentz",
+              "name": "洛伦兹力与带电粒子在磁场中的运动",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-magnetic-field"],
+              "objective": "掌握洛伦兹力，会分析带电粒子在匀强磁场中的圆周运动。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g11p-u3",
+          "name": "电磁感应与交变电流",
+          "knowledge_points": [
+            {
+              "id": "g11p-induction-law",
+              "name": "法拉第电磁感应定律",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-lorentz"],
+              "objective": "理解感应电动势与磁通量变化率的关系，会计算感应电动势。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11p-lenz-law",
+              "name": "楞次定律",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-induction-law"],
+              "objective": "会用楞次定律判断感应电流方向，理解自感现象。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11p-ac-current",
+              "name": "交变电流与变压器",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-lenz-law"],
+              "objective": "理解正弦交变电流的产生与有效值，掌握理想变压器规律。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade12",
+      "grade_name": "高三",
+      "units": [
+        {
+          "code": "g12p-u1",
+          "name": "机械振动与机械波",
+          "knowledge_points": [
+            {
+              "id": "g12p-simple-harmonic",
+              "name": "简谐运动",
+              "difficulty_band": 3,
+              "prerequisites": ["g11p-mechanical-energy"],
+              "objective": "理解简谐运动的特征与图象，会分析回复力与能量转化。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12p-pendulum",
+              "name": "单摆与受迫振动",
+              "difficulty_band": 3,
+              "prerequisites": ["g12p-simple-harmonic"],
+              "objective": "掌握单摆周期公式，理解共振与受迫振动。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12p-mechanical-wave",
+              "name": "机械波",
+              "difficulty_band": 3,
+              "prerequisites": ["g12p-simple-harmonic"],
+              "objective": "理解波长、频率与波速的关系，会分析波的图象与传播方向。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12p-wave-phenomena",
+              "name": "波的干涉、衍射与多普勒效应",
+              "difficulty_band": 3,
+              "prerequisites": ["g12p-mechanical-wave"],
+              "objective": "了解波的干涉、衍射与多普勒效应及其条件。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g12p-u2",
+          "name": "光学与近代物理",
+          "knowledge_points": [
+            {
+              "id": "g12p-refraction-total",
+              "name": "光的折射与全反射",
+              "difficulty_band": 3,
+              "prerequisites": ["g8p-lens-imaging"],
+              "objective": "掌握折射定律与全反射条件，会计算临界角。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12p-interference",
+              "name": "光的干涉、衍射与偏振",
+              "difficulty_band": 3,
+              "prerequisites": ["g12p-refraction-total"],
+              "objective": "了解双缝干涉、薄膜干涉与衍射现象，知道光的偏振。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g12p-photoelectric",
+              "name": "光电效应与波粒二象性",
+              "difficulty_band": 3,
+              "prerequisites": ["g12p-interference"],
+              "objective": "理解光电效应规律与爱因斯坦光电方程，知道波粒二象性。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12p-atomic-structure",
+              "name": "原子结构与能级",
+              "difficulty_band": 3,
+              "prerequisites": ["g12p-photoelectric"],
+              "objective": "了解原子核式结构模型与氢原子能级跃迁。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12p-nuclear",
+              "name": "原子核与核反应",
+              "difficulty_band": 3,
+              "prerequisites": ["g12p-atomic-structure"],
+              "objective": "知道天然放射现象、核衰变与核反应方程，理解质能方程。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g12p-u3",
+          "name": "热学与实验",
+          "knowledge_points": [
+            {
+              "id": "g12p-molecular-theory",
+              "name": "分子动理论与内能",
+              "difficulty_band": 2,
+              "prerequisites": ["g9p-internal-energy"],
+              "objective": "理解分子动理论要点，会估算分子大小与阿伏加德罗常数。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12p-gas-laws",
+              "name": "气体实验定律与理想气体",
+              "difficulty_band": 3,
+              "prerequisites": ["g12p-molecular-theory"],
+              "objective": "掌握玻意耳定律、查理定律与理想气体状态方程。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12p-thermodynamics",
+              "name": "热力学定律",
+              "difficulty_band": 3,
+              "prerequisites": ["g12p-gas-laws"],
+              "objective": "理解热力学第一定律与第二定律，会分析能量转化与熵增。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12p-experiments",
+              "name": "高考物理实验综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g12p-mechanical-wave", "g12p-interference"],
+              "objective": "掌握力学与电学核心实验的原理、数据处理与误差分析。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

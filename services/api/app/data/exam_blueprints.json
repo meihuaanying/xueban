@@ -1,0 +1,160 @@
+{
+  "schema_version": "1.0",
+  "region": "guangdong",
+  "year": 2026,
+  "updated_at": "2026-10-26",
+  "note": "结构依据 docs/verification/GD_2026_ALIGNMENT.md 的官方来源整理；confidence=partial 表示官方原文未直接列明或有存疑，使用前请复核。",
+  "exams": [
+    {
+      "id": "gaokao_2026_gd",
+      "name": "广东省 2026 普通高考（3+1+2）",
+      "total_score": 750,
+      "confidence": "verified",
+      "selection": {
+        "first": { "choose": 1, "from": ["physics", "history"], "score_each": 100 },
+        "second": {
+          "choose": 2,
+          "from": ["chemistry", "biology", "politics", "geography"],
+          "score_each": 100
+        }
+      },
+      "notes": "750 = 语数英各 150 + 首选 1 门 100（原始分）+ 再选 2 门各 100（等级赋分）。",
+      "subjects": [
+        {
+          "subject": "chinese",
+          "name": "语文",
+          "paper": "全国卷（教育部教育考试院统一命题）",
+          "score": 150,
+          "duration_minutes": 150,
+          "structure": [
+            { "part": "现代文阅读", "score": 35 },
+            { "part": "古诗文阅读", "score": 35 },
+            { "part": "语言文字运用", "score": 20 },
+            { "part": "写作", "score": 60 }
+          ],
+          "confidence": "partial"
+        },
+        {
+          "subject": "math",
+          "name": "数学",
+          "paper": "全国卷（新高考卷）",
+          "score": 150,
+          "duration_minutes": 120,
+          "structure": [
+            { "part": "单项选择题", "count": 8, "per_score": 5, "score": 40 },
+            { "part": "多项选择题", "count": 3, "per_score": 6, "score": 18 },
+            { "part": "填空题", "count": 3, "per_score": 5, "score": 15 },
+            { "part": "解答题", "count": 5, "scores": [13, 15, 15, 17, 17], "score": 77 }
+          ],
+          "confidence": "partial",
+          "notes": "2026 年全卷保持 19 题；8+3+3+5 的逐项配比来自 2024 起公开结构，2026 官方评析转载未逐项列明。"
+        },
+        {
+          "subject": "english",
+          "name": "英语",
+          "paper": "全国卷（笔试）+ 广东省英语听说考试（单独举行）",
+          "score": 150,
+          "structure": [
+            { "part": "笔试（卷面 120）", "score": 130, "notes": "按 笔试成绩×13÷12 四舍五入折算" },
+            { "part": "英语听说（卷面 60÷3）", "score": 20 }
+          ],
+          "confidence": "partial",
+          "notes": "总分公式 150 = 笔试×13÷12 + 听说；笔试卷面 120 为按公式反推，官方未直接写明。"
+        },
+        {
+          "subject": "physics",
+          "name": "物理（首选科目）",
+          "paper": "广东省自主命题，卷面原始分计入",
+          "score": 100,
+          "confidence": "verified"
+        },
+        {
+          "subject": "history",
+          "name": "历史（首选科目）",
+          "paper": "广东省自主命题，卷面原始分计入",
+          "score": 100,
+          "confidence": "verified"
+        },
+        {
+          "subject": "chemistry",
+          "name": "化学（再选科目）",
+          "paper": "广东省自主命题，等级赋分计入",
+          "score": 100,
+          "confidence": "verified"
+        },
+        {
+          "subject": "biology",
+          "name": "生物学（再选科目）",
+          "paper": "广东省自主命题，等级赋分计入",
+          "score": 100,
+          "confidence": "verified"
+        },
+        {
+          "subject": "politics",
+          "name": "思想政治（再选科目）",
+          "paper": "广东省自主命题，等级赋分计入",
+          "score": 100,
+          "confidence": "verified"
+        },
+        {
+          "subject": "geography",
+          "name": "地理（再选科目）",
+          "paper": "广东省自主命题，等级赋分计入",
+          "score": 100,
+          "confidence": "verified"
+        }
+      ]
+    },
+    {
+      "id": "zhongkao_2026_gd_province",
+      "name": "广东省 2026 初中学业水平考试（省统一命题卷，广州/深圳除外）",
+      "confidence": "verified",
+      "notes": "9 科笔试省级统一命题；广州、深圳自主命题；信息科技、体育与健康、艺术、小语种、外语听说、理化生实验操作由各市自行组织。",
+      "subjects": [
+        { "subject": "chinese", "name": "语文", "score": 120 },
+        { "subject": "math", "name": "数学", "score": 120 },
+        { "subject": "english", "name": "外语", "score": 120, "notes": "含听力或听说 30 分" },
+        { "subject": "physics", "name": "物理", "score": 100, "notes": "实验操作不低于总分 10%" },
+        { "subject": "chemistry", "name": "化学", "score": 100, "notes": "实验操作不低于总分 10%" },
+        { "subject": "biology", "name": "生物学", "score": 100, "notes": "实验操作不低于总分 10%" },
+        { "subject": "history", "name": "历史", "score": 100 },
+        { "subject": "geography", "name": "地理", "score": 100 },
+        { "subject": "politics", "name": "道德与法治", "score": 100 }
+      ]
+    },
+    {
+      "id": "zhongkao_2026_guangzhou",
+      "name": "广州市 2026 中考（自主命题）",
+      "total_score": 810,
+      "confidence": "verified",
+      "notes": "录取计分 8 科；生物/地理不在该计分清单。",
+      "subjects": [
+        { "subject": "chinese", "name": "语文", "score": 120 },
+        { "subject": "math", "name": "数学", "score": 120 },
+        { "subject": "english", "name": "英语", "score": 120, "notes": "含听说 30" },
+        { "subject": "physics", "name": "物理", "score": 100, "notes": "含实验操作 10" },
+        { "subject": "chemistry", "name": "化学", "score": 100, "notes": "含实验操作 10" },
+        { "subject": "politics", "name": "道德与法治", "score": 90 },
+        { "subject": "history", "name": "历史", "score": 90 },
+        { "subject": "pe", "name": "体育与健康", "score": 70, "notes": "含综合评价 20" }
+      ]
+    },
+    {
+      "id": "zhongkao_2026_shenzhen",
+      "name": "深圳市 2026 中考（自主命题，2026 年起新方案）",
+      "total_score": 630,
+      "confidence": "verified",
+      "notes": "地理生物学 100 分（含生物实验操作 5）不计入 630 总分，录取使用以当年招生文件为准。",
+      "subjects": [
+        { "subject": "chinese", "name": "语文", "score": 120 },
+        { "subject": "math", "name": "数学", "score": 100 },
+        { "subject": "english", "name": "外语", "score": 100 },
+        { "subject": "physics_chemistry", "name": "物理化学合卷", "score": 120 },
+        { "subject": "history", "name": "历史", "score": 70 },
+        { "subject": "politics", "name": "道德与法治", "score": 50 },
+        { "subject": "lab", "name": "理化实验操作", "score": 20, "notes": "物理 10 + 化学 10" },
+        { "subject": "pe", "name": "体育与健康", "score": 50 }
+      ]
+    }
+  ]
+}

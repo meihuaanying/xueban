@@ -1,0 +1,728 @@
+{
+  "schema_version": "1.0",
+  "subject": "geography",
+  "subject_name": "地理",
+  "curriculum_standard": "人教版地理（初中七年级起 + 高中必修与选择性必修）",
+  "description": "七年级、八年级、高一、高二、高三知识点树（2026-10）。以人教版教材目录为基准，按「单元 → 知识点」两级组织；prerequisites 为知识点 id 列表，构成先修关系；difficulty_band 为难度档（1=入门 2=基础 3=进阶）。",
+  "difficulty_bands": {
+    "1": "入门：地理事象识记与判读",
+    "2": "基础：原理理解与图表分析",
+    "3": "进阶：综合区域分析与人地协调"
+  },
+  "stages": [
+    {
+      "grade": "grade7",
+      "grade_name": "七年级",
+      "units": [
+        {
+          "code": "g7g-u1",
+          "name": "地球与地图",
+          "knowledge_points": [
+            {
+              "id": "g7g-earth-globe",
+              "name": "地球的形状、大小与地球仪",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "能说出地球的形状与平均半径、赤道周长、表面积，认识地球仪上的地轴、两极与赤道。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g7g-latitude-longitude",
+              "name": "经纬网与经纬度判读",
+              "difficulty_band": 2,
+              "prerequisites": ["g7g-earth-globe"],
+              "objective": "理解经线、纬线、经度、纬度的特点，会在经纬网上判读某点的经纬度并判断东西半球与低中高纬度。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g7g-map-reading",
+              "name": "地图的阅读与等高线地形图",
+              "difficulty_band": 2,
+              "prerequisites": ["g7g-latitude-longitude"],
+              "objective": "掌握比例尺、方向、图例三要素，能判读等高线地形图上的山峰、山谷、山脊、陡崖与坡度陡缓。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g7g-u2",
+          "name": "陆地和海洋",
+          "knowledge_points": [
+            {
+              "id": "g7g-land-sea",
+              "name": "海陆分布与七大洲四大洋",
+              "difficulty_band": 1,
+              "prerequisites": ["g7g-map-reading"],
+              "objective": "能在世界地图上说出七大洲、四大洋的名称、位置与分界线，理解世界海陆分布不均的特点。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g7g-plate-tectonics",
+              "name": "海陆变迁与板块运动",
+              "difficulty_band": 2,
+              "prerequisites": ["g7g-land-sea"],
+              "objective": "能用实例说明海陆变迁，理解板块构造学说的基本观点，并解释火山、地震带与山脉的分布。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g7g-u3",
+          "name": "天气与气候",
+          "knowledge_points": [
+            {
+              "id": "g7g-weather-climate",
+              "name": "天气与气候及常用天气符号",
+              "difficulty_band": 1,
+              "prerequisites": ["g7g-latitude-longitude"],
+              "objective": "能区分天气与气候，识别常用天气符号，并看懂简单的天气预报图。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g7g-temp-precip",
+              "name": "气温与降水的变化和分布",
+              "difficulty_band": 2,
+              "prerequisites": ["g7g-weather-climate"],
+              "objective": "会读气温曲线图和降水量柱状图，归纳世界气温与降水的时间变化和空间分布规律。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7g-climate-types",
+              "name": "世界主要气候类型及分布",
+              "difficulty_band": 3,
+              "prerequisites": ["g7g-temp-precip"],
+              "objective": "掌握热带、亚热带、温带、寒带主要气候类型的特征与分布，能根据气温降水资料判断气候类型。",
+              "question_types": ["choice", "match", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g7g-u4",
+          "name": "居民与聚落、发展与合作",
+          "knowledge_points": [
+            {
+              "id": "g7g-population-race",
+              "name": "人口与人种",
+              "difficulty_band": 1,
+              "prerequisites": ["g7g-climate-types"],
+              "objective": "能说出世界人口增长与分布的特点，辨认三大人种，理解人口问题的表现与对策。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7g-language-religion-settlement",
+              "name": "语言、宗教与聚落",
+              "difficulty_band": 2,
+              "prerequisites": ["g7g-population-race"],
+              "objective": "知道世界主要语言和三大宗教的分布，能区分城市聚落与乡村聚落并分析聚落形成与发展的条件。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g7g-development-cooperation",
+              "name": "发展与合作",
+              "difficulty_band": 2,
+              "prerequisites": ["g7g-language-religion-settlement"],
+              "objective": "能区分发达国家与发展中国家，理解国际经济合作的意义与主要形式。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g7g-u5",
+          "name": "世界区域地理",
+          "knowledge_points": [
+            {
+              "id": "g7g-asia-southeast",
+              "name": "亚洲与东南亚",
+              "difficulty_band": 2,
+              "prerequisites": ["g7g-climate-types"],
+              "objective": "能归纳亚洲的地形、气候、河流特点，说出东南亚的位置、气候、农业与旅游等区域特征。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7g-middle-east-europe",
+              "name": "中东与欧洲西部",
+              "difficulty_band": 3,
+              "prerequisites": ["g7g-asia-southeast"],
+              "objective": "能说明中东地理位置、石油资源与水资源的特点，归纳欧洲西部温带海洋性气候与乳畜业的关系。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7g-africa-polar",
+              "name": "撒哈拉以南非洲与极地地区",
+              "difficulty_band": 3,
+              "prerequisites": ["g7g-middle-east-europe"],
+              "objective": "能归纳撒哈拉以南非洲的自然与人文特征，说出南极、北极地区的自然环境差异与科考价值。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade8",
+      "grade_name": "八年级",
+      "units": [
+        {
+          "code": "g8g-u1",
+          "name": "中国的疆域与人口",
+          "knowledge_points": [
+            {
+              "id": "g8g-territory",
+              "name": "中国的疆域与行政区划",
+              "difficulty_band": 1,
+              "prerequisites": ["g7g-map-reading"],
+              "objective": "能说出中国的纬度位置、海陆位置、领土四至与邻国，记住省级行政区的名称、简称和行政中心。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8g-population-ethnic",
+              "name": "中国的人口与民族",
+              "difficulty_band": 2,
+              "prerequisites": ["g8g-territory", "g7g-population-race"],
+              "objective": "能说明中国人口分布的特点与人口政策，知道 56 个民族及其分布特点。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8g-terrain",
+              "name": "中国的地形与地势",
+              "difficulty_band": 2,
+              "prerequisites": ["g8g-territory"],
+              "objective": "能说出中国地势三级阶梯的界线与特征，识别主要山脉、高原、平原、盆地和丘陵。",
+              "question_types": ["choice", "fill", "match"]
+            }
+          ]
+        },
+        {
+          "code": "g8g-u2",
+          "name": "中国的气候与河流",
+          "knowledge_points": [
+            {
+              "id": "g8g-climate",
+              "name": "中国的气候特征与影响因素",
+              "difficulty_band": 2,
+              "prerequisites": ["g8g-terrain", "g7g-climate-types"],
+              "objective": "能归纳中国气候复杂多样、季风气候显著的特征，分析纬度、海陆、地形等因素对气候的影响。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8g-rivers",
+              "name": "中国的河流与湖泊",
+              "difficulty_band": 2,
+              "prerequisites": ["g8g-climate", "g8g-terrain"],
+              "objective": "能区分内流河与外流河，说出长江、黄河的源流概况、水文特征及治理开发措施。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8g-natural-disasters",
+              "name": "中国的自然灾害",
+              "difficulty_band": 2,
+              "prerequisites": ["g8g-rivers"],
+              "objective": "能说出中国主要气象灾害与地质灾害的分布，理解防灾减灾的基本措施。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g8g-u3",
+          "name": "中国的自然资源与经济发展",
+          "knowledge_points": [
+            {
+              "id": "g8g-land-resources",
+              "name": "中国的土地资源",
+              "difficulty_band": 1,
+              "prerequisites": ["g8g-terrain"],
+              "objective": "能说出中国土地资源的类型、分布与特点，理解珍惜和合理利用土地资源的重要性。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8g-water-resources",
+              "name": "中国的水资源",
+              "difficulty_band": 2,
+              "prerequisites": ["g8g-rivers", "g8g-land-resources"],
+              "objective": "能说明中国水资源时空分布不均的特点，理解跨流域调水与节约用水的意义。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8g-agriculture-industry",
+              "name": "中国的农业与工业",
+              "difficulty_band": 2,
+              "prerequisites": ["g8g-water-resources", "g8g-climate"],
+              "objective": "能说出中国农业与工业的分布特点，理解因地制宜发展农业和工业布局的主要影响因素。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8g-transport",
+              "name": "中国的交通运输",
+              "difficulty_band": 2,
+              "prerequisites": ["g8g-agriculture-industry"],
+              "objective": "能说出中国主要铁路干线、交通枢纽和运输方式的选择原则。",
+              "question_types": ["choice", "fill", "match"]
+            }
+          ]
+        },
+        {
+          "code": "g8g-u4",
+          "name": "中国的地理差异与区域发展",
+          "knowledge_points": [
+            {
+              "id": "g8g-regional-differences",
+              "name": "中国的地理差异与四大地理区域",
+              "difficulty_band": 2,
+              "prerequisites": ["g8g-climate", "g8g-transport"],
+              "objective": "能说出秦岭—淮河一线的地理意义，理解四大地理区域的划分依据与区域差异。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8g-north-south",
+              "name": "北方地区与南方地区",
+              "difficulty_band": 3,
+              "prerequisites": ["g8g-regional-differences"],
+              "objective": "能比较北方地区与南方地区的自然条件、农业生产与居民生活的差异。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8g-northwest-qinghai-tibet",
+              "name": "西北地区与青藏地区",
+              "difficulty_band": 3,
+              "prerequisites": ["g8g-north-south"],
+              "objective": "能归纳西北地区干旱、青藏地区高寒的自然特征，说明其农牧业与生态保护的特点。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8g-provincial-cross-region",
+              "name": "省级区域与跨省区域",
+              "difficulty_band": 3,
+              "prerequisites": ["g8g-northwest-qinghai-tibet", "g8g-north-south"],
+              "objective": "能以北京、台湾、香港和澳门、黄土高原、长江三角洲等为例，分析省级区域与跨省区域的发展条件与问题。",
+              "question_types": ["choice", "fill", "match"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade10",
+      "grade_name": "高一",
+      "units": [
+        {
+          "code": "g10g-u1",
+          "name": "宇宙中的地球",
+          "knowledge_points": [
+            {
+              "id": "g10g-earth-universe",
+              "name": "地球的宇宙环境与太阳对地球的影响",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "能说出天体系统的层级，说明地球是太阳系中一颗普通而特殊的行星，并举例说明太阳辐射与太阳活动对地球的影响。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g10g-earth-history",
+              "name": "地球的历史与圈层结构",
+              "difficulty_band": 1,
+              "prerequisites": ["g10g-earth-universe"],
+              "objective": "知道地质年代表的划分与主要生物演化事件，能说出地球内部圈层与外部圈层的划分依据和特点。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10g-earth-motion",
+              "name": "地球的运动及其地理意义",
+              "difficulty_band": 3,
+              "prerequisites": ["g10g-earth-history", "g7g-latitude-longitude"],
+              "objective": "掌握地球自转与公转的方向、周期和速度，能解释昼夜交替、地方时、正午太阳高度和昼夜长短的变化。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g10g-u2",
+          "name": "地球上的大气",
+          "knowledge_points": [
+            {
+              "id": "g10g-atmosphere",
+              "name": "大气的组成、垂直分层与受热过程",
+              "difficulty_band": 2,
+              "prerequisites": ["g10g-earth-motion"],
+              "objective": "能说出大气的组成与垂直分层特点，用大气受热过程原理解释气温日较差、温室效应等现象。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10g-atmospheric-circulation",
+              "name": "大气环流与气压带、风带",
+              "difficulty_band": 3,
+              "prerequisites": ["g10g-atmosphere", "g7g-climate-types"],
+              "objective": "掌握热力环流原理，能绘制并说明三圈环流、气压带风带的分布与季节移动及其对气候的影响。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10g-weather-systems",
+              "name": "常见天气系统",
+              "difficulty_band": 3,
+              "prerequisites": ["g10g-atmospheric-circulation"],
+              "objective": "能判读锋面、气旋与反气旋的天气图，说明其对天气变化的影响。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g10g-u3",
+          "name": "地球上的水",
+          "knowledge_points": [
+            {
+              "id": "g10g-water-cycle",
+              "name": "水循环及其地理意义",
+              "difficulty_band": 2,
+              "prerequisites": ["g10g-atmosphere"],
+              "objective": "能说出水循环的类型与主要环节，说明水循环对地理环境与人类活动的影响。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10g-ocean-currents",
+              "name": "海水的性质与海水运动",
+              "difficulty_band": 3,
+              "prerequisites": ["g10g-water-cycle"],
+              "objective": "能说出海水温度、盐度、密度的分布规律，说明洋流、波浪、潮汐的成因及其对地理环境的影响。",
+              "question_types": ["choice", "fill", "match"]
+            }
+          ]
+        },
+        {
+          "code": "g10g-u4",
+          "name": "地貌、植被与土壤",
+          "knowledge_points": [
+            {
+              "id": "g10g-landforms",
+              "name": "常见地貌类型与地貌观察",
+              "difficulty_band": 1,
+              "prerequisites": ["g10g-water-cycle"],
+              "objective": "能识别喀斯特、河流、风沙、海岸、冰川等常见地貌，掌握地貌观察的顺序与内容。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g10g-vegetation-soil",
+              "name": "植被与土壤",
+              "difficulty_band": 2,
+              "prerequisites": ["g10g-landforms", "g10g-atmosphere"],
+              "objective": "能说出主要植被类型与环境的关系，理解土壤的组成、形成因素与主要土壤类型的分布。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10g-natural-disasters",
+              "name": "自然灾害与防灾减灾",
+              "difficulty_band": 2,
+              "prerequisites": ["g10g-vegetation-soil", "g10g-weather-systems"],
+              "objective": "能说出主要自然灾害的成因、分布与危害，理解防灾减灾措施与自救互救方法。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g10g-u5",
+          "name": "人口、城镇与产业",
+          "knowledge_points": [
+            {
+              "id": "g10g-population",
+              "name": "人口分布、迁移与合理容量",
+              "difficulty_band": 2,
+              "prerequisites": ["g10g-natural-disasters"],
+              "objective": "能分析影响人口分布与迁移的因素，理解资源环境承载力与人口合理容量的含义。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10g-urbanization",
+              "name": "城镇空间结构与城镇化",
+              "difficulty_band": 2,
+              "prerequisites": ["g10g-population"],
+              "objective": "能说出城镇内部空间结构的特点与形成原因，分析城镇化进程及其带来的问题与对策。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10g-industry-transport",
+              "name": "农业、工业与交通运输布局",
+              "difficulty_band": 3,
+              "prerequisites": ["g10g-urbanization", "g8g-agriculture-industry"],
+              "objective": "能分析农业、工业区位因素及其变化，说明交通运输布局对区域发展的影响。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade11",
+      "grade_name": "高二",
+      "units": [
+        {
+          "code": "g11g-u1",
+          "name": "地球运动与地表形态",
+          "knowledge_points": [
+            {
+              "id": "g11g-earth-motion-advanced",
+              "name": "地球运动的地理意义与时间计算",
+              "difficulty_band": 3,
+              "prerequisites": ["g10g-earth-motion"],
+              "objective": "能进行地方时、区时与日期变更的计算，分析太阳视运动、正午太阳高度与昼夜长短的时空变化。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11g-crust-movement",
+              "name": "内力作用与地表形态",
+              "difficulty_band": 2,
+              "prerequisites": ["g10g-landforms"],
+              "objective": "能说明地壳运动、岩浆活动、变质作用对地表形态的影响，判读褶皱、断层等地质构造。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g11g-external-forces",
+              "name": "外力作用与地表形态",
+              "difficulty_band": 3,
+              "prerequisites": ["g11g-crust-movement"],
+              "objective": "能分析风化、侵蚀、搬运、堆积作用对地表形态的塑造，说明河流地貌与风沙地貌的形成过程。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g11g-u2",
+          "name": "自然地理环境的整体性与差异性",
+          "knowledge_points": [
+            {
+              "id": "g11g-atmosphere-advanced",
+              "name": "大气运动与天气系统的深化",
+              "difficulty_band": 3,
+              "prerequisites": ["g10g-atmospheric-circulation", "g10g-weather-systems"],
+              "objective": "能综合分析气压带风带、季风环流与天气系统对区域气候和天气的影响。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11g-water-advanced",
+              "name": "陆地水体与洋流的综合应用",
+              "difficulty_band": 3,
+              "prerequisites": ["g10g-ocean-currents", "g10g-water-cycle"],
+              "objective": "能分析陆地水体之间的补给关系，说明洋流对气候、渔场、航行和污染扩散的影响。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11g-natural-integrity",
+              "name": "自然地理环境的整体性",
+              "difficulty_band": 2,
+              "prerequisites": ["g11g-external-forces", "g10g-vegetation-soil", "g11g-atmosphere-advanced", "g11g-water-advanced"],
+              "objective": "能运用自然地理要素相互作用原理，分析某一要素变化对其他要素和整体环境的影响。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11g-natural-difference",
+              "name": "自然地理环境的差异性",
+              "difficulty_band": 3,
+              "prerequisites": ["g11g-natural-integrity"],
+              "objective": "能说出由赤道到两极、由沿海到内陆、由山麓到山顶的地域分异规律及其影响因素。",
+              "question_types": ["choice", "match", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g11g-u3",
+          "name": "区域与区域发展",
+          "knowledge_points": [
+            {
+              "id": "g11g-region-concept",
+              "name": "区域的含义与类型",
+              "difficulty_band": 1,
+              "prerequisites": ["g8g-regional-differences"],
+              "objective": "理解区域的含义、特征与划分方法，能区分自然区域、行政区域和经济区域。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g11g-regional-development",
+              "name": "区域发展的条件与差异",
+              "difficulty_band": 2,
+              "prerequisites": ["g11g-region-concept", "g11g-natural-difference"],
+              "objective": "能分析区域发展的自然条件与社会经济条件，比较不同区域的发展水平与产业结构差异。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11g-regional-cooperation",
+              "name": "区域联系与协调发展",
+              "difficulty_band": 3,
+              "prerequisites": ["g11g-regional-development"],
+              "objective": "能说明区域间产业转移、资源调配与协作发展的原因和意义，分析区域协调发展的途径。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g11g-u4",
+          "name": "资源、环境与区域发展",
+          "knowledge_points": [
+            {
+              "id": "g11g-resource-transformation",
+              "name": "资源枯竭型地区的转型发展",
+              "difficulty_band": 2,
+              "prerequisites": ["g11g-regional-development"],
+              "objective": "能以资源型城市为例，分析其发展历程、面临问题与产业转型、生态修复的措施。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11g-ecological-governance",
+              "name": "生态脆弱区的综合治理",
+              "difficulty_band": 3,
+              "prerequisites": ["g11g-natural-difference", "g11g-regional-development"],
+              "objective": "能分析荒漠化、水土流失等生态问题的成因与危害，提出生态脆弱区综合治理的对策。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11g-urban-industry",
+              "name": "城市群与产业转型",
+              "difficulty_band": 3,
+              "prerequisites": ["g11g-resource-transformation", "g10g-urbanization"],
+              "objective": "能说明城市群的形成条件与发展特点，分析区域产业结构升级和产业转型的路径。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade12",
+      "grade_name": "高三",
+      "units": [
+        {
+          "code": "g12g-u1",
+          "name": "自然资源与国家安全",
+          "knowledge_points": [
+            {
+              "id": "g12g-resource-security",
+              "name": "自然资源与国家安全",
+              "difficulty_band": 2,
+              "prerequisites": ["g11g-resource-transformation"],
+              "objective": "理解自然资源安全的内涵，能分析耕地、水资源、矿产、能源等资源安全对国家安全的影响。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12g-energy-security",
+              "name": "中国的能源安全",
+              "difficulty_band": 3,
+              "prerequisites": ["g12g-resource-security"],
+              "objective": "能分析中国能源生产与消费的结构特点、能源安全风险及保障能源安全的措施。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12g-grain-security",
+              "name": "中国的耕地与粮食安全",
+              "difficulty_band": 3,
+              "prerequisites": ["g12g-resource-security"],
+              "objective": "能说明中国耕地资源的特点与粮食安全现状，分析保障粮食安全的主要途径。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12g-marine-security",
+              "name": "海洋资源与海洋权益",
+              "difficulty_band": 2,
+              "prerequisites": ["g12g-resource-security"],
+              "objective": "能说出中国海洋资源的特点与海洋权益的内容，理解维护海洋权益的意义。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g12g-u2",
+          "name": "环境安全与生态保护",
+          "knowledge_points": [
+            {
+              "id": "g12g-environment-security",
+              "name": "环境安全与污染物跨境转移",
+              "difficulty_band": 2,
+              "prerequisites": ["g12g-resource-security"],
+              "objective": "理解环境安全的概念，能分析污染物跨境转移的途径、危害与国际合作治理措施。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g12g-ecological-security",
+              "name": "生态保护与国家安全",
+              "difficulty_band": 3,
+              "prerequisites": ["g12g-environment-security"],
+              "objective": "能说明生态退化对国家安全的影响，理解生态修复、自然保护地体系建设的作用。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12g-climate-security",
+              "name": "全球气候变化与国家安全",
+              "difficulty_band": 3,
+              "prerequisites": ["g12g-ecological-security"],
+              "objective": "能分析全球气候变化的成因、影响与应对措施，理解碳减排与国际合作的意义。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g12g-u3",
+          "name": "区域地理综合",
+          "knowledge_points": [
+            {
+              "id": "g12g-world-regions",
+              "name": "世界主要区域地理特征综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g7g-africa-polar", "g11g-natural-difference"],
+              "objective": "能综合归纳世界主要区域的位置、自然地理与人文地理特征，并比较区域间的差异。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g12g-china-regions",
+              "name": "中国区域地理综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g8g-provincial-cross-region", "g11g-regional-development"],
+              "objective": "能综合归纳中国四大地理区域及重点区域的自然、人文特征，分析区域发展条件与问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12g-regional-analysis",
+              "name": "区域特征分析与比较",
+              "difficulty_band": 3,
+              "prerequisites": ["g12g-world-regions", "g12g-china-regions"],
+              "objective": "掌握区域特征分析的一般思路，能从位置、自然、人文等维度比较区域差异并作出评价。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12g-sustainable-development",
+              "name": "区域可持续发展与人地协调",
+              "difficulty_band": 3,
+              "prerequisites": ["g12g-regional-analysis", "g11g-ecological-governance"],
+              "objective": "能运用可持续发展观念，分析区域人口、资源、环境与发展之间的关系并提出协调对策。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g12g-u4",
+          "name": "地理能力与素养",
+          "knowledge_points": [
+            {
+              "id": "g12g-map-skills",
+              "name": "地理图表判读与空间定位",
+              "difficulty_band": 2,
+              "prerequisites": ["g7g-map-reading", "g12g-regional-analysis"],
+              "objective": "能判读等高线图、气候统计图、区域分布图等常见地理图表，并进行准确的空间定位。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g12g-comprehensive-question",
+              "name": "地理综合题的分析与表达",
+              "difficulty_band": 3,
+              "prerequisites": ["g12g-map-skills"],
+              "objective": "掌握地理综合题的审题、信息提取、因果分析与规范表达方法，能组织完整的答题要点。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12g-geo-practice",
+              "name": "地理实践与野外观察",
+              "difficulty_band": 2,
+              "prerequisites": ["g12g-regional-analysis"],
+              "objective": "了解地理观测、野外考察与社会调查的基本方法，能设计简单的乡土地理实践活动。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

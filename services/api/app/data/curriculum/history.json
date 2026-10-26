@@ -1,0 +1,846 @@
+{
+  "schema_version": "1.0",
+  "subject": "history",
+  "subject_name": "历史",
+  "curriculum_standard": "统编版历史（初中七至九年级 + 高中中外历史纲要与选择性必修）",
+  "description": "初中（七年级至九年级）与高中（高一至高三）历史知识点树，2026-10。以统编版教材目录为基准，按「单元 → 知识点」两级组织；prerequisites 为知识点 id 列表，构成先修关系；difficulty_band 为难度档（1=史实识记与时间定位 2=因果关联与材料解读 3=史料实证与历史解释）。",
+  "difficulty_bands": {
+    "1": "入门：史实识记与时间定位",
+    "2": "基础：因果关联与材料解读",
+    "3": "进阶：史料实证与历史解释"
+  },
+  "stages": [
+    {
+      "grade": "grade7",
+      "grade_name": "七年级",
+      "units": [
+        {
+          "code": "g7h-u1",
+          "name": "史前时期与早期国家",
+          "knowledge_points": [
+            {
+              "id": "g7h-prehistoric",
+              "name": "中国境内的早期人类与文明起源",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "了解北京人、河姆渡人和半坡人的生产生活，认识中华文明起源的特点。",
+              "question_types": ["choice", "judge", "match"]
+            },
+            {
+              "id": "g7h-xia-shang-zhou",
+              "name": "夏商周的更替与早期国家制度",
+              "difficulty_band": 2,
+              "prerequisites": ["g7h-prehistoric"],
+              "objective": "说明夏商周三代的更替，理解分封制和宗法制的内涵与作用。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g7h-u2",
+          "name": "春秋战国与社会变革",
+          "knowledge_points": [
+            {
+              "id": "g7h-spring-autumn-warring",
+              "name": "春秋战国的社会变革",
+              "difficulty_band": 2,
+              "prerequisites": ["g7h-xia-shang-zhou"],
+              "objective": "说明春秋战国时期的争霸兼并战争和铁器牛耕的推广，理解社会变革的背景。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g7h-shang-yang-reforms",
+              "name": "商鞅变法与都江堰",
+              "difficulty_band": 3,
+              "prerequisites": ["g7h-spring-autumn-warring"],
+              "objective": "说明商鞅变法和都江堰的修建，分析其历史作用。",
+              "question_types": ["choice", "judge", "fill"]
+            },
+            {
+              "id": "g7h-hundred-schools",
+              "name": "百家争鸣",
+              "difficulty_band": 3,
+              "prerequisites": ["g7h-spring-autumn-warring"],
+              "objective": "列举诸子百家的代表人物和主要主张，理解百家争鸣的历史影响。",
+              "question_types": ["choice", "match", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g7h-u3",
+          "name": "秦汉大一统",
+          "knowledge_points": [
+            {
+              "id": "g7h-qin-unification",
+              "name": "秦统一中国与中央集权制度",
+              "difficulty_band": 2,
+              "prerequisites": ["g7h-shang-yang-reforms"],
+              "objective": "说明秦统一中国的过程，理解中央集权制度和统一措施的意义。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g7h-han-dynasty",
+              "name": "西汉的建立与汉武帝巩固大一统",
+              "difficulty_band": 2,
+              "prerequisites": ["g7h-qin-unification"],
+              "objective": "说明西汉的建立与文景之治，概述汉武帝巩固大一统的主要措施。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g7h-silk-road",
+              "name": "张骞通西域与丝绸之路",
+              "difficulty_band": 2,
+              "prerequisites": ["g7h-han-dynasty"],
+              "objective": "说明张骞通西域和丝绸之路的开通，理解其在中外交流中的作用。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g7h-u4",
+          "name": "三国两晋南北朝",
+          "knowledge_points": [
+            {
+              "id": "g7h-three-kingdoms",
+              "name": "三国鼎立与南北朝对峙",
+              "difficulty_band": 2,
+              "prerequisites": ["g7h-han-dynasty"],
+              "objective": "了解三国鼎立、西晋统一和南北朝对峙的基本史实。",
+              "question_types": ["choice", "judge", "fill"]
+            },
+            {
+              "id": "g7h-national-integration",
+              "name": "北魏孝文帝改革与民族交融",
+              "difficulty_band": 3,
+              "prerequisites": ["g7h-three-kingdoms"],
+              "objective": "说明北魏孝文帝改革的内容和作用，理解民族交融的历史意义。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g7h-u5",
+          "name": "隋唐至明清",
+          "knowledge_points": [
+            {
+              "id": "g7h-sui-tang",
+              "name": "隋唐的统一与繁荣",
+              "difficulty_band": 2,
+              "prerequisites": ["g7h-national-integration"],
+              "objective": "说明隋唐的统一与繁荣，理解科举制的创立及其影响。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g7h-song-yuan",
+              "name": "辽宋夏金元与民族关系的发展",
+              "difficulty_band": 2,
+              "prerequisites": ["g7h-sui-tang"],
+              "objective": "说明辽宋夏金元的政权并立与更替，理解经济重心南移和民族关系的发展。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g7h-ming-qing",
+              "name": "明清君主专制的强化与对外关系",
+              "difficulty_band": 3,
+              "prerequisites": ["g7h-song-yuan"],
+              "objective": "说明明清君主专制的强化和对外关系的变化，分析闭关锁国的影响。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g7h-ancient-culture",
+              "name": "古代科技文化与中华优秀传统文化",
+              "difficulty_band": 2,
+              "prerequisites": ["g7h-sui-tang"],
+              "objective": "列举古代科技、文学和艺术的主要成就，理解中华优秀传统文化的特点。",
+              "question_types": ["choice", "match", "judge"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade8",
+      "grade_name": "八年级",
+      "units": [
+        {
+          "code": "g8h-u1",
+          "name": "列强侵略与民族危机",
+          "knowledge_points": [
+            {
+              "id": "g8h-opium-war",
+              "name": "鸦片战争与《南京条约》",
+              "difficulty_band": 1,
+              "prerequisites": ["g7h-ming-qing"],
+              "objective": "说明鸦片战争的背景、过程和《南京条约》的内容，理解中国开始沦为半殖民地半封建社会。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g8h-second-opium",
+              "name": "第二次鸦片战争与太平天国运动",
+              "difficulty_band": 2,
+              "prerequisites": ["g8h-opium-war"],
+              "objective": "说明第二次鸦片战争和太平天国运动的基本史实，理解其对中国社会的影响。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g8h-sino-japanese",
+              "name": "甲午中日战争与民族危机加深",
+              "difficulty_band": 2,
+              "prerequisites": ["g8h-second-opium"],
+              "objective": "说明甲午中日战争和《马关条约》的内容，理解列强瓜分中国的民族危机。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g8h-boxer",
+              "name": "义和团运动与《辛丑条约》",
+              "difficulty_band": 2,
+              "prerequisites": ["g8h-sino-japanese"],
+              "objective": "说明义和团运动和《辛丑条约》的内容，理解清政府成为列强统治工具的影响。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8h-u2",
+          "name": "近代化探索与辛亥革命",
+          "knowledge_points": [
+            {
+              "id": "g8h-self-strengthening",
+              "name": "洋务运动",
+              "difficulty_band": 2,
+              "prerequisites": ["g8h-second-opium"],
+              "objective": "说明洋务运动的主要内容，评价其在中国近代化进程中的作用。",
+              "question_types": ["choice", "judge", "fill"]
+            },
+            {
+              "id": "g8h-reform-1911",
+              "name": "戊戌变法与辛亥革命",
+              "difficulty_band": 3,
+              "prerequisites": ["g8h-self-strengthening"],
+              "objective": "说明戊戌变法与辛亥革命的过程，理解中华民国建立的历史意义。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g8h-new-culture",
+              "name": "新文化运动与马克思主义传播",
+              "difficulty_band": 3,
+              "prerequisites": ["g8h-reform-1911"],
+              "objective": "说明新文化运动的主要内容和影响，理解马克思主义在中国的传播。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8h-u3",
+          "name": "新民主主义革命",
+          "knowledge_points": [
+            {
+              "id": "g8h-may-fourth",
+              "name": "五四运动与中国共产党的成立",
+              "difficulty_band": 2,
+              "prerequisites": ["g8h-new-culture"],
+              "objective": "说明五四运动和中国共产党的成立，理解中国革命面貌焕然一新的原因。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g8h-agrarian-war",
+              "name": "井冈山道路与红军长征",
+              "difficulty_band": 2,
+              "prerequisites": ["g8h-may-fourth"],
+              "objective": "说明井冈山道路的开辟和红军长征，理解农村包围城市道路的意义。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g8h-anti-japanese",
+              "name": "抗日战争",
+              "difficulty_band": 2,
+              "prerequisites": ["g8h-agrarian-war"],
+              "objective": "说明抗日民族统一战线的建立和抗战胜利的原因，理解抗战的历史意义。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g8h-liberation-war",
+              "name": "解放战争",
+              "difficulty_band": 2,
+              "prerequisites": ["g8h-anti-japanese"],
+              "objective": "说明重庆谈判和三大战役，理解新民主主义革命胜利的原因。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8h-u4",
+          "name": "新中国的成立与社会主义建设",
+          "knowledge_points": [
+            {
+              "id": "g8h-prc-founding",
+              "name": "新中国的成立与政权巩固",
+              "difficulty_band": 1,
+              "prerequisites": ["g8h-liberation-war"],
+              "objective": "说明新中国成立的历史意义和巩固人民政权的措施。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g8h-socialist-transformation",
+              "name": "第一个五年计划与三大改造",
+              "difficulty_band": 2,
+              "prerequisites": ["g8h-prc-founding"],
+              "objective": "说明第一个五年计划和三大改造，理解社会主义制度基本建立的意义。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g8h-reform-opening",
+              "name": "十一届三中全会与改革开放",
+              "difficulty_band": 2,
+              "prerequisites": ["g8h-socialist-transformation"],
+              "objective": "说明十一届三中全会的内容和改革开放的成就，理解中国特色社会主义道路。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade9",
+      "grade_name": "九年级",
+      "units": [
+        {
+          "code": "g9h-u1",
+          "name": "世界古代文明",
+          "knowledge_points": [
+            {
+              "id": "g9h-ancient-civilizations",
+              "name": "古代亚非欧文明",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "了解古埃及、古巴比伦、古印度和古希腊罗马文明的代表性成就。",
+              "question_types": ["choice", "match", "judge"]
+            },
+            {
+              "id": "g9h-feudalism",
+              "name": "西欧封建制度与中世纪城市",
+              "difficulty_band": 2,
+              "prerequisites": ["g9h-ancient-civilizations"],
+              "objective": "说明西欧封建等级制度和庄园经济，了解中世纪城市与大学的兴起。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g9h-arab-byzantine",
+              "name": "拜占庭帝国与阿拉伯帝国",
+              "difficulty_band": 2,
+              "prerequisites": ["g9h-ancient-civilizations"],
+              "objective": "了解拜占庭帝国和阿拉伯帝国的兴衰，理解其在文化传播中的作用。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g9h-u2",
+          "name": "走向近代",
+          "knowledge_points": [
+            {
+              "id": "g9h-renaissance",
+              "name": "文艺复兴",
+              "difficulty_band": 2,
+              "prerequisites": ["g9h-feudalism"],
+              "objective": "说明文艺复兴的核心思想和代表作品，理解其对人性的解放。",
+              "question_types": ["choice", "judge", "match"]
+            },
+            {
+              "id": "g9h-age-of-discovery",
+              "name": "新航路开辟",
+              "difficulty_band": 2,
+              "prerequisites": ["g9h-renaissance"],
+              "objective": "说明新航路开辟的条件、过程和影响，理解世界开始连为一个整体。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g9h-bourgeois-revolutions",
+              "name": "英美法资产阶级革命",
+              "difficulty_band": 3,
+              "prerequisites": ["g9h-age-of-discovery"],
+              "objective": "说明英国资产阶级革命、美国独立战争和法国大革命的主要史实，比较其异同。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g9h-u3",
+          "name": "工业革命与马克思主义",
+          "knowledge_points": [
+            {
+              "id": "g9h-industrial-revolution",
+              "name": "两次工业革命",
+              "difficulty_band": 3,
+              "prerequisites": ["g9h-bourgeois-revolutions"],
+              "objective": "说明两次工业革命的重大发明和影响，理解工业化带来的社会变化。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g9h-marxism",
+              "name": "马克思主义的诞生",
+              "difficulty_band": 3,
+              "prerequisites": ["g9h-industrial-revolution"],
+              "objective": "说明马克思主义诞生的条件和《共产党宣言》的内容，理解其历史意义。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9h-u4",
+          "name": "第一次世界大战与十月革命",
+          "knowledge_points": [
+            {
+              "id": "g9h-world-war-one",
+              "name": "第一次世界大战",
+              "difficulty_band": 3,
+              "prerequisites": ["g9h-industrial-revolution"],
+              "objective": "说明第一次世界大战的背景、过程和影响，理解凡尔赛—华盛顿体系。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g9h-russian-revolution",
+              "name": "俄国十月革命与苏联的建立",
+              "difficulty_band": 2,
+              "prerequisites": ["g9h-world-war-one"],
+              "objective": "说明十月革命的进程和苏联的建立，理解其世界历史意义。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9h-u5",
+          "name": "第二次世界大战与战后世界",
+          "knowledge_points": [
+            {
+              "id": "g9h-world-war-two",
+              "name": "第二次世界大战",
+              "difficulty_band": 3,
+              "prerequisites": ["g9h-russian-revolution"],
+              "objective": "说明第二次世界大战的爆发、扩大和转折，理解世界反法西斯战争胜利的意义。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g9h-cold-war",
+              "name": "冷战与两极格局",
+              "difficulty_band": 3,
+              "prerequisites": ["g9h-world-war-two"],
+              "objective": "说明冷战的起因和两极格局的形成，了解战后资本主义与社会主义的发展。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g9h-post-cold-war",
+              "name": "世界多极化与经济全球化",
+              "difficulty_band": 2,
+              "prerequisites": ["g9h-cold-war"],
+              "objective": "说明苏联解体与两极格局瓦解，理解世界多极化趋势和经济全球化。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade10",
+      "grade_name": "高一",
+      "units": [
+        {
+          "code": "g10h-u1",
+          "name": "古代中国的国家与社会",
+          "knowledge_points": [
+            {
+              "id": "g10h-early-china",
+              "name": "先秦时期的国家与社会",
+              "difficulty_band": 2,
+              "prerequisites": ["g7h-xia-shang-zhou"],
+              "objective": "认识先秦时期的国家形态、社会经济和思想文化，理解中华文明的早期特征。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g10h-imperial-system",
+              "name": "君主专制中央集权制度的发展",
+              "difficulty_band": 2,
+              "prerequisites": ["g10h-early-china"],
+              "objective": "说明秦汉至明清君主专制中央集权制度的发展演变。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g10h-ancient-economy",
+              "name": "古代中国的经济与社会生活",
+              "difficulty_band": 2,
+              "prerequisites": ["g10h-early-china"],
+              "objective": "说明古代小农经济、手工业与商业的发展，理解重农抑商政策的影响。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g10h-u2",
+          "name": "近代中国的救亡图存",
+          "knowledge_points": [
+            {
+              "id": "g10h-opium-era",
+              "name": "晚清民族危机与救亡图存",
+              "difficulty_band": 2,
+              "prerequisites": ["g10h-imperial-system"],
+              "objective": "说明晚清列强侵略与民族危机，理解中国人民反抗外来侵略的斗争。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g10h-republic",
+              "name": "辛亥革命与中华民国",
+              "difficulty_band": 2,
+              "prerequisites": ["g10h-opium-era"],
+              "objective": "说明辛亥革命与中华民国的建立，理解北洋军阀统治时期的社会状况。",
+              "question_types": ["choice", "judge", "fill"]
+            },
+            {
+              "id": "g10h-new-democratic",
+              "name": "新民主主义革命的历程",
+              "difficulty_band": 3,
+              "prerequisites": ["g10h-republic"],
+              "objective": "说明新民主主义革命的发展历程，理解中国共产党领导革命胜利的原因。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g10h-u3",
+          "name": "现代中国的建设与改革",
+          "knowledge_points": [
+            {
+              "id": "g10h-new-china",
+              "name": "新中国成立与社会主义建设",
+              "difficulty_band": 2,
+              "prerequisites": ["g10h-new-democratic"],
+              "objective": "说明新中国成立初期的政权巩固、经济建设和社会改造。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g10h-reform-era",
+              "name": "改革开放与中国特色社会主义",
+              "difficulty_band": 2,
+              "prerequisites": ["g10h-new-china"],
+              "objective": "说明十一届三中全会以来改革开放的进程和成就。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g10h-new-era",
+              "name": "中国特色社会主义新时代",
+              "difficulty_band": 2,
+              "prerequisites": ["g10h-reform-era"],
+              "objective": "认识中国特色社会主义新时代的内涵和主要成就。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g10h-u4",
+          "name": "古代与近代世界",
+          "knowledge_points": [
+            {
+              "id": "g10h-ancient-world",
+              "name": "古代世界文明",
+              "difficulty_band": 2,
+              "prerequisites": [],
+              "objective": "了解古代亚非欧文明的发展，理解古代文明多元并存的特点。",
+              "question_types": ["choice", "match", "judge"]
+            },
+            {
+              "id": "g10h-modern-world",
+              "name": "近代西方资本主义与世界市场",
+              "difficulty_band": 3,
+              "prerequisites": ["g10h-ancient-world"],
+              "objective": "说明近代西方资本主义制度的确立和工业革命，理解世界市场的形成。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g10h-world-wars",
+              "name": "两次世界大战与国际秩序",
+              "difficulty_band": 3,
+              "prerequisites": ["g10h-modern-world"],
+              "objective": "说明两次世界大战的进程和影响，理解战后国际秩序的演变。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g10h-u5",
+          "name": "战后世界",
+          "knowledge_points": [
+            {
+              "id": "g10h-cold-war-era",
+              "name": "冷战与两极格局",
+              "difficulty_band": 2,
+              "prerequisites": ["g10h-world-wars"],
+              "objective": "说明冷战与两极格局的形成，了解战后殖民体系的瓦解。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g10h-globalization",
+              "name": "世界多极化与经济全球化",
+              "difficulty_band": 2,
+              "prerequisites": ["g10h-cold-war-era"],
+              "objective": "说明世界多极化趋势与经济全球化，理解和平与发展的时代主题。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade11",
+      "grade_name": "高二",
+      "units": [
+        {
+          "code": "g11h-u1",
+          "name": "古代世界文明",
+          "knowledge_points": [
+            {
+              "id": "g11h-ancient-east",
+              "name": "古代亚非文明",
+              "difficulty_band": 2,
+              "prerequisites": [],
+              "objective": "说明古代西亚、埃及和印度的文明成就，理解大河文明的共同特征。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g11h-greek-rome",
+              "name": "古希腊罗马文明",
+              "difficulty_band": 2,
+              "prerequisites": ["g11h-ancient-east"],
+              "objective": "说明古希腊城邦民主政治和罗马法的发展，理解西方文明的传统。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g11h-medieval-world",
+              "name": "中古时期的世界",
+              "difficulty_band": 2,
+              "prerequisites": ["g11h-greek-rome"],
+              "objective": "说明中古西欧封建制度、拜占庭与阿拉伯文明，了解古代世界文明的交流。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g11h-u2",
+          "name": "走向近代的世界",
+          "knowledge_points": [
+            {
+              "id": "g11h-renaissance-discovery",
+              "name": "文艺复兴、宗教改革与新航路开辟",
+              "difficulty_band": 2,
+              "prerequisites": ["g11h-medieval-world"],
+              "objective": "说明文艺复兴、宗教改革和新航路开辟，理解欧洲社会的转型。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g11h-bourgeois-revolutions",
+              "name": "资产阶级革命与资本主义制度的确立",
+              "difficulty_band": 3,
+              "prerequisites": ["g11h-renaissance-discovery"],
+              "objective": "说明英美法等国资产阶级革命与资本主义制度的确立。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g11h-industrialization",
+              "name": "工业革命与资本主义世界体系",
+              "difficulty_band": 3,
+              "prerequisites": ["g11h-bourgeois-revolutions"],
+              "objective": "说明工业革命的进程和影响，理解资本主义世界体系的形成。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g11h-u3",
+          "name": "现代世界的形成",
+          "knowledge_points": [
+            {
+              "id": "g11h-imperialism",
+              "name": "垄断资本主义与殖民体系",
+              "difficulty_band": 3,
+              "prerequisites": ["g11h-industrialization"],
+              "objective": "说明垄断资本主义和殖民体系的形成，理解亚非拉民族独立运动。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g11h-russian-soviet",
+              "name": "俄国十月革命与苏联社会主义建设",
+              "difficulty_band": 2,
+              "prerequisites": ["g11h-imperialism"],
+              "objective": "说明俄国十月革命和苏联社会主义建设，理解其历史经验与教训。",
+              "question_types": ["choice", "judge", "fill"]
+            },
+            {
+              "id": "g11h-world-wars",
+              "name": "两次世界大战与国际格局",
+              "difficulty_band": 3,
+              "prerequisites": ["g11h-imperialism"],
+              "objective": "说明两次世界大战的起因、进程和影响，理解国际格局的变动。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g11h-u4",
+          "name": "战后世界",
+          "knowledge_points": [
+            {
+              "id": "g11h-cold-war-system",
+              "name": "冷战与两极格局",
+              "difficulty_band": 2,
+              "prerequisites": ["g11h-world-wars"],
+              "objective": "说明冷战与两极格局，了解战后资本主义国家的调整与社会主义国家的发展。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g11h-decolonization",
+              "name": "殖民体系瓦解与新兴民族国家",
+              "difficulty_band": 2,
+              "prerequisites": ["g11h-cold-war-system"],
+              "objective": "说明二战后殖民体系的瓦解和新兴民族国家的发展。",
+              "question_types": ["choice", "judge", "fill"]
+            },
+            {
+              "id": "g11h-globalization",
+              "name": "经济全球化与世界多极化",
+              "difficulty_band": 3,
+              "prerequisites": ["g11h-cold-war-system"],
+              "objective": "说明经济全球化和世界多极化趋势，理解全球治理面临的问题。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g11h-china-world",
+              "name": "当代中国与世界的互动",
+              "difficulty_band": 2,
+              "prerequisites": ["g11h-globalization"],
+              "objective": "说明当代中国与世界的互动，理解人类命运共同体理念。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade12",
+      "grade_name": "高三",
+      "units": [
+        {
+          "code": "g12h-u1",
+          "name": "国家制度与社会治理",
+          "knowledge_points": [
+            {
+              "id": "g12h-institutions",
+              "name": "政治制度与治理体系的演变",
+              "difficulty_band": 2,
+              "prerequisites": ["g10h-imperial-system"],
+              "objective": "说明中国古代至近现代政治制度的演变，比较中外政治制度的特点。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g12h-laws",
+              "name": "法律与教化",
+              "difficulty_band": 2,
+              "prerequisites": ["g12h-institutions"],
+              "objective": "说明中国古代法律与教化的演变，理解近代法治与社会主义核心价值观。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g12h-administration",
+              "name": "官员选拔与管理",
+              "difficulty_band": 2,
+              "prerequisites": ["g12h-institutions"],
+              "objective": "说明中国古代官员选拔与管理制度的演变。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g12h-border-ethnic",
+              "name": "民族关系与对外交往",
+              "difficulty_band": 2,
+              "prerequisites": ["g12h-institutions"],
+              "objective": "说明中国古代的民族关系与对外交往，理解统一多民族国家的巩固。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g12h-u2",
+          "name": "经济与社会生活",
+          "knowledge_points": [
+            {
+              "id": "g12h-agriculture",
+              "name": "食物生产与社会生活",
+              "difficulty_band": 2,
+              "prerequisites": ["g12h-institutions"],
+              "objective": "说明食物生产与农业生产工具、劳作方式的变化。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g12h-trade",
+              "name": "商业贸易与货币信贷",
+              "difficulty_band": 2,
+              "prerequisites": ["g12h-agriculture"],
+              "objective": "说明商业贸易、货币与信贷的发展，理解世界市场的形成。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g12h-transport",
+              "name": "交通变迁与城市化",
+              "difficulty_band": 2,
+              "prerequisites": ["g12h-trade"],
+              "objective": "说明水陆交通的变迁和城市化进程，理解交通对经济生活的影响。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g12h-healthcare",
+              "name": "医疗、公共卫生与社会保障",
+              "difficulty_band": 2,
+              "prerequisites": ["g12h-trade"],
+              "objective": "说明医疗与公共卫生事业的发展，理解社会保障制度的作用。",
+              "question_types": ["choice", "judge", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g12h-u3",
+          "name": "文化交流与传播",
+          "knowledge_points": [
+            {
+              "id": "g12h-cultural-exchange",
+              "name": "古代商路与文化交流",
+              "difficulty_band": 2,
+              "prerequisites": ["g12h-trade"],
+              "objective": "说明古代商路与文化交流，理解文明互鉴的历史经验。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g12h-ideas",
+              "name": "思想文化的传播与交融",
+              "difficulty_band": 2,
+              "prerequisites": ["g12h-cultural-exchange"],
+              "objective": "说明思想文化的传播与交融，理解中华文化对世界的影响。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g12h-education",
+              "name": "学校教育与文化的传承",
+              "difficulty_band": 2,
+              "prerequisites": ["g12h-ideas"],
+              "objective": "说明学校教育、印刷书与文化传承的关系。",
+              "question_types": ["choice", "judge", "fill"]
+            },
+            {
+              "id": "g12h-heritage",
+              "name": "文化遗产的保护与利用",
+              "difficulty_band": 2,
+              "prerequisites": ["g12h-education"],
+              "objective": "说明文化遗产的保护与利用，理解传承中华优秀传统文化的意义。",
+              "question_types": ["choice", "fill", "judge"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

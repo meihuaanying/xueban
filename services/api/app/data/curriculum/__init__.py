@@ -26,6 +26,13 @@ SUBJECT_FILES: dict[str, str] = {
     "chinese": "chinese.json",
     "math": "math.json",
     "english": "english.json",
+    # 广东 3+1+2：高中选考六科；初中对应学科一并建树（同一学科文件跨初高中）
+    "physics": "physics.json",
+    "chemistry": "chemistry.json",
+    "biology": "biology.json",
+    "history": "history.json",
+    "geography": "geography.json",
+    "politics": "politics.json",
 }
 
 VALID_DIFFICULTY_BANDS = frozenset({1, 2, 3})
@@ -36,6 +43,12 @@ SUBJECT_NAMES: dict[str, str] = {
     "chinese": "语文",
     "math": "数学",
     "english": "英语",
+    "physics": "物理",
+    "chemistry": "化学",
+    "biology": "生物",
+    "history": "历史",
+    "geography": "地理",
+    "politics": "道德与法治（思想政治）",
 }
 
 #: 全学段年级（grade1~12）。高中用「高一/高二/高三」而非「十年级」，

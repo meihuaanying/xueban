@@ -120,7 +120,16 @@ export function ExplainerFrame({
       {...props}
     >
       <figcaption className="mb-xs flex flex-wrap items-center justify-between gap-xs">
-        <span className="text-app-sm font-semibold">{title}</span>
+        <span className="flex flex-wrap items-center gap-xs">
+          {/* 生成合成内容显式标识（《人工智能生成合成内容标识办法》要求） */}
+          <span
+            className="rounded-control border border-border-strong px-xs text-app-xs text-muted-foreground"
+            data-testid="explainer-ai-label"
+          >
+            AI 生成讲解 · 仅供学习参考
+          </span>
+          <span className="text-app-sm font-semibold">{title}</span>
+        </span>
         {degraded ? null : (
           <span className="flex items-center gap-hair">
             <button

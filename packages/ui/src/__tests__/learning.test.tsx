@@ -301,6 +301,13 @@ describe("ExplainerFrame（沙箱安全）", () => {
     expect(frame.getAttribute("referrerpolicy")).toBe("no-referrer");
   });
 
+  it("常驻 AI 生成内容显式标识（生成合成内容标识办法）", () => {
+    render(<ExplainerFrame title="10 以内加法" html={html} />);
+    expect(screen.getByTestId("explainer-ai-label")).toHaveTextContent(
+      "AI 生成讲解 · 仅供学习参考",
+    );
+  });
+
   // 注意：超时路径不能在组件测试里断言。jsdom 会自动给 iframe 派发 load 事件，
   // 而 iframe onLoad 是「渲染完成」的解除武装信号，一旦挂上超时分支永远走不到。
   // 所以超时逻辑单独测 useExplainerWatchdog（见下方 describe），这里只测接线。
