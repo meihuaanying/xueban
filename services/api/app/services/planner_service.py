@@ -299,21 +299,28 @@ async def generate_path(
     从一年级的知识点兜底开始。
     """
     from app.services import mastery_service
+    from app.services.grade_scope import load_points_by_ids
 
-    overview = await mastery_service.get_mastery_overview(session, user_id=user_id, subject=subject)
+    overview_all = await mastery_service.get_mastery_overview(
+        session, user_id=user_id, subject=subject
+    )
+    # 掌握度索引必须用**未过滤**的全量数据：前置知识常在同年级之外，
+    # 先过滤会让已掌握的前置被当成未掌握（p_init），路径里塞满重复地基。
+    mastery_by_kp = {point.knowledge_point_id: point.mastery for point in overview_all}
+    overview = overview_all
     if grade_kp_ids is not None:
         overview = [point for point in overview if point.knowledge_point_id in grade_kp_ids]
-    mastery_by_kp = {point.knowledge_point_id: point.mastery for point in overview}
     weak_points = [_as_path_point(point) for point in overview][:limit]
     if not weak_points:
-        # 兜底查询不带年级条件（其函数体为既有实现），放大取数后在应用层
-        # 按年级过滤，保证跨年级行不会挤掉目标年级的知识点。
-        fallback = await _fallback_points(
-            session, subject=subject, limit=limit * 8 if grade_kp_ids is not None else limit
-        )
         if grade_kp_ids is not None:
-            fallback = [p for p in fallback if p.id in grade_kp_ids][:limit]
-        weak_points = fallback
+            # 年级模式：按 id 精确取（排序稳定），不依赖跨批次的 sort_order 窗口。
+            rows = await load_points_by_ids(session, kp_ids=grade_kp_ids, limit=limit)
+            prior = BktParams().p_init
+            weak_points = [
+                PathPoint(id=row.id, name=row.name, mastery=prior) for row in rows
+            ]
+        if not weak_points:
+            weak_points = await _fallback_points(session, subject=subject, limit=limit)
     strong_points = [
         _as_path_point(point)
         for point in overview
@@ -433,12 +440,19 @@ async def _sync_review_task(
 
 
 async def get_or_create_today(
-    session: AsyncSession, *, user_id: uuid.UUID, now: datetime | None = None
+    session: AsyncSession,
+    *,
+    user_id: uuid.UUID,
+    now: datetime | None = None,
+    grade_kp_ids: set[uuid.UUID] | None = None,
 ) -> tuple[Plan, list[PlanTask]]:
     """获取/生成今日任务卡（3~5 个：学/练/复习搭配）。
 
     复习任务与 FSRS 到期数量联动：当天第一次打开时按实时数量生成，之后再次打开会补建或
     刷新标题，保证「今日任务」不会漏掉当天到期的卡片。
+
+    ``grade_kp_ids`` 只在**首次生成**今日路径时生效：桌面端默认落在今日任务页，
+    如果这里不带年级，会先生成一条未收窄的路径并长期复用（之后翻到规划页也拿不回）。
     """
     current = now or utcnow()
     today = current.date()
@@ -464,7 +478,7 @@ async def get_or_create_today(
             review_due=review_due,
         )
 
-    path = await get_or_create_path(session, user_id=user_id)
+    path = await get_or_create_path(session, user_id=user_id, grade_kp_ids=grade_kp_ids)
     points: list[PathPoint] = []
     for phase in path.meta.get("phases", []):
         for item in phase.get("knowledge_points", []):

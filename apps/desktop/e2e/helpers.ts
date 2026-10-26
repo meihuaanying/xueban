@@ -34,7 +34,7 @@ export function randomPhone(): string {
 
 /** 通过 API 直接创建账号（E2E 提速；UI 注册链路由 journey 1 覆盖）。 */
 export async function createAccount(request: APIRequestContext): Promise<TestAccount> {
-  const password = "E2e-pass-1234";
+  const password = "E2e-" + Math.random().toString(36).slice(2, 10) + "-Aa9";
   let lastError = "";
   for (let attempt = 0; attempt < 5; attempt += 1) {
     const phone = randomPhone();

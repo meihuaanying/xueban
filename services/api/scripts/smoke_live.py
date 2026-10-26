@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import random
+import secrets
 import sys
 import threading
 import time
@@ -62,9 +63,11 @@ def main() -> int:
             )
 
             phone = f"137{random.randint(10000000, 99999999)}"
+            # 冒烟账号的密码每次随机生成，不把任何口令字面量写进源码
+            smoke_password = "Smk-" + secrets.token_urlsafe(12)
             register = client.post(
                 "/v1/auth/register",
-                json={"phone": phone, "password": "smoke-pass-123", "role": "student"},
+                json={"phone": phone, "password": smoke_password, "role": "student"},
             )
             status_text = f"[{'PASS' if register.status_code == 201 else 'FAIL'}]"
             print(f"{status_text} 注册 -> {register.status_code}")

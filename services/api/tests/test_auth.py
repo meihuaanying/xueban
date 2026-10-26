@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import secrets
 from datetime import timedelta
 
 from httpx import AsyncClient
@@ -11,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.models import SmsCode, User
 from app.services.security import create_token, decode_token, hash_token
 from tests.conftest import auth_headers, next_phone
-from tests.helpers import headers_of, register, sms_login
+from tests.helpers import TEST_PASSWORD, WRONG_PASSWORD, headers_of, register, sms_login
 
 # ---------- 注册 ----------
 
@@ -29,7 +30,7 @@ async def test_register_duplicate_phone_conflict(client: AsyncClient) -> None:
     payload = await register(client)
     again = await client.post(
         "/v1/auth/register",
-        json={"phone": payload["phone"], "password": "password123"},
+        json={"phone": payload["phone"], "password": TEST_PASSWORD},
     )
     assert again.status_code == 409
     assert again.json()["code"] == "AUTH_PHONE_EXISTS"
@@ -37,7 +38,7 @@ async def test_register_duplicate_phone_conflict(client: AsyncClient) -> None:
 
 async def test_register_invalid_phone_rejected(client: AsyncClient) -> None:
     response = await client.post(
-        "/v1/auth/register", json={"phone": "123456", "password": "password123"}
+        "/v1/auth/register", json={"phone": "123456", "password": TEST_PASSWORD}
     )
     assert response.status_code == 422
     assert response.json()["code"] == "VALIDATION_ERROR"
@@ -59,7 +60,7 @@ async def test_register_parent_role(client: AsyncClient) -> None:
 async def test_register_invalid_role_rejected(client: AsyncClient) -> None:
     response = await client.post(
         "/v1/auth/register",
-        json={"phone": next_phone(), "password": "password123", "role": "admin"},
+        json={"phone": next_phone(), "password": TEST_PASSWORD, "role": "admin"},
     )
     assert response.status_code == 422
 
@@ -70,7 +71,7 @@ async def test_register_invalid_role_rejected(client: AsyncClient) -> None:
 async def test_login_success(client: AsyncClient) -> None:
     payload = await register(client)
     response = await client.post(
-        "/v1/auth/login", json={"phone": payload["phone"], "password": "password123"}
+        "/v1/auth/login", json={"phone": payload["phone"], "password": TEST_PASSWORD}
     )
     assert response.status_code == 200
     assert response.json()["access_token"]
@@ -79,7 +80,7 @@ async def test_login_success(client: AsyncClient) -> None:
 async def test_login_wrong_password(client: AsyncClient) -> None:
     payload = await register(client)
     response = await client.post(
-        "/v1/auth/login", json={"phone": payload["phone"], "password": "wrong-pass-1"}
+        "/v1/auth/login", json={"phone": payload["phone"], "password": WRONG_PASSWORD}
     )
     assert response.status_code == 401
     assert response.json()["code"] == "AUTH_INVALID_CREDENTIALS"
@@ -87,7 +88,7 @@ async def test_login_wrong_password(client: AsyncClient) -> None:
 
 async def test_login_unknown_phone(client: AsyncClient) -> None:
     response = await client.post(
-        "/v1/auth/login", json={"phone": next_phone(), "password": "password123"}
+        "/v1/auth/login", json={"phone": next_phone(), "password": TEST_PASSWORD}
     )
     assert response.status_code == 401
 
@@ -102,7 +103,7 @@ async def test_login_disabled_account(
         )
         await session.commit()
     response = await client.post(
-        "/v1/auth/login", json={"phone": payload["phone"], "password": "password123"}
+        "/v1/auth/login", json={"phone": payload["phone"], "password": TEST_PASSWORD}
     )
     assert response.status_code == 403
     assert response.json()["code"] == "AUTH_ACCOUNT_DISABLED"
@@ -143,7 +144,8 @@ async def test_logout_revokes_refresh_token(client: AsyncClient) -> None:
 
 
 async def test_logout_is_idempotent(client: AsyncClient) -> None:
-    response = await client.post("/v1/auth/logout", json={"refresh_token": "invalid-token"})
+    invalid = "inv-" + secrets.token_urlsafe(12)
+    response = await client.post("/v1/auth/logout", json={"refresh_token": invalid})
     assert response.status_code == 204
 
 

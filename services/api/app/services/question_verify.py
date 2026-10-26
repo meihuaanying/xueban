@@ -30,7 +30,12 @@ from app.data.curriculum import grade_name as _grade_name
 from app.data.curriculum import subject_name as _subject_name
 from app.services.llm_client import LlmClient
 from app.services.math_verify import is_pure_math, parse_math, strip_latex
-from app.services.prompts import CONTENT_JUDGE_USER_TEMPLATE, content_judge_system_prompt
+from app.services.prompts import (
+    CONTENT_JUDGE_BATCH_USER_TEMPLATE,
+    CONTENT_JUDGE_QUESTION_BLOCK,
+    CONTENT_JUDGE_USER_TEMPLATE,
+    content_judge_system_prompt,
+)
 from app.services.question_generator import GeneratedQuestion
 
 logger = logging.getLogger("xueban.content.verify")
@@ -378,12 +383,55 @@ def _parse_judge_payload(raw: str) -> tuple[str, int, str] | None:
     return verdict, score, reason
 
 
+def _parse_judge_batch(raw: str) -> dict[int, tuple[str, int, str]]:
+    """解析批量 judge 的 {"results": [...]}；容忍 ```json 包裹与多余文字。
+
+    只按 index 收结果；index 非法或重复一律丢弃（该题位由调用方回退单题判）。
+    """
+    text = raw.strip()
+    if text.startswith("```"):
+        text = re.sub(r"^```(?:json)?\s*", "", text)
+        text = re.sub(r"\s*```$", "", text)
+    start, end = text.find("{"), text.rfind("}")
+    if start < 0 or end <= start:
+        return {}
+    try:
+        payload = json.loads(text[start : end + 1])
+    except json.JSONDecodeError:
+        return {}
+    results = payload.get("results") if isinstance(payload, dict) else None
+    if not isinstance(results, list):
+        return {}
+    parsed: dict[int, tuple[str, int, str]] = {}
+    for item in results:
+        if not isinstance(item, dict):
+            continue
+        try:
+            index = int(item.get("index", 0))
+        except (TypeError, ValueError):
+            continue
+        if index < 1 or index in parsed:
+            continue
+        verdict = str(item.get("verdict", "")).strip().lower()
+        if verdict not in {"pass", "reject"}:
+            continue
+        try:
+            score = int(item.get("score", 0))
+        except (TypeError, ValueError):
+            score = 0
+        parsed[index] = (verdict, score, str(item.get("reason", "")).strip())
+    return parsed
+
+
 class QuestionVerifier:
     """规则 + LLM judge 双通道验证。"""
 
     def __init__(self, client: LlmClient, settings: Settings) -> None:
         self._client = client
         self._settings = settings
+        # --no-judge 排障开关：False 时规则通道照跑、judge 一律放行且不发请求。
+        # 必须覆盖单题与批量两条路径，否则批量化后该开关会失效、继续烧配额。
+        self.judge_enabled = True
 
     async def judge(
         self, question: GeneratedQuestion, point: KnowledgePoint
@@ -434,6 +482,95 @@ class QuestionVerifier:
             return None, None, "judge 输出无法解析"
         verdict, score, reason = parsed
         return verdict == "pass" and score >= JUDGE_SCORE_THRESHOLD, score, reason
+
+    # ------------------------------------------------------------ 批量 judge
+
+    def _question_block(self, index: int, question: GeneratedQuestion) -> str:
+        options_block = (
+            "\n".join(f"{key}. {value}" for key, value in (question.options or {}).items())
+            or "（无选项）"
+        )
+        return CONTENT_JUDGE_QUESTION_BLOCK.format(
+            index=index,
+            qtype=question.qtype,
+            stem=question.stem,
+            options=options_block,
+            answer=question.answer,
+            analysis=question.analysis,
+            hint1=question.hint1,
+            hint2=question.hint2,
+            hint3=question.hint3,
+        )
+
+    async def judge_many(
+        self, questions: list[GeneratedQuestion], point: KnowledgePoint
+    ) -> list[JudgeOutcome]:
+        """一次判多题（控配额）；解析失败的题位回退逐题 judge。
+
+        批量判题的收益是调用次数按批缩小（配额窗口下这是决定性差异），
+        代价是个别模型的数组输出可能缺项——缺项一律回退单题判，绝不默认放行。
+        """
+        if not questions:
+            return []
+        if not self.judge_enabled:
+            return [(True, 100, "judge 已按 --no-judge 跳过")] * len(questions)
+        self._client.bind_session(f"{self._settings.llm_session_prefix}-judge-{point.id}")
+        blocks = "\n\n".join(
+            self._question_block(index, question)
+            for index, question in enumerate(questions, start=1)
+        )
+        messages = [
+            {
+                "role": "system",
+                "content": content_judge_system_prompt(stage_for_grade(point.grade))
+                + "\n本次需要一次判多题，请严格按题号输出结果数组，不要合并或省略。",
+            },
+            {
+                "role": "user",
+                "content": CONTENT_JUDGE_BATCH_USER_TEMPLATE.format(
+                    point_name=point.name,
+                    grade_name=_grade_name(point.grade),
+                    subject_name=_subject_name(point.subject),
+                    objective=point.objective,
+                    count=len(questions),
+                    questions=blocks,
+                ),
+            },
+        ]
+        result = await self._client.complete(
+            messages,
+            model=self._settings.content_judge_model,
+            temperature=0.1,
+            max_tokens=min(
+                self._settings.content_max_tokens,
+                self._settings.content_tokens_per_question * len(questions) * 2,
+            ),
+            name=f"content.judge.batch.{point.subject}",
+        )
+        parsed = _parse_judge_batch(result.content)
+        expected = set(range(1, len(questions) + 1))
+        if set(parsed) != expected:
+            # 题号集合不严格匹配（缺项/多余/0 基错位）时整批作废，全部回退单题判。
+            # 接受「部分匹配」会把某题的结论静默套到另一题上，宁可多花调用。
+            logger.warning(
+                "批量 judge 题号不匹配（期望 %s，收到 %s），整批回退单题判",
+                sorted(expected),
+                sorted(parsed),
+            )
+            outcomes = []
+            for question in questions:
+                try:
+                    outcomes.append(await self.judge(question, point))
+                except Exception as exc:
+                    logger.warning("回退单题 judge 失败：%s", exc)
+                    outcomes.append((None, None, f"judge 调用失败：{type(exc).__name__}"))
+            return outcomes
+        outcomes = []
+        for index in range(1, len(questions) + 1):
+            verdict, score, reason = parsed[index]
+            passed_item = verdict == "pass" and score >= JUDGE_SCORE_THRESHOLD
+            outcomes.append((passed_item, score, reason))
+        return outcomes
 
     async def verify_one(
         self, question: GeneratedQuestion, point: KnowledgePoint
@@ -494,26 +631,92 @@ class QuestionVerifier:
         list[tuple[GeneratedQuestion, VerificationResult]],
         VerificationReport,
     ]:
-        """批量验证；返回 (通过, [(未通过题, 结果)], 统计)。"""
+        """批量验证；返回 (通过, [(未通过题, 结果)], 统计)。
+
+        流程：规则通道逐题先跑（纯本地、零成本）；规则通过的题再按
+        ``content_judge_batch_size`` 分批做 LLM judge——数学题按既有口径
+        只走规则+SymPy，不进 judge。
+        """
         report = VerificationReport(total=len(questions))
         passed: list[GeneratedQuestion] = []
         rejected: list[tuple[GeneratedQuestion, VerificationResult]] = []
 
-        for question in questions:
-            result = await self.verify_one(question, point)
-            if result.rule_passed:
-                report.rule_passed += 1
-            if result.judge_passed is True:
-                report.judge_passed += 1
-            elif result.judge_passed is None:
-                report.judge_skipped += 1
-            if result.verdict is Verdict.ERROR:
-                report.judge_errors += 1
-            if result.accepted:
-                passed.append(question)
-            else:
+        rule_failed: dict[int, VerificationResult] = {}
+        judge_targets: list[int] = []
+        for index, question in enumerate(questions):
+            reason = rule_verify(question, point)
+            if reason is not None:
                 report.rejected += 1
-                rejected.append((question, result))
+                rule_failed[index] = VerificationResult(
+                    verdict=Verdict.REJECT,
+                    rule_passed=False,
+                    judge_passed=None,
+                    score=None,
+                    reason="规则不通过：" + reason,
+                )
+                continue
+            report.rule_passed += 1
+            if point.subject != _MATH_SUBJECT:
+                judge_targets.append(index)
+            else:
+                passed.append(question)
+
+        judge_results: dict[int, JudgeOutcome] = {}
+        batch_size = max(1, int(self._settings.content_judge_batch_size))
+        for start in range(0, len(judge_targets), batch_size):
+            chunk = judge_targets[start : start + batch_size]
+            try:
+                outcomes = await self.judge_many([questions[i] for i in chunk], point)
+            except Exception as exc:
+                logger.warning("批量 judge 调用失败（%s 题）：%s", len(chunk), exc)
+                outcomes = [(None, None, "judge 调用失败：" + type(exc).__name__)] * len(chunk)
+            for index, outcome in zip(chunk, outcomes, strict=True):
+                judge_results[index] = outcome
+
+        for index, question in enumerate(questions):
+            failed = rule_failed.get(index)
+            if failed is not None:
+                rejected.append((question, failed))
+                continue
+            if index not in judge_results:
+                # 数学题：规则 + SymPy 已过，按既有口径直接通过
+                passed.append(question)
+                continue
+            judge_passed, score, judge_reason = judge_results[index]
+            if judge_passed is True:
+                report.judge_passed += 1
+                passed.append(question)
+                continue
+            if judge_passed is None:
+                report.judge_skipped += 1
+                report.judge_errors += 1
+                report.rejected += 1
+                rejected.append(
+                    (
+                        question,
+                        VerificationResult(
+                            verdict=Verdict.ERROR,
+                            rule_passed=True,
+                            judge_passed=None,
+                            score=score,
+                            reason="judge 不可用：" + (judge_reason or ""),
+                        ),
+                    )
+                )
+                continue
+            report.rejected += 1
+            rejected.append(
+                (
+                    question,
+                    VerificationResult(
+                        verdict=Verdict.REJECT,
+                        rule_passed=True,
+                        judge_passed=False,
+                        score=score,
+                        reason=judge_reason or "judge 判定不合格",
+                    ),
+                )
+            )
 
         return passed, rejected, report
 

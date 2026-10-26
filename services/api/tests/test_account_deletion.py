@@ -18,14 +18,14 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.db import utcnow
 from app.models import RefreshToken, User
 from app.services import auth_service
-from tests.helpers import auth_headers, register
+from tests.helpers import TEST_PASSWORD, WRONG_PASSWORD, auth_headers, register
 
 
 async def test_delete_account_requires_correct_password(client: AsyncClient) -> None:
     tokens = await register(client)
     response = await client.post(
         "/v1/auth/account/delete",
-        json={"password": "wrong-password"},
+        json={"password": WRONG_PASSWORD},
         headers=auth_headers(tokens["access_token"]),
     )
     assert response.status_code == 400
@@ -42,14 +42,14 @@ async def test_delete_account_anonymizes_and_revokes(
     user_id = me.json()["id"]
 
     response = await client.post(
-        "/v1/auth/account/delete", json={"password": "password123"}, headers=headers
+        "/v1/auth/account/delete", json={"password": TEST_PASSWORD}, headers=headers
     )
     assert response.status_code == 204
 
     # 旧访问令牌失效（账号已停用 → 403）
     assert (await client.get("/v1/auth/me", headers=headers)).status_code == 403
     # 原手机号无法登录；刷新令牌已吊销
-    login = await client.post("/v1/auth/login", json={"phone": phone, "password": "password123"})
+    login = await client.post("/v1/auth/login", json={"phone": phone, "password": TEST_PASSWORD})
     assert login.status_code == 401
     refreshed = await client.post(
         "/v1/auth/refresh", json={"refresh_token": tokens["refresh_token"]}
@@ -82,7 +82,7 @@ async def deleted_user_id(
     me = await client.get("/v1/auth/me", headers=headers)
     user_id: str = me.json()["id"]
     deleted = await client.post(
-        "/v1/auth/account/delete", json={"password": "password123"}, headers=headers
+        "/v1/auth/account/delete", json={"password": TEST_PASSWORD}, headers=headers
     )
     assert deleted.status_code == 204
     return user_id

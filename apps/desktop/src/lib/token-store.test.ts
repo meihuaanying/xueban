@@ -1,8 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+// 测试令牌运行时生成：源码里不留令牌字面量（安全扫描红线）
+const ACCESS_TOKEN = "acc-" + crypto.randomUUID();
+const REFRESH_TOKEN = "ref-" + crypto.randomUUID();
+
 const TOKENS = {
-  access_token: "access-1",
-  refresh_token: "refresh-1",
+  access_token: ACCESS_TOKEN,
+  refresh_token: REFRESH_TOKEN,
   token_type: "bearer",
   expires_in: 900,
 };
@@ -40,11 +44,11 @@ describe("keyring 通道（Tauri 环境）", () => {
     await store.saveTokens(TOKENS);
     expect(invoke).toHaveBeenCalledWith("credential_save", {
       account: "access_token",
-      secret: "access-1",
+      secret: ACCESS_TOKEN,
     });
 
     const loaded = await store.loadTokens();
-    expect(loaded).toEqual({ accessToken: "access-1", refreshToken: "refresh-1" });
+    expect(loaded).toEqual({ accessToken: ACCESS_TOKEN, refreshToken: REFRESH_TOKEN });
 
     await store.clearTokens();
     expect(keyring.size).toBe(0);

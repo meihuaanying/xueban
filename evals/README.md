@@ -23,8 +23,9 @@ PROMPTFOO_DISABLE_TELEMETRY=1 npx promptfoo@latest eval -c evals/crisis_mock_api
 npx promptfoo@latest view        # 查看结果
 ```
 
-mock provider 环境变量：`XUEBAN_API_BASE`（默认 `http://127.0.0.1:8096`）、
-`XUEBAN_EVAL_PHONE` / `XUEBAN_EVAL_PASSWORD`（默认本机压测账号，见 `services/api/scripts/prepare_load_user.py`）。
+mock provider 环境变量：`XUEBAN_API_BASE`（默认 `http://127.0.0.1:8096`，仅允许本机回环地址）、
+`XUEBAN_EVAL_PHONE`（可默认）与 `XUEBAN_EVAL_PASSWORD`（**必须显式提供**，源码不内置口令；
+账号准备见 `services/api/scripts/prepare_load_user.py --password '<口令>'`）。
 
 更新用例与提示词快照：
 

@@ -2,15 +2,15 @@
 
 用法（services/api 目录）：
     .venv/Scripts/python scripts/export_eval_cases.py [--limit 50]
-    .venv/Scripts/python scripts/export_eval_cases.py --stage grade1_2 --limit 30 \
+    .venv/Scripts/python scripts/export_eval_cases.py --stage primary --limit 30 \
         --output tutor_cases_grade12.json
 
 产物（均在 evals/ 下）：
     tutor_cases.json          —— 评测用例（题干 + 标准答案 + 知识点）
     prompts/tutor_level1.txt   —— 第 1 层提示词快照（与 app/services/prompts.py 同步生成）
 
-`--stage` 用来按学段筛题：P1 的一二年级内容在 `grade1_2`，与存量初中/高中题库
-分开评测——守护型红线必须针对真正会面给妹妹的那套内容，不能拿初中题充数。
+`--stage` 用来按学段筛题：取值 primary / junior / senior（2026-10 起学段统一，
+旧 `grade1_2` 已废止）；守护型红线必须针对真正面给学生的那套内容评测。
 """
 
 from __future__ import annotations
@@ -93,7 +93,7 @@ async def main() -> int:
     parser.add_argument(
         "--stage",
         default=None,
-        help="按学段筛题（如 grade1_2 只导 P1 一二年级题）；默认不筛",
+        help="按学段筛题（primary / junior / senior；默认不筛）",
     )
     parser.add_argument("--output", default="tutor_cases.json", help="输出文件名")
     args = parser.parse_args()

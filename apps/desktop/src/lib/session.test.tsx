@@ -23,9 +23,16 @@ vi.mock("./api", async () => {
 
 const mockedApi = vi.mocked(api);
 
+// 测试口令运行时生成：源码里不留口令字面量（安全扫描红线）
+const TEST_PASSWORD = "Tst-" + crypto.randomUUID().slice(0, 12);
+
+// 测试令牌运行时生成：源码里不留令牌字面量（安全扫描红线）
+const ACCESS_TOKEN = "acc-" + crypto.randomUUID();
+const REFRESH_TOKEN = "ref-" + crypto.randomUUID();
+
 const TOKENS = {
-  access_token: "access-1",
-  refresh_token: "refresh-1",
+  access_token: ACCESS_TOKEN,
+  refresh_token: REFRESH_TOKEN,
   token_type: "bearer",
   expires_in: 900,
 };
@@ -45,7 +52,7 @@ describe("登录态存储（keyring 回退 localStorage）", () => {
     expect(isTauri()).toBe(false);
     await saveTokens(TOKENS);
     const tokens = await loadTokens();
-    expect(tokens).toEqual({ accessToken: "access-1", refreshToken: "refresh-1" });
+    expect(tokens).toEqual({ accessToken: ACCESS_TOKEN, refreshToken: REFRESH_TOKEN });
   });
 
 });
@@ -56,8 +63,8 @@ function AuthProbe() {
     <div>
       <span data-testid="status">{status}</span>
       <span data-testid="user">{user?.phone ?? "-"}</span>
-      <button onClick={() => void login("13900000000", "password123")}>login</button>
-      <button onClick={() => void register("13900000001", "password123", "昵称")}>register</button>
+      <button onClick={() => void login("13900000000", TEST_PASSWORD)}>login</button>
+      <button onClick={() => void register("13900000001", TEST_PASSWORD, "昵称")}>register</button>
       <button onClick={() => void logout()}>logout</button>
       <button onClick={() => void refreshUser()}>refresh</button>
     </div>
@@ -84,8 +91,8 @@ describe("AuthProvider", () => {
   });
 
   it("已存令牌 → 拉取用户进入 authenticated", async () => {
-    window.localStorage.setItem("xueban.desktop.access_token", "access-1");
-    window.localStorage.setItem("xueban.desktop.refresh_token", "refresh-1");
+    window.localStorage.setItem("xueban.desktop.access_token", ACCESS_TOKEN);
+    window.localStorage.setItem("xueban.desktop.refresh_token", REFRESH_TOKEN);
     mockedApi.me.mockResolvedValue(PROFILE);
     render(
       <AuthProvider>
@@ -135,7 +142,7 @@ describe("AuthProvider", () => {
     await waitFor(() => expect(screen.getByTestId("status").textContent).toBe("authenticated"));
     expect(mockedApi.register).toHaveBeenCalledWith({
       phone: "13900000001",
-      password: "password123",
+      password: TEST_PASSWORD,
       nickname: "昵称",
     });
   });

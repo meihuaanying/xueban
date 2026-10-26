@@ -56,6 +56,10 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger("xueban.content.pipeline")
 
+_QUOTA_ABORT_MESSAGE = (
+    "配额窗口耗尽（LLM_RATE_LIMITED），已提前中止；窗口恢复后重跑同一命令即可断点续跑"
+)
+
 # 题库来源标记，便于与存量 self-built 题区分
 PIPELINE_SOURCE = "llm-pipeline-v1"
 
@@ -88,6 +92,8 @@ class PipelineReport:
     """整条管线的统计，用于简报与门禁取证。"""
 
     outcomes: list[PointOutcome] = field(default_factory=list)
+    #: 提前中止的原因（如配额窗口耗尽）；空串表示正常跑完
+    aborted_reason: str = ""
 
     @property
     def total_generated(self) -> int:
@@ -187,25 +193,41 @@ class QuestionPipeline:
         return record.id
 
     async def _existing_stems(
-        self, session: AsyncSession, knowledge_point_id: uuid.UUID
+        self, session: AsyncSession, knowledge_point_id: uuid.UUID, *, stage: str
     ) -> list[str]:
+        """该知识点在**目标学段**下已有的题干（去重种子只认这个口径）。
+
+        不能把学段已过时的题当去重种子：那会把本该重新生成的新题判成近重复，
+        旧内容既不可达又挡住新内容。
+        """
         rows = await session.execute(
             select(QuestionModel.stem)
             .join(QuestionKnowledgePoint)
-            .where(QuestionKnowledgePoint.knowledge_point_id == knowledge_point_id)
+            .where(
+                QuestionKnowledgePoint.knowledge_point_id == knowledge_point_id,
+                QuestionModel.stage == stage,
+            )
         )
         return [row for row in rows.scalars().all()]
 
     async def _count_for_point(
-        self, session: AsyncSession, knowledge_point_id: uuid.UUID
+        self,
+        session: AsyncSession,
+        knowledge_point_id: uuid.UUID,
+        *,
+        expected_stage: str,
     ) -> int:
-        """这个知识点**真正能被抽到**的题量：只算 PUBLISHED。
+        """这个知识点**真正能被抽到**的题量：只算 PUBLISHED 且学段一致的题。
 
         不能简单按 `QuestionKnowledgePoint` 行数算：入库时会按 `human_review_rate`
         抽 5% 写成 `QuestionStatus.REVIEW` 留给人工审阅，而练习/诊断/考试取题一律
         `status == PUBLISHED`（见 practice_service、diagnosis_service、exam_service）。
         早先这里不过滤，于是「30 题」里有 1~2 道躺在 review 区——管线认为已达标跳过，
         学生端却只能抽到 28~29 道。实测 41 个一年级知识点里有 32 个中招。
+
+        另外必须校验 `Question.stage == expected_stage`：学段模型统一后，挂在同一
+        知识点下但 stage 已过时的题（如历史 `grade1_2`）学生端查不到，不能算数，
+        否则管线会永远跳过这些点、旧内容隐形丢失。
         """
         result = await session.execute(
             select(func.count())
@@ -214,6 +236,7 @@ class QuestionPipeline:
             .where(
                 QuestionKnowledgePoint.knowledge_point_id == knowledge_point_id,
                 QuestionModel.status == QuestionStatus.PUBLISHED,
+                QuestionModel.stage == expected_stage,
             )
         )
         return int(result.scalar_one())
@@ -248,13 +271,18 @@ class QuestionPipeline:
         knowledge_point_id = await self._ensure_knowledge_point(session, point, sort_order)
         await session.commit()
 
-        existed = await self._count_for_point(session, knowledge_point_id)
+        expected_stage = stage_for_grade(point.grade)
+        existed = await self._count_for_point(
+            session, knowledge_point_id, expected_stage=expected_stage
+        )
         outcome.existed_before = existed
         if existed >= target:
             outcome.skipped = True
             return outcome
 
-        seed_stems = await self._existing_stems(session, knowledge_point_id)
+        seed_stems = await self._existing_stems(
+            session, knowledge_point_id, stage=expected_stage
+        )
         seed_vectors = (
             await self._embeddings.embed(seed_stems) if seed_stems else []
         )
@@ -354,9 +382,15 @@ class QuestionPipeline:
         limit_points: int | None = None,
         target: int | None = None,
     ) -> PipelineReport:
-        """按学科/年级跑完整树；`limit_points` 用于先小批量验证再放开。"""
+        """按学科/年级跑完整树；`limit_points` 用于先小批量验证再放开。
+
+        连续两个知识点都因**用量窗口限流**失败时提前中止：配额耗尽期间继续
+        往下跑只会把每个点都重试到 5 次上限（每点数分钟），既拿不到题也吃掉
+        恢复后的额度。中止后重跑同一命令即可断点续跑（已达标知识点自动跳过）。
+        """
         report = PipelineReport()
         sort_order = 0
+        consecutive_rate_limited = 0
         for subject in subjects:
             curriculum = get_curriculum(subject)
             for point in curriculum.points:
@@ -372,6 +406,14 @@ class QuestionPipeline:
                     report.outcomes.append(
                         PointOutcome(point_id=point.id, errors=[f"{type(exc).__name__}: {exc}"])
                     )
+                    if "LLM_RATE_LIMITED" in str(exc):
+                        consecutive_rate_limited += 1
+                    else:
+                        consecutive_rate_limited = 0
+                    if consecutive_rate_limited >= 2:
+                        report.aborted_reason = _QUOTA_ABORT_MESSAGE
+                        logger.error(report.aborted_reason)
+                        return report
                     continue
                 report.outcomes.append(outcome)
                 logger.info(
@@ -383,6 +425,14 @@ class QuestionPipeline:
                     outcome.verified,
                     outcome.deduped_away,
                 )
+                if any("LLM_RATE_LIMITED" in error for error in outcome.errors):
+                    consecutive_rate_limited += 1
+                else:
+                    consecutive_rate_limited = 0
+                if consecutive_rate_limited >= 2:
+                    report.aborted_reason = _QUOTA_ABORT_MESSAGE
+                    logger.error(report.aborted_reason)
+                    return report
                 if limit_points is not None and len(report.outcomes) >= limit_points:
                     return report
         return report

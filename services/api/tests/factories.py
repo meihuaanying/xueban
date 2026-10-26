@@ -7,6 +7,7 @@ import factory
 from app.models import Question, QuestionStatus, QuestionType, User, UserRole
 from app.services.security import hash_password
 from tests.conftest import next_phone
+from tests.helpers import TEST_PASSWORD
 
 
 class UserFactory(factory.Factory):
@@ -20,7 +21,7 @@ class UserFactory(factory.Factory):
     role = UserRole.STUDENT
     is_k12 = False
     is_active = True
-    password_hash = factory.LazyFunction(lambda: hash_password("password123"))
+    password_hash = factory.LazyFunction(lambda: hash_password(TEST_PASSWORD))
 
 
 class QuestionFactory(factory.Factory):

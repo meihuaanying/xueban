@@ -63,9 +63,9 @@ async def run(args: argparse.Namespace) -> int:
     client = LlmClient(settings, observability)
     pipeline = QuestionPipeline(client, settings, request_interval_seconds=args.interval)
     if args.no_judge:
-        # 排障开关：judge 一律放行，只跑规则通道。正式出库必须走完整双通道，
-        # 这里只用于定位网关连通性/额度问题。
-        pipeline._verifier.judge = _disabled_judge
+        # 排障开关：judge 一律放行，只跑规则通道（批量与单题两条路径同时短路）。
+        # 正式出库必须走完整双通道，这里只用于定位网关连通性/额度问题。
+        pipeline._verifier.judge_enabled = False
 
     try:
         async with database_session() as session:
@@ -88,6 +88,7 @@ async def run(args: argparse.Namespace) -> int:
                 "dedupe_removal_rate": round(report.dedupe_removal_rate, 4),
                 "by_subject": report.by_subject(),
                 "target_per_point": target,
+                "aborted_reason": report.aborted_reason,
                 "generation_model": settings.content_generation_model,
                 "judge_model": settings.content_judge_model,
                 # 出题失败与验证拒绝都记在这里。只给样本而不是全文：全量跑会
@@ -156,12 +157,6 @@ async def _db_totals(session: object, *, stages: tuple[str, ...]) -> dict[str, i
         "db_by_subject": by_subject,
         "db_points_below_target": len(below),
     }
-
-
-async def _disabled_judge(*args: object, **kwargs: object) -> tuple[bool, int, str]:
-    """排障用：judge 一律放行。"""
-    del args, kwargs
-    return True, 100, "judge 已按 --no-judge 跳过"
 
 
 if __name__ == "__main__":

@@ -49,7 +49,7 @@ test.describe("P0 旅程骨架与路由守卫", () => {
   });
 });
 
-/** P0 onboarding：选学段 → 自动切主题 → 首次诊断 */
+/** P0 onboarding：选学段 → 选年级 → 自动切主题 → 首次诊断 */
 test.describe("P0 onboarding 选学段", () => {
   test("选择小学学段自动切到儿童模式并进入诊断", async ({ page, request }) => {
     // 初始学段显式用 focus 主题（SEEDED_BAND），否则 helper 缺省 primary 会预置 kids，
@@ -62,8 +62,11 @@ test.describe("P0 onboarding 选学段", () => {
     await expect(page.getByTestId("onboarding-theme")).toContainText("专注模式");
 
     await page.getByTestId("onboarding-choose-primary").click();
+    // 全学段扩展后 onboarding 是两步流：点学段 → 露出年级选择
+    await expect(page.getByTestId("onboarding-grades")).toBeVisible();
+    await page.getByTestId("onboarding-choose-grade1").click();
 
-    // 选学段即自动切主题并进入首站诊断（旅程状态机驱动跳转）
+    // 选年级即进入首站诊断（旅程状态机驱动跳转）；学段已切儿童主题
     await expect(page).toHaveURL(/\/journey\/diagnosis$/);
     await expect(page.getByTestId("stage-diagnosis")).toBeVisible();
     await expect
@@ -78,6 +81,7 @@ test.describe("P0 onboarding 选学段", () => {
     await page.goto("/onboarding");
 
     await page.getByTestId("onboarding-choose-senior").click();
+    await page.getByTestId("onboarding-choose-grade10").click();
 
     await expect(page).toHaveURL(/\/journey\/diagnosis$/);
     await expect

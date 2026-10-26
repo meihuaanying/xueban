@@ -2,9 +2,17 @@
 
 from __future__ import annotations
 
+import secrets
+
 from httpx import AsyncClient
 
 from tests.conftest import auth_headers, next_phone
+
+#: 测试账号口令：每次运行随机生成，源码里不留任何口令字面量
+#: （安全扫描会把源码中的口令串判为硬编码凭据）。
+TEST_PASSWORD = "Tst-" + secrets.token_urlsafe(12)
+#: 故意错误的口令，用于鉴权失败路径
+WRONG_PASSWORD = "Wrg-" + secrets.token_urlsafe(12)
 
 
 async def register(
@@ -12,7 +20,7 @@ async def register(
     *,
     role: str = "student",
     phone: str | None = None,
-    password: str = "password123",
+    password: str = TEST_PASSWORD,
     nickname: str | None = None,
     is_k12: bool = False,
 ) -> dict[str, str]:

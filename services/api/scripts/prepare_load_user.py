@@ -1,9 +1,10 @@
 """为压测/联调准备一个带学情数据的账号（重设密码）。
 
 用法（services/api 目录，Windows 用 .venv/Scripts/python）：
-    python -m scripts.prepare_load_user --phone 17136015493 --password load-test-123
-    python -m scripts.prepare_load_user --pick  # 自动挑选数据最丰富的用户
+    python -m scripts.prepare_load_user --phone 17136015493 --password '<你的口令>'
+    python -m scripts.prepare_load_user --pick --password '<你的口令>'  # 自动挑选数据最丰富的用户
 
+--password 必须显式提供（脚本内不内置默认口令）。
 仅用于本地/预发环境；生产环境禁止执行。
 """
 
@@ -51,7 +52,11 @@ async def _reset(phone: str, password: str) -> int:
 async def main() -> int:
     parser = argparse.ArgumentParser(description="压测账号准备")
     parser.add_argument("--phone", help="目标手机号")
-    parser.add_argument("--password", default="load-test-123", help="新密码")
+    parser.add_argument(
+        "--password",
+        required=True,
+        help="新密码（必须显式提供，不使用源码内置默认口令）",
+    )
     parser.add_argument("--pick", action="store_true", help="自动挑选数据最丰富的用户")
     args = parser.parse_args()
 

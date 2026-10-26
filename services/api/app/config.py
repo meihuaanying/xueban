@@ -89,11 +89,14 @@ class Settings(BaseSettings):
     llm_rate_limit_backoff_seconds: float = 8.0
 
     # ----- 题库内容管线（P1 / §6.2） -----
-    # 出题与讲解教学设计用强中文模型；自动验证的 judge 通道用更便宜的模型控成本
-    content_generation_model: str = "kimi-k3"
-    content_judge_model: str = "deepseek-v4-flash"
+    # 出题与质检统一用 deepseek-v4.1-flash（opencode go 网关）。
+    # 配额按「5 小时用量窗口」计，批量与批判都在省额度。
+    content_generation_model: str = "deepseek-v4.1-flash"
+    content_judge_model: str = "deepseek-v4.1-flash"
     # 单次请求出多少道题（Go 的用量窗口按请求计费，批量越大越省额度）
     content_batch_size: int = 10
+    # 一次判多少题（judge 批量化：调用数按批缩小，配额窗口下是决定性差异）
+    content_judge_batch_size: int = 5
     # 推理模型（kimi-k3 / glm-5.3 等）会先产出 reasoning 再给正文，max_tokens
     # 给小了会把预算全花在推理上、正文 content 返回 null。实测 kimi-k3 出 10 道
     # 带三层提示的题：max_tokens=4000 → 4000 token 全进 reasoning、正文长度 0；

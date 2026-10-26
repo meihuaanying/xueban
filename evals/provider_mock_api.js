@@ -5,19 +5,49 @@
  * - vars.question_id    → 走 /v1/tutor/session + /{id}/hint（第 1 层），返回讲解文本；
  * - vars.crisis_message → 走 /v1/coach/companion，返回 {crisis, reply, resources} JSON 字符串。
  *
- * 环境变量：XUEBAN_API_BASE（默认 http://127.0.0.1:8096）、
- *          XUEBAN_EVAL_PHONE / XUEBAN_EVAL_PASSWORD（默认本机压测账号）。
+ * 环境变量：XUEBAN_API_BASE（默认 http://127.0.0.1:8096，仅回环地址）、
+ *          XUEBAN_EVAL_PHONE / XUEBAN_EVAL_PASSWORD（口令必须显式提供）。
  */
 const BASE = (process.env.XUEBAN_API_BASE || "http://127.0.0.1:8096").replace(/\/+$/, "");
+// SSRF 防线：这个 provider 只服务「本机 mock API」，BASE 必须落在回环地址。
+// 否则一旦被注入外部 URL，评测流程就成了访问内网/云元数据的通道。
+{
+  const parsed = new URL(BASE);
+  const loopback = new Set(["127.0.0.1", "localhost", "::1", "[::1]"]);
+  if (!loopback.has(parsed.hostname)) {
+    throw new Error(
+      "XUEBAN_API_BASE 只允许本机回环地址（127.0.0.1/localhost/::1），当前：" + parsed.hostname,
+    );
+  }
+}
 const PHONE = process.env.XUEBAN_EVAL_PHONE || "17136015493";
-const PASSWORD = process.env.XUEBAN_EVAL_PASSWORD || "load-test-123";
+// 评测账号口令只从环境变量读取，不在源码里留默认口令字面量
+const PASSWORD = process.env.XUEBAN_EVAL_PASSWORD;
+if (!PASSWORD) {
+  throw new Error("请通过 XUEBAN_EVAL_PASSWORD 提供本机评测账号的口令");
+}
 
 let tokenPromise = null;
+
+const LOOPBACK_HOSTS = new Set(["127.0.0.1", "localhost", "::1", "[::1]"]);
+
+/**
+ * 统一的本机请求入口（SSRF 防线）：
+ * 每次调用都重新解析目标 URL，并强制 hostname 落在回环地址白名单内；
+ * 任何外部地址在发请求前就被拒绝。所有 fetch 必须经由此函数。
+ */
+async function localFetch(path, init) {
+  const url = new URL(path, BASE);
+  if (!LOOPBACK_HOSTS.has(url.hostname)) {
+    throw new Error("仅允许访问本机回环地址，拒绝：" + url.hostname);
+  }
+  return fetch(url.toString(), init);
+}
 
 async function getToken() {
   if (!tokenPromise) {
     tokenPromise = (async () => {
-      const res = await fetch(`${BASE}/v1/auth/login`, {
+      const res = await localFetch(`${BASE}/v1/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: PHONE, password: PASSWORD }),
@@ -38,7 +68,7 @@ async function withAuth() {
 
 async function callTutor(vars) {
   const headers = await withAuth();
-  const created = await fetch(`${BASE}/v1/tutor/session`, {
+  const created = await localFetch(`${BASE}/v1/tutor/session`, {
     method: "POST",
     headers,
     body: JSON.stringify({ question_id: vars.question_id }),
@@ -47,7 +77,7 @@ async function callTutor(vars) {
     throw new Error(`创建讲解会话失败: ${created.status} ${await created.text()}`);
   }
   const { session_id: sessionId } = await created.json();
-  const hint = await fetch(`${BASE}/v1/tutor/${sessionId}/hint`, {
+  const hint = await localFetch(`${BASE}/v1/tutor/${sessionId}/hint`, {
     method: "POST",
     headers,
     body: JSON.stringify({ level: 1 }),
@@ -60,7 +90,7 @@ async function callTutor(vars) {
 
 async function callCrisis(vars) {
   const headers = await withAuth();
-  const res = await fetch(`${BASE}/v1/coach/companion`, {
+  const res = await localFetch(`${BASE}/v1/coach/companion`, {
     method: "POST",
     headers,
     body: JSON.stringify({ message: vars.crisis_message }),

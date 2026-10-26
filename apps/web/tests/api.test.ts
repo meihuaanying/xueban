@@ -20,9 +20,14 @@ import {
   saveTokens,
 } from "@/lib/auth-storage";
 
+// 测试口令/令牌运行时生成：源码里不留凭据字面量（安全扫描红线）
+const TEST_PASSWORD = "Tst-" + crypto.randomUUID().slice(0, 12);
+const ACCESS_TOKEN = "acc-" + crypto.randomUUID();
+const REFRESH_TOKEN = "ref-" + crypto.randomUUID();
+
 const TOKEN_PAIR: TokenPair = {
-  access_token: "access-1",
-  refresh_token: "refresh-1",
+  access_token: ACCESS_TOKEN,
+  refresh_token: REFRESH_TOKEN,
   token_type: "bearer",
   expires_in: 900,
 };
@@ -100,10 +105,10 @@ describe("官网 API 客户端", () => {
     const fetchMock = mockFetch(TOKEN_PAIR, 201);
     const tokens = await registerAccount({
       phone: "13900000000",
-      password: "password123",
+      password: TEST_PASSWORD,
       role: "parent",
     });
-    expect(tokens.access_token).toBe("access-1");
+    expect(tokens.access_token).toBe(ACCESS_TOKEN);
     const { init } = lastRequest(fetchMock);
     expect(JSON.parse(String(init.body))).toMatchObject({
       phone: "13900000000",
@@ -143,7 +148,7 @@ describe("官网 API 客户端", () => {
     const controlsMock = mockFetch({});
     await parentApi.updateControls("tok", {
       child_id: "child-1",
-      parent_password: "password123",
+      parent_password: TEST_PASSWORD,
       is_enabled: true,
       daily_limit_minutes: 30,
       rest_after_minutes: 20,
@@ -203,8 +208,8 @@ describe("官网 API 客户端", () => {
 describe("登录态本地存储", () => {
   it("保存/读取/清理令牌", () => {
     saveTokens(TOKEN_PAIR);
-    expect(loadAccessToken()).toBe("access-1");
-    expect(window.localStorage.getItem("xueban.refresh_token")).toBe("refresh-1");
+    expect(loadAccessToken()).toBe(ACCESS_TOKEN);
+    expect(window.localStorage.getItem("xueban.refresh_token")).toBe(REFRESH_TOKEN);
 
     saveAccessToken("override");
     expect(loadAccessToken()).toBe("override");

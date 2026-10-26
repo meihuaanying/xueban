@@ -3,7 +3,7 @@
 /** onboarding：选学段 → 选年级 → 自动切主题 → 进入首次诊断（§7 P0；全学段扩展）。 */
 import { AudioButton, Button, Card, CardContent, CardHeader, CardTitle } from "@xueban/ui";
 import { APP_NAME } from "@xueban/core";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 import { useJourney } from "@/journey/journey-context";
 import { GRADE_BANDS, gradeLabel, type GradeBand } from "@/journey/stages";
@@ -15,11 +15,17 @@ const BANDS: { id: GradeBand; hint: string }[] = [
 ];
 
 export default function OnboardingPage() {
-  const { band, setBand, grade, setGrade, goTo, theme } = useJourney();
+  const { setBand, grade, setGrade, goTo, theme } = useJourney();
+  // 引导流程固定从「选学段」开始：即使旧会话已存过学段，也不跳过第一步，
+  // 否则用户（和 E2E）会在年级步里找不到自己学段的年级按钮。
+  const [step, setStep] = useState<"band" | "grade">("band");
+  const [pickedBand, setPickedBand] = useState<GradeBand | null>(null);
 
   const chooseBand = useCallback(
     (next: GradeBand) => {
       setBand(next);
+      setPickedBand(next);
+      setStep("grade");
     },
     [setBand],
   );
@@ -32,8 +38,9 @@ export default function OnboardingPage() {
     [goTo, setGrade],
   );
 
-  // 第一步未完成（没选学段）时只展示学段卡；选完学段进入年级选择。
-  const preset = band ? GRADE_BANDS[band] : null;
+  // 头部文案与卡片列表共用同一判据：只看「当前步 + 已选学段」，
+  // 否则点「重选学段」回到列表时，标题还停在「选择你的年级」。
+  const preset = step === "grade" && pickedBand ? GRADE_BANDS[pickedBand] : null;
 
   return (
     <main
@@ -53,7 +60,7 @@ export default function OnboardingPage() {
         </p>
       </header>
 
-      {preset ? (
+      {preset && step === "grade" ? (
         <ul
           className="grid w-full max-w-3xl grid-cols-2 gap-sm md:grid-cols-3"
           data-testid="onboarding-grades"
@@ -83,7 +90,7 @@ export default function OnboardingPage() {
           <li className="col-span-full">
             <Button
               variant="outline"
-              onClick={() => chooseBand(band!)}
+              onClick={() => setStep("band")}
               data-testid="onboarding-back"
             >
               ← 重选学段
@@ -94,13 +101,9 @@ export default function OnboardingPage() {
         <ul className="grid w-full max-w-4xl gap-md md:grid-cols-3" data-testid="onboarding-bands">
           {BANDS.map(({ id, hint }) => {
             const bandPreset = GRADE_BANDS[id];
-            const selected = band === id;
             return (
               <li key={id}>
-                <Card
-                  className={selected ? "h-full border-primary bg-primary-soft" : "h-full"}
-                  data-testid={`onboarding-band-${id}`}
-                >
+                <Card className="h-full" data-testid={`onboarding-band-${id}`}>
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                       {bandPreset.label}
@@ -116,7 +119,6 @@ export default function OnboardingPage() {
                     </p>
                     <Button
                       onClick={() => chooseBand(id)}
-                      aria-pressed={selected}
                       data-testid={`onboarding-choose-${id}`}
                     >
                       选择{bandPreset.label}

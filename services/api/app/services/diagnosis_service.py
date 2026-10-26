@@ -376,6 +376,16 @@ async def submit_answer(
             stage=str(exam.meta.get("stage", "junior")),
             exclude={uuid.UUID(hex=item) for item in asked},
         )
+        # 年级/范围一致性：首题按 grade 收窄后，scope_knowledge_points 已落库；
+        # 后续选题必须留在同一范围内，否则一、二年级同属 primary 时会串年级。
+        scope = exam.meta.get("scope_knowledge_points")
+        if isinstance(scope, list) and scope:
+            scope_ids = {uuid.UUID(value) for value in scope}
+            candidates = [
+                candidate
+                for candidate in candidates
+                if any(kp_id in scope_ids for kp_id in candidate.knowledge_point_ids)
+            ]
         mastery_points = await mastery_service.get_mastery_overview(session, user_id=user.id)
         mastery_by_kp = {point.knowledge_point_id: point.mastery for point in mastery_points}
         candidate = select_candidate(

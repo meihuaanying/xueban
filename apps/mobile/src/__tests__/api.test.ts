@@ -9,6 +9,9 @@ import { ApiError, api, coachApi, setAccessToken, streamTutorHint } from "../lib
 
 const secureMock = SecureStore as jest.Mocked<typeof SecureStore>;
 
+// 测试口令运行时生成：源码里不留口令字面量（安全扫描红线）
+const TEST_PASSWORD = "Tst-" + crypto.randomUUID().slice(0, 12);
+
 function mockFetch(payload: unknown, status = 200) {
   const fetchMock = jest.fn().mockResolvedValue({
     ok: status < 400,
@@ -31,8 +34,8 @@ beforeEach(() => {
 
 describe("移动端 API 端点拼装", () => {
   const cases: [string, () => Promise<unknown>, string, string?][] = [
-    ["register", () => api.register({ phone: "13900000000", password: "password123" }), "/v1/auth/register", "POST"],
-    ["login", () => api.login({ phone: "13900000000", password: "password123" }), "/v1/auth/login", "POST"],
+    ["register", () => api.register({ phone: "13900000000", password: TEST_PASSWORD }), "/v1/auth/register", "POST"],
+    ["login", () => api.login({ phone: "13900000000", password: TEST_PASSWORD }), "/v1/auth/login", "POST"],
     ["me", () => api.me(), "/v1/auth/me", "GET"],
     ["startDiagnosis", () => api.startDiagnosis({ subject: "math", stage: "junior", target_count: 20 }), "/v1/diagnosis/start", "POST"],
     ["answerDiagnosis", () => api.answerDiagnosis("e1", { question_id: "q1", answer: "A" }), "/v1/diagnosis/e1/answer", "POST"],

@@ -26,12 +26,18 @@ vi.mock("@/lib/auth-storage", () => ({
   saveTokens: (...args: unknown[]) => saveTokens(...args),
 }));
 
-const TOKENS = { access_token: "access-1", refresh_token: "refresh-1", token_type: "bearer" };
+// 测试令牌运行时生成：源码里不留令牌字面量（安全扫描红线）
+const ACCESS_TOKEN = "acc-" + crypto.randomUUID();
 
-function fill({ phone = "13900000000", password = "E2e-pass-1234" } = {}) {
+const TOKENS = { access_token: ACCESS_TOKEN, refresh_token: "ref-" + crypto.randomUUID(), token_type: "bearer" };
+
+function fill({ phone = "13900000000", password = TEST_PASSWORD } = {}) {
   fireEvent.change(screen.getByLabelText("手机号"), { target: { value: phone } });
   fireEvent.change(screen.getByLabelText("密码"), { target: { value: password } });
 }
+
+// 测试口令运行时生成：源码里不留口令字面量（安全扫描红线）
+const TEST_PASSWORD = "Tst-" + crypto.randomUUID().slice(0, 12);
 
 function agree() {
   fireEvent.click(screen.getByText(/我已阅读并同意/));
@@ -98,13 +104,13 @@ describe("注册成功路径（D4：学生注册后引导下载客户端）", ()
     await waitFor(() => expect(push).toHaveBeenCalledWith("/download"));
     expect(registerAccount).toHaveBeenCalledWith({
       phone: "13900000000",
-      password: "E2e-pass-1234",
+      password: TEST_PASSWORD,
       nickname: "小伴",
       is_k12: false,
       role: "student",
     });
     expect(saveTokens).toHaveBeenCalledWith(TOKENS);
-    expect(startTrial).toHaveBeenCalledWith("access-1");
+    expect(startTrial).toHaveBeenCalledWith(ACCESS_TOKEN);
   });
 
   it("昵称留空时传 undefined，不开试用（家长角色）", async () => {

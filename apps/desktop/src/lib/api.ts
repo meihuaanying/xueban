@@ -633,7 +633,10 @@ export const api = {
       `/v1/plan/path/regenerate${options?.grade ? `?grade=${options.grade}` : ""}`,
       {},
     ),
-  today: () => get<TodayResponse>("/v1/plan/today"),
+  today: (options?: { grade?: string }) =>
+    get<TodayResponse>(
+      `/v1/plan/today${options?.grade ? `?grade=${options.grade}` : ""}`,
+    ),
   completeTask: (taskId: string) => post<CompleteTaskResponse>(`/v1/plan/tasks/${taskId}/complete`),
   examCountdown: (payload: { exam_date: string; target_score?: number }) =>
     post<ExamCountdown>("/v1/plan/exam-countdown", payload),

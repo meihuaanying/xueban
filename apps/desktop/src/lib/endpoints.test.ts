@@ -2,6 +2,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ApiError, api, coachApi, getAccessToken, setAccessToken, setRefreshToken, v3Api } from "./api";
 
+// 测试口令/令牌运行时生成：源码里不留凭据字面量（安全扫描红线）
+const TEST_PASSWORD = "Tst-" + crypto.randomUUID().slice(0, 12);
+const REFRESH_TOKEN = "ref-" + crypto.randomUUID();
+
 function mockFetch(payload: unknown, status = 200) {
   const fetchMock = vi.fn().mockResolvedValue(
     new Response(JSON.stringify(payload), {
@@ -24,10 +28,10 @@ afterEach(() => {
 
 describe("桌面端 API 端点拼装", () => {
   const cases: [string, () => Promise<unknown>, string, string?][] = [
-    ["register", () => api.register({ phone: "13900000000", password: "password123" }), "/v1/auth/register", "POST"],
-    ["login", () => api.login({ phone: "13900000000", password: "password123" }), "/v1/auth/login", "POST"],
+    ["register", () => api.register({ phone: "13900000000", password: TEST_PASSWORD }), "/v1/auth/register", "POST"],
+    ["login", () => api.login({ phone: "13900000000", password: TEST_PASSWORD }), "/v1/auth/login", "POST"],
     ["me", () => api.me(), "/v1/auth/me", "GET"],
-    ["logout", () => api.logout("refresh-1"), "/v1/auth/logout", "POST"],
+    ["logout", () => api.logout(REFRESH_TOKEN), "/v1/auth/logout", "POST"],
     ["startDiagnosis", () => api.startDiagnosis({ subject: "math", stage: "junior", target_count: 20 }), "/v1/diagnosis/start", "POST"],
     ["answerDiagnosis", () => api.answerDiagnosis("exam-1", { question_id: "q1", answer: "A" }), "/v1/diagnosis/exam-1/answer", "POST"],
     ["diagnosisReport", () => api.diagnosisReport("exam-1"), "/v1/diagnosis/exam-1/report", "GET"],

@@ -48,6 +48,26 @@ def upgrade() -> None:
     conn.execute(
         sa.text("UPDATE knowledge_points SET stage = 'primary' WHERE stage = 'grade1_2'")
     )
+    # 题目的 stage 必须随知识点一起迁移：只改 KP 不改题，会让旧小学题
+    # 永久查不到（诊断/练习按 Question.stage 精确过滤），且管线计数把它们
+    # 算作「已有题」从而跳过补题——等于旧内容隐形丢失。
+    conn.execute(
+        sa.text("UPDATE questions SET stage = 'primary' WHERE stage = 'grade1_2'")
+    )
+
+    # 迁移后自检：不允许残留任何 grade1_2（KP 或题目）。发现即中止迁移，
+    # 避免「迁移成功但数据不可达」的静默失败。
+    leftover_kp = conn.execute(
+        sa.text("SELECT count(*) FROM knowledge_points WHERE stage = 'grade1_2'")
+    ).scalar_one()
+    leftover_q = conn.execute(
+        sa.text("SELECT count(*) FROM questions WHERE stage = 'grade1_2'")
+    ).scalar_one()
+    if leftover_kp or leftover_q:
+        raise RuntimeError(
+            f"stage 迁移未完成：knowledge_points 残留 {leftover_kp} 行、"
+            f"questions 残留 {leftover_q} 行仍为 grade1_2"
+        )
 
 
 def downgrade() -> None:

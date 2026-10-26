@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_session, require_not_locked
 from app.config import settings
+from app.errors import AppError
 from app.models import Question, User
 from app.schemas import HandwritingDiagnosisRequest, HandwritingDiagnosisResponse, HandwritingStep
 from app.schemas.diagnosis import (
@@ -52,18 +53,33 @@ async def start(
     user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> DiagnosisStartResponse:
-    """创建诊断并按初始难度给出第一题；带 grade 时收窄到该年级教材进度。"""
+    """创建诊断并按初始难度给出第一题；带 grade 时收窄到该年级教材进度。
+
+    年级内容尚未建成时按学段兜底（与既有空态文案「先用已有学段的题练一练」
+    口径一致）：避免新年级学生因为内容未生成而完全无法开始诊断。
+    """
     grade_kp_ids = None
     if payload.grade is not None:
         grade_kp_ids = await knowledge_point_ids_for_grade(session, grade=payload.grade)
-    exam, question = await diagnosis_service.start_diagnosis(
-        session,
-        user=user,
-        subject=payload.subject,
-        stage=payload.stage,
-        target_count=payload.target_count,
-        grade_kp_ids=grade_kp_ids,
-    )
+    try:
+        exam, question = await diagnosis_service.start_diagnosis(
+            session,
+            user=user,
+            subject=payload.subject,
+            stage=payload.stage,
+            target_count=payload.target_count,
+            grade_kp_ids=grade_kp_ids,
+        )
+    except AppError as exc:
+        if exc.code != "DIAGNOSIS_NO_QUESTIONS" or grade_kp_ids is None:
+            raise
+        exam, question = await diagnosis_service.start_diagnosis(
+            session,
+            user=user,
+            subject=payload.subject,
+            stage=payload.stage,
+            target_count=payload.target_count,
+        )
     response = DiagnosisStartResponse(
         exam_id=exam.id,
         status=exam.status.value,

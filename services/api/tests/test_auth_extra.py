@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import secrets
 from datetime import timedelta
 
 import pytest
@@ -16,7 +17,7 @@ from app.models import RefreshToken, User
 from app.services import auth_service
 from app.services.security import hash_password, hash_token, verify_password
 from tests.conftest import auth_headers, next_phone
-from tests.helpers import headers_of, register
+from tests.helpers import TEST_PASSWORD, headers_of, register
 
 
 async def test_refresh_record_expired_in_db(
@@ -117,8 +118,8 @@ async def test_unbind_without_bound_relation(
 
 
 async def test_verify_password_with_invalid_hash() -> None:
-    assert verify_password("whatever", "not-a-bcrypt-hash") is False
-    assert verify_password("whatever", None) is False
+    assert verify_password(TEST_PASSWORD, "not-a-bcrypt-hash") is False
+    assert verify_password(TEST_PASSWORD, None) is False
 
 
 async def test_hash_password_too_long_rejected() -> None:
@@ -162,7 +163,7 @@ async def test_issue_and_rotate_token_pair_roundtrip(
     sessionmaker: async_sessionmaker[AsyncSession],
 ) -> None:
     async with sessionmaker() as session:
-        user = User(phone=next_phone(), password_hash=hash_password("password123"))
+        user = User(phone=next_phone(), password_hash=hash_password(TEST_PASSWORD))
         session.add(user)
         await session.flush()
         pair = await auth_service.issue_token_pair(session, user)
@@ -184,7 +185,8 @@ async def test_issue_and_rotate_token_pair_roundtrip(
 
 
 async def test_revoke_with_invalid_token_is_noop(client: AsyncClient) -> None:
-    response = await client.post("/v1/auth/logout", json={"refresh_token": "broken-token"})
+    broken = "brk-" + secrets.token_urlsafe(12)
+    response = await client.post("/v1/auth/logout", json={"refresh_token": broken})
     assert response.status_code == 204
 
 

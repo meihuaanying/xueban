@@ -949,7 +949,9 @@ async def test_pipeline_counts_only_published_questions(
             session.add(QuestionKnowledgePoint(question_id=record.id, knowledge_point_id=kp_id))
         await session.commit()
 
-        assert await pipeline._count_for_point(session, kp_id) == 1
+        assert (
+            await pipeline._count_for_point(session, kp_id, expected_stage="primary") == 1
+        )
 
         # target=2：只按关联行数会误判为已达标并跳过，按 PUBLISHED 口径则要继续补
         outcome = await pipeline.process_point(session, CHINESE_POINT, target=2)

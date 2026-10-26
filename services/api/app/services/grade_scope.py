@@ -47,4 +47,26 @@ async def knowledge_point_ids_for_grade(
     return set(rows)
 
 
+async def load_points_by_ids(
+    session: AsyncSession, *, kp_ids: set[uuid.UUID], limit: int
+) -> list[KnowledgePoint]:
+    """按 id 集合取知识点行（教学顺序排序）。
+
+    规划兜底路径用：先用 knowledge_point_ids_for_grade 求集合，再按 id 精确取，
+    避免 `ORDER BY sort_order LIMIT n` 在不同管线批次间排序不稳定、把目标年级
+    的知识点挤出窗口。
+    """
+    if not kp_ids or limit <= 0:
+        return []
+    rows = (
+        await session.execute(
+            select(KnowledgePoint)
+            .where(KnowledgePoint.id.in_(kp_ids))
+            .order_by(KnowledgePoint.sort_order, KnowledgePoint.code)
+            .limit(limit)
+        )
+    ).scalars().all()
+    return list(rows)
+
+
 __all__ = ["knowledge_point_ids_for_grade", "validate_grade"]

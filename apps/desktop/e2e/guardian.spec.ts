@@ -21,7 +21,7 @@ async function register(
   role: "student" | "parent",
 ): Promise<GuardianAccount> {
   const phone = randomPhone();
-  const password = "E2e-pass-1234";
+  const password = "E2e-" + Math.random().toString(36).slice(2, 10) + "-Aa9";
   const response = await request.post(`${API_ORIGIN}/v1/auth/register`, {
     data: { phone, password, role },
   });

@@ -239,6 +239,28 @@ CONTENT_JUDGE_USER_TEMPLATE = """知识点：{point_name}（{grade_name}·{subje
 
 只输出形如 {{"verdict": "pass|reject", "score": 0~100 的整数, "reason": "一句话理由"}} 的 JSON。"""
 
+#: 批量质检（控成本/配额）：一次判多题，逐题给结论。题号从 1 起，必须与输入一一对应。
+CONTENT_JUDGE_BATCH_USER_TEMPLATE = """知识点：{point_name}（{grade_name}·{subject_name}）
+学习目标：{objective}
+
+下面有 {count} 道题，请**逐题独立**质检（不要因相邻题互相影响），按题号给出结论。
+只输出 JSON，不要输出其他文字：
+{{"results": [{{"index": 1, "verdict": "pass|reject",
+  "score": 0~100 的整数, "reason": "一句话理由"}}]}}
+必须包含 1~{count} 全部题号，不能缺项，不能合并。
+
+{questions}"""
+
+CONTENT_JUDGE_QUESTION_BLOCK = """【第 {index} 题】
+题型：{qtype}
+题干：{stem}
+选项：{options}
+标准答案：{answer}
+解析：{analysis}
+第1层提示：{hint1}
+第2层提示：{hint2}
+第3层提示：{hint3}"""
+
 MICRO_LESSON_SYSTEM_PROMPT = """你是学伴的微课讲师。针对给定知识点撰写一篇 3~5 分钟的口语化
 微课讲解稿，要求：由浅入深、举例具体、结尾留一个小练习；使用简体中文；数学表达式用 LaTeX（$...$）。
 直接输出讲解稿正文（不要 JSON、不要标题、不要 Markdown 标记），字数控制在 600~1000 字。"""

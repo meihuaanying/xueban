@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.db import utcnow
 from app.models import ChatMessage, ChatRole, ChatSession, ReportShare, SafetyEvent
 from tests.conftest import auth_headers
-from tests.helpers import headers_of, register_user
+from tests.helpers import TEST_PASSWORD, WRONG_PASSWORD, headers_of, register_user
 
 
 async def _bind(client: AsyncClient, parent: dict[str, str], child: dict[str, str]) -> str:
@@ -101,7 +101,7 @@ async def test_rbac_student_cannot_access_parent_apis(client: AsyncClient) -> No
         "/v1/parents/controls",
         json={
             "child_id": student["id"],
-            "parent_password": "password123",
+            "parent_password": TEST_PASSWORD,
             "is_enabled": True,
             "daily_limit_minutes": 30,
             "rest_after_minutes": 20,
@@ -132,7 +132,7 @@ async def test_controls_update_requires_parent_password(client: AsyncClient) -> 
         "/v1/parents/controls",
         json={
             "child_id": child_id,
-            "parent_password": "wrong-password",
+            "parent_password": WRONG_PASSWORD,
             "is_enabled": True,
             "daily_limit_minutes": 30,
             "rest_after_minutes": 20,
@@ -146,7 +146,7 @@ async def test_controls_update_requires_parent_password(client: AsyncClient) -> 
         "/v1/parents/controls",
         json={
             "child_id": child_id,
-            "parent_password": "password123",
+            "parent_password": TEST_PASSWORD,
             "is_enabled": True,
             "daily_limit_minutes": 30,
             "rest_after_minutes": 20,
@@ -166,7 +166,7 @@ async def test_guardian_status_locks_after_daily_limit(client: AsyncClient) -> N
         "/v1/parents/controls",
         json={
             "child_id": child_id,
-            "parent_password": "password123",
+            "parent_password": TEST_PASSWORD,
             "is_enabled": True,
             "daily_limit_minutes": 30,
             "rest_after_minutes": 20,
@@ -210,7 +210,7 @@ async def test_guardian_status_curfew_blocks_access(client: AsyncClient) -> None
         "/v1/parents/controls",
         json={
             "child_id": child_id,
-            "parent_password": "password123",
+            "parent_password": TEST_PASSWORD,
             "is_enabled": True,
             "daily_limit_minutes": 120,
             "allowed_start": start.isoformat(),

@@ -30,7 +30,11 @@ async def generate(
     user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> PracticeGenerateResponse:
-    """薄弱知识点占比 ≥60%，近 7 天去重；带 grade 时收窄到教材进度。"""
+    """薄弱知识点占比 ≥60%，近 7 天去重；带 grade 时收窄到教材进度。
+
+    年级内容尚未建成时按班学段兜底（与诊断空态文案口径一致）：
+    先按年级取题，取不到再退回学段级题库，避免学生端直接空转。
+    """
     grade_kp_ids = None
     if payload.grade is not None:
         grade_kp_ids = await knowledge_point_ids_for_grade(session, grade=payload.grade)
@@ -43,6 +47,15 @@ async def generate(
         knowledge_point_ids=payload.knowledge_point_ids,
         grade_kp_ids=grade_kp_ids,
     )
+    if not practice_set.items and grade_kp_ids is not None:
+        practice_set = await practice_service.generate_practice(
+            session,
+            user=user,
+            subject=payload.subject,
+            stage=payload.stage,
+            count=payload.count,
+            knowledge_point_ids=payload.knowledge_point_ids,
+        )
     questions: list[PracticeQuestionOut] = []
     for item in practice_set.items:
         links = await diagnosis_service.question_knowledge_point_links(

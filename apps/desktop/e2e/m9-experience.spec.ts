@@ -38,13 +38,15 @@ test.describe("旅程三态与加载反馈", () => {
   });
 });
 
-/** T9.4 新手引导：选学段 → 自动切主题 → 首次诊断（≤3 步） */
+/** T9.4 新手引导：选学段 → 选年级 → 自动切主题 → 首次诊断 */
 test.describe("新手引导到首次诊断", () => {
   test("选学段后自动切主题并落在诊断页", async ({ page, request }) => {
     await signInAsLearner(page, request, { stage: "today" });
     await page.goto("/onboarding");
 
     await page.getByTestId("onboarding-choose-primary").click();
+    // 全学段扩展：学段之后还要选具体年级
+    await page.getByTestId("onboarding-choose-grade1").click();
     await expect(page).toHaveURL(/\/journey\/diagnosis$/);
     await expect(page.getByTestId("stage-diagnosis")).toBeVisible();
     await expect(page.getByTestId("diagnosis-start")).toBeVisible();

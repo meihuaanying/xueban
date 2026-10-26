@@ -6,6 +6,7 @@ import asyncio
 import itertools
 import os
 import random
+import secrets
 import uuid
 from collections.abc import AsyncIterator
 from pathlib import Path
@@ -181,7 +182,8 @@ async def admin_token(sessionmaker: async_sessionmaker[AsyncSession]) -> str:
         user = User(
             phone=next_phone(),
             role=UserRole.ADMIN,
-            password_hash=hash_password("admin-pass-123"),
+            # 直建账号的口令运行时生成：源码里不留口令字面量（安全扫描红线）
+            password_hash=hash_password("Adm-" + secrets.token_urlsafe(12)),
             nickname="测试管理员",
         )
         session.add(user)

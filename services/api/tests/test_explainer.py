@@ -43,7 +43,7 @@ from app.services.explainer_sanitize import (
 )
 from app.services.security import hash_password
 from tests.conftest import auth_headers, next_phone
-from tests.helpers import register_user
+from tests.helpers import TEST_PASSWORD, register_user
 
 MAX_BYTES = 500 * 1024
 POINT_CODE = "g1m-add-within-10"
@@ -377,7 +377,7 @@ async def student(sessionmaker: async_sessionmaker[AsyncSession]) -> tuple[uuid.
         user = User(
             phone=next_phone(),
             role=UserRole.STUDENT,
-            password_hash=hash_password("pw-123456"),
+            password_hash=hash_password(TEST_PASSWORD),
             nickname="讲解测试",
         )
         session.add(user)
@@ -394,7 +394,7 @@ async def student_token(sessionmaker: async_sessionmaker[AsyncSession]) -> str:
         user = User(
             phone=next_phone(),
             role=UserRole.STUDENT,
-            password_hash=hash_password("pw-123456"),
+            password_hash=hash_password(TEST_PASSWORD),
             nickname="讲解路由测试",
         )
         session.add(user)

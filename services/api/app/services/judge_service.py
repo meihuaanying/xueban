@@ -210,14 +210,34 @@ def run_python(
             feedback=_build_feedback(code, [], "blocked"),
         )
 
-    sandbox_dir = workdir or tempfile.mkdtemp(prefix="judge-")
+    # 沙箱目录必须落在系统临时目录内：workdir 只供测试注入，若被外部传入
+    # 任意路径，os.path.join 之后的写入就会变成路径穿越。先做归属校验。
+    sandbox_dir = os.path.realpath(workdir or tempfile.mkdtemp(prefix="judge-"))
+    temp_root = os.path.realpath(tempfile.gettempdir())
+    if not (sandbox_dir == temp_root or sandbox_dir.startswith(temp_root + os.sep)):
+        return JudgeOutcome(
+            verdict="rejected",
+            passed=0,
+            total=len(tests),
+            blocked_reason="沙箱目录不合法",
+            feedback=_build_feedback(code, [], "rejected"),
+        )
     owned = workdir is None
     try:
-        script = os.path.join(sandbox_dir, "solution.py")
-        with open(script, "w", encoding="utf-8") as handle:
+        # 用 NamedTemporaryFile(dir=sandbox_dir) 落盘：路径完全由标准库在已校验的
+        # 沙箱目录内生成，代码里不再拼接任何路径片段（无 traversal 面）。
+        with tempfile.NamedTemporaryFile(
+            "w",
+            dir=sandbox_dir,
+            prefix="solution-",
+            suffix=".py",
+            delete=False,
+            encoding="utf-8",
+        ) as handle:
             handle.write(SANDBOX_PREAMBLE.format(blocked=sorted(BLOCKED_MODULES)))
             handle.write("\n")
             handle.write(code)
+            script = handle.name
 
         results: list[TestResult] = []
         passed = 0

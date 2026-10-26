@@ -6,6 +6,7 @@ import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Progress, Stre
 import { AsyncFeedback, JourneyStepper } from "../../components/journey-blocks";
 import { StageShell } from "../../components/stage-shell";
 import { useJourney } from "../../journey/journey-context";
+import { GRADE_BANDS } from "../../journey/stages";
 import { useToday } from "../../journey/use-journey-data";
 
 const TASK_LABEL: Record<string, string> = {
@@ -17,8 +18,10 @@ const TASK_LABEL: Record<string, string> = {
 };
 
 export default function TodayStagePage() {
-  const { theme, mark, goTo } = useJourney();
-  const today = useToday();
+  const { band, grade, theme, mark, goTo } = useJourney();
+  // 今日路径只在该用户当天首次生成时用到年级；后续复用既有路径。
+  const preset = band ? GRADE_BANDS[band] : GRADE_BANDS.primary;
+  const today = useToday(grade ?? preset.grade);
   const tasks = today.data?.tasks ?? [];
   const done = today.data?.completed_count ?? 0;
   const total = today.data?.total ?? 0;
