@@ -56,8 +56,12 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger("xueban.content.pipeline")
 
-_QUOTA_ABORT_MESSAGE = (
-    "配额窗口耗尽（LLM_RATE_LIMITED），已提前中止；窗口恢复后重跑同一命令即可断点续跑"
+#: 连续两个知识点「零入库且命中这些错误」即中止：配额耗尽或网关不可用时，
+#: 继续逐点重试只会把时间耗在必败的请求上，断点续跑更划算。
+_ABORT_ERROR_CODES = ("LLM_RATE_LIMITED", "LLM_UNAVAILABLE")
+_ABORT_MESSAGE = (
+    "网关不可用（LLM_RATE_LIMITED / LLM_UNAVAILABLE），已提前中止；"
+    "恢复后重跑同一命令即可断点续跑"
 )
 
 # 题库来源标记，便于与存量 self-built 题区分
@@ -409,12 +413,12 @@ class QuestionPipeline:
                     report.outcomes.append(
                         PointOutcome(point_id=point.id, errors=[f"{type(exc).__name__}: {exc}"])
                     )
-                    if "LLM_RATE_LIMITED" in str(exc):
+                    if any(code in str(exc) for code in _ABORT_ERROR_CODES):
                         consecutive_rate_limited += 1
                     else:
                         consecutive_rate_limited = 0
                     if consecutive_rate_limited >= 2:
-                        report.aborted_reason = _QUOTA_ABORT_MESSAGE
+                        report.aborted_reason = _ABORT_MESSAGE
                         logger.error(report.aborted_reason)
                         return report
                     continue
@@ -428,15 +432,17 @@ class QuestionPipeline:
                     outcome.verified,
                     outcome.deduped_away,
                 )
-                # 只有「限流且这一轮一题都没补成」才算一次配额失败；瞬时 429 后
+                # 只有「网关不可用且这一轮一题都没补成」才算一次失败；瞬时错误后
                 # 恢复正常入库的知识点不应计入，否则会误中止健康运行。
-                rate_limited = any("LLM_RATE_LIMITED" in error for error in outcome.errors)
-                if rate_limited and outcome.inserted == 0:
+                gateway_down = any(
+                    code in error for error in outcome.errors for code in _ABORT_ERROR_CODES
+                )
+                if gateway_down and outcome.inserted == 0:
                     consecutive_rate_limited += 1
-                elif not rate_limited:
+                elif not gateway_down:
                     consecutive_rate_limited = 0
                 if consecutive_rate_limited >= 2:
-                    report.aborted_reason = _QUOTA_ABORT_MESSAGE
+                    report.aborted_reason = _ABORT_MESSAGE
                     logger.error(report.aborted_reason)
                     return report
                 if limit_points is not None and len(report.outcomes) >= limit_points:
