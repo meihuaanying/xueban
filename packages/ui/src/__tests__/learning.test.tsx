@@ -308,6 +308,59 @@ describe("ExplainerFrame（沙箱安全）", () => {
     );
   });
 
+  it("多选题：勾选不足两项不能确认，确认后按字母序提交并重置", () => {
+    const onConfirm = vi.fn();
+    render(
+      <QuestionCard
+        stem="下列哪些是正确的？"
+        kind="multi"
+        options={[
+          { key: "A", label: "甲" },
+          { key: "B", label: "乙" },
+          { key: "C", label: "丙" },
+        ]}
+        onConfirm={onConfirm}
+      />,
+    );
+    const submit = screen.getByTestId("multi-submit");
+    expect(submit).toBeDisabled();
+
+    fireEvent.click(screen.getByTestId("option-C"));
+    expect(submit).toBeDisabled();
+    fireEvent.click(screen.getByTestId("option-A"));
+    expect(submit).toBeEnabled();
+
+    fireEvent.click(submit);
+    expect(onConfirm).toHaveBeenCalledWith("AC");
+    // 提交后草稿重置，按钮回到不可用
+    expect(submit).toBeDisabled();
+  });
+
+  it("多选题：重复点击同一项是取消勾选", () => {
+    const onConfirm = vi.fn();
+    render(
+      <QuestionCard
+        stem="题"
+        kind="multi"
+        options={[
+          { key: "A", label: "甲" },
+          { key: "B", label: "乙" },
+        ]}
+        onConfirm={onConfirm}
+      />,
+    );
+    fireEvent.click(screen.getByTestId("option-A"));
+    fireEvent.click(screen.getByTestId("option-A"));
+    // A 被取消后只剩 0 项，确认按钮回到禁用
+    expect(screen.getByTestId("multi-submit")).toBeDisabled();
+
+    fireEvent.click(screen.getByTestId("option-B"));
+    expect(screen.getByTestId("multi-submit")).toBeDisabled();
+    fireEvent.click(screen.getByTestId("option-A"));
+    fireEvent.click(screen.getByTestId("multi-submit"));
+    expect(onConfirm).toHaveBeenCalledWith("AB");
+  });
+
   // 注意：超时路径不能在组件测试里断言。jsdom 会自动给 iframe 派发 load 事件，
   // 而 iframe onLoad 是「渲染完成」的解除武装信号，一旦挂上超时分支永远走不到。
   // 所以超时逻辑单独测 useExplainerWatchdog（见下方 describe），这里只测接线。

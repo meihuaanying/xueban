@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import re
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -157,12 +158,26 @@ def _matches_option_content(question: Question, user_answer: str) -> bool:
     return normalize_answer(label) == normalize_answer(question.answer)
 
 
+def _matches_multi_choice(expected: str, user_answer: str) -> bool:
+    """多选题判定：按字母集合比较，顺序与分隔符不影响判分。
+
+    标准答案存「AC」，孩子可能提交 "CA" 或 "A、C"——集合相等即正确。
+    """
+    letters = re.compile(r"[A-Z]")
+    wanted = set(letters.findall(expected.upper()))
+    got = set(letters.findall(user_answer.upper()))
+    return bool(wanted) and wanted == got
+
+
 def check_answer(question: Question, user_answer: str) -> bool:
     """客观题判定（按题型归一后比较）。
 
     选择/填空保持原有的归一化字符串比较；连线题按映射比对；点选识字支持
-    「提交选项 key」与「直接提交内容」两种形态；判断题认 √/×/T/F 等口语写法。
+    「提交选项 key」与「直接提交内容」两种形态；判断题认 √/×/T/F 等口语写法；
+    多选题按字母集合比对（顺序无关）。
     """
+    if question.qtype is QuestionType.MULTI_CHOICE:
+        return _matches_multi_choice(question.answer, user_answer)
     if question.qtype is QuestionType.MATCH and _matches_link_pairs(
         question.answer, user_answer
     ):

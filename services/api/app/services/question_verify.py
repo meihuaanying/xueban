@@ -124,8 +124,8 @@ def _option_key(answer: str) -> str:
 
 
 def _check_options_unique(question: GeneratedQuestion) -> str | None:
-    """选择题/连线题：答案必须指向存在的选项，且选项值不得重复。"""
-    if question.qtype not in {"choice", "match"}:
+    """选择题/多选题/连线题：答案必须指向存在的选项，且选项值不得重复。"""
+    if question.qtype not in {"choice", "match", "multi_choice"}:
         return None
     if not question.options:
         return "选择题缺少选项"
@@ -140,6 +140,28 @@ def _check_options_unique(question: GeneratedQuestion) -> str | None:
             return "题干中出现了正确选项内容，等于直接给答案"
         if _option_key(question.answer) not in {key.upper() for key in question.options}:
             return "答案不在选项范围内"
+    return None
+
+
+_MULTI_LETTER = re.compile(r"[A-Z]")
+
+
+def _check_multi_choice_answer(question: GeneratedQuestion) -> str | None:
+    """多选题专项规则：≥2 个字母、全部指向存在的选项、按字母顺序存储。"""
+    if question.qtype != "multi_choice":
+        return None
+    if not question.options:
+        return "多选题缺少选项"
+    letters = sorted(set(_MULTI_LETTER.findall(question.answer.upper())))
+    if len(letters) < 2:
+        return "多选题答案至少包含两个选项字母"
+    option_keys = {key.upper() for key in question.options}
+    missing = [letter for letter in letters if letter not in option_keys]
+    if missing:
+        return f"答案字母不在选项范围内：{''.join(missing)}"
+    canonical = "".join(letters)
+    if canonical != "".join(_MULTI_LETTER.findall(question.answer.upper())):
+        return "多选题答案必须按字母顺序存储（如 \"AC\"），否则判分与展示会乱序"
     return None
 
 
@@ -160,6 +182,12 @@ def _check_hints_not_leaking(question: GeneratedQuestion) -> str | None:
             (value for key, value in (question.options or {}).items()
              if key.upper() == _option_key(question.answer)),
             None,
+        )
+    elif question.qtype == "multi_choice":
+        letters = set(_MULTI_LETTER.findall(question.answer.upper()))
+        target = "；".join(
+            value for key, value in (question.options or {}).items()
+            if key.upper() in letters
         )
     else:
         target = question.answer
@@ -346,6 +374,7 @@ def rule_verify(question: GeneratedQuestion, point: KnowledgePoint) -> str | Non
 
     reasons = (
         _check_options_unique(question),
+        _check_multi_choice_answer(question),
         _check_judge_answer_format(question),
         _check_hints_not_leaking(question),
     )

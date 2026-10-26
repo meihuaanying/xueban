@@ -171,10 +171,11 @@ QUESTION_GEN_USER_TEMPLATE = """学科：{subject}（{subject_name}）
 可出题型：{question_types}
 
 请出 {count} 道题，覆盖上述题型。每道题的 JSON 结构：
-{{"qtype": "choice|judge|fill|match|oral|pick_hanzi",
+{{"qtype": "choice|multi_choice|judge|fill|match|oral|pick_hanzi",
  "stem": "题干",
  "options": {{"A": "...", "B": "...", "C": "...", "D": "..."}},
- "answer": "正确答案（选择题填选项字母；判断题填 对/错；填空题填答案；"
+ "answer": "正确答案（选择题填选项字母；多选题填 2 个及以上字母、按字母顺序如 \"AC\"；"
+           "判断题填 对/错；填空题填答案；"
            "连线题填 JSON 字符串；口算题填数字；点选识字填所选汉字，用、分隔）",
  "analysis": "解析：为什么这么想",
  "hint1": "第1层思路提示，绝不给答案",

@@ -446,6 +446,23 @@ def test_rule_verify_requires_judge_answer_format() -> None:
     assert rule_verify(question, CHINESE_POINT) is not None
 
 
+def test_rule_verify_multi_choice_answer_rules() -> None:
+    """多选题规则：≥2 个字母、字母必须指向选项、必须按字母序存储。"""
+    options = {"A": "2", "B": "3", "C": "5", "D": "8"}
+
+    ok = make_question(qtype="multi_choice", answer="AC", options=options)
+    assert rule_verify(ok, CHINESE_POINT) is None
+
+    single = make_question(qtype="multi_choice", answer="A", options=options)
+    assert "至少" in (rule_verify(single, CHINESE_POINT) or "")
+
+    missing = make_question(qtype="multi_choice", answer="AE", options=options)
+    assert "不在选项范围" in (rule_verify(missing, CHINESE_POINT) or "")
+
+    unordered = make_question(qtype="multi_choice", answer="CA", options=options)
+    assert "字母顺序" in (rule_verify(unordered, CHINESE_POINT) or "")
+
+
 def test_rule_verify_accepts_chinese_judge_answers() -> None:
     for word in ("对", "错"):
         question = make_question(qtype="judge", options=None, answer=word)

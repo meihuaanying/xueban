@@ -33,7 +33,26 @@ from app.services.prompts import (
 logger = logging.getLogger("xueban.content.gen")
 
 # 允许的题型：与 Question.qtype 的取值对齐
-ALLOWED_QTYPES = frozenset({"choice", "judge", "fill", "match", "oral", "pick_hanzi"})
+ALLOWED_QTYPES = frozenset(
+    {"choice", "multi_choice", "judge", "fill", "match", "oral", "pick_hanzi"}
+)
+
+
+def _prompt_question_types(point: KnowledgePoint) -> tuple[str, ...]:
+    """给命题 prompt 的题型清单。
+
+    新高考数学含多选题（19 题结构里的 3 道），但课程树里高中数学知识点
+    只声明了 choice/fill——这里按「senior + math」动态补上，避免逐条改
+    66 个知识点的 JSON。其余学科/学段保持课程树声明。
+    """
+    types = point.question_types
+    if (
+        point.subject == "math"
+        and stage_for_grade(point.grade) == "senior"
+        and "multi_choice" not in types
+    ):
+        return (*types, "multi_choice")
+    return types
 
 _FENCE_RE = re.compile(r"```(?:json)?\s*(.*?)\s*```", re.DOTALL)
 
@@ -167,7 +186,7 @@ class QuestionGenerator:
                     unit_name=point.unit_name,
                     point_name=point.name,
                     objective=point.objective,
-                    question_types="、".join(point.question_types),
+                    question_types="、".join(_prompt_question_types(point)),
                     count=count,
                 ),
             },

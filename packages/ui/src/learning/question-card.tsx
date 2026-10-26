@@ -9,6 +9,8 @@ import { MathFormula } from "../formula";
 
 export type QuestionKind =
   | "choice"
+  /** 新高考多选题：多选作答，确认后按字母序提交（如 "AC"） */
+  | "multi"
   | "fill"
   | "judge"
   | "link"
@@ -44,6 +46,8 @@ export interface QuestionCardProps extends Omit<HTMLAttributes<HTMLDivElement>, 
   /** 已选中的选项 */
   value?: string;
   onSelect?: (key: string) => void;
+  /** 多选题确认提交（参数为按字母排序的选项字母串，如 "AC"） */
+  onConfirm?: (answer: string) => void;
   /** 提交按钮（受控由父组件决定何时可提交） */
   footer?: ReactNode;
   /** 朗读题干（一年级默认开启） */
@@ -71,6 +75,7 @@ export function QuestionCard({
   pinyin,
   value,
   onSelect,
+  onConfirm,
   footer,
   speakable,
   tian,
@@ -83,6 +88,9 @@ export function QuestionCard({
   // 由「提交答案」按钮显式触发 onSelect。
   const [draft, setDraft] = useState("");
   useEffect(() => setDraft(""), [stem]);
+  // 多选题草稿自持：逐项勾选不提交，确认时按字母序整串提交。
+  const [multiSelected, setMultiSelected] = useState<string[]>([]);
+  useEffect(() => setMultiSelected([]), [stem]);
   // 判断题与口算题在题库里没有 options（answer 直接是「对」/「73」），
   // 所以兜底按钮由前端补，否则这两类题会掉进文本框，孩子不知道怎么答。
   const resolvedOptions =
@@ -143,7 +151,10 @@ export function QuestionCard({
           role="list"
         >
           {resolvedOptions.map((option) => {
-            const selected = value === option.key;
+            const selected =
+              kind === "multi"
+                ? multiSelected.includes(option.key)
+                : value === option.key;
             return (
               <li key={option.key}>
                 <button
@@ -151,7 +162,17 @@ export function QuestionCard({
                   disabled={disabled}
                   aria-pressed={selected}
                   data-testid={"option-" + option.key}
-                  onClick={() => onSelect?.(option.key)}
+                  onClick={() => {
+                    if (kind === "multi") {
+                      setMultiSelected((prev) =>
+                        prev.includes(option.key)
+                          ? prev.filter((item) => item !== option.key)
+                          : [...prev, option.key],
+                      );
+                      return;
+                    }
+                    onSelect?.(option.key);
+                  }}
                   className={cn(
                     "flex min-h-[var(--tap-min)] w-full items-center justify-center gap-xs",
                     "rounded-control border px-sm text-app transition-colors",
@@ -170,6 +191,26 @@ export function QuestionCard({
             );
           })}
         </ul>
+      ) : null}
+
+      {kind === "multi" && resolvedOptions?.length ? (
+        <button
+          type="button"
+          data-testid="multi-submit"
+          disabled={disabled || multiSelected.length < 2}
+          onClick={() => {
+            const letters = [...multiSelected].sort().join("");
+            setMultiSelected([]);
+            onConfirm?.(letters);
+          }}
+          className={cn(
+            "mt-sm min-h-[var(--tap-min)] w-full rounded-control border border-primary",
+            "bg-primary px-sm text-app-md text-primary-foreground",
+            "disabled:cursor-not-allowed disabled:opacity-60",
+          )}
+        >
+          确认答案（可多选，至少两项）
+        </button>
       ) : null}
 
       {isLink || resolvedOptions?.length ? null : (

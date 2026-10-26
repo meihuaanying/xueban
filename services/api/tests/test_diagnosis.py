@@ -156,6 +156,22 @@ def test_judge_accepts_symbol_and_word_forms() -> None:
     assert not diagnosis_service.check_answer(falsehood, "√")
 
 
+def test_multi_choice_compares_letter_sets() -> None:
+    """多选题（新高考 19 题）：按字母集合判分，顺序与分隔符无关。"""
+    question = _question(
+        QuestionType.MULTI_CHOICE, "AC", {"A": "3", "B": "5", "C": "6", "D": "8"}
+    )
+    assert diagnosis_service.check_answer(question, "AC")
+    # 顺序无关、分隔符无关
+    assert diagnosis_service.check_answer(question, "CA")
+    assert diagnosis_service.check_answer(question, "A、C")
+    assert diagnosis_service.check_answer(question, "c,a")
+    # 漏选/多选/单选都算错
+    assert not diagnosis_service.check_answer(question, "A")
+    assert not diagnosis_service.check_answer(question, "ACD")
+    assert not diagnosis_service.check_answer(question, "BD")
+
+
 def test_choice_still_compares_option_key_only() -> None:
     """选择题不能因为选项内容刚好等于答案就放行——否则等于没做选择。"""
     question = _question(QuestionType.CHOICE, "B", {"A": "10", "B": "12"})

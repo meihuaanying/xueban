@@ -30,6 +30,8 @@ class QuestionType(enum.StrEnum):
     """题目题型。"""
 
     CHOICE = "choice"
+    # 新高考数学 19 题结构的多选题（3 道）：答案为多个选项字母，按字母序存储
+    MULTI_CHOICE = "multi_choice"
     FILL = "fill"
     SHORT_ANSWER = "short_answer"
     ESSAY = "essay"
