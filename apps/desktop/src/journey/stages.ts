@@ -142,17 +142,66 @@ export function nextStage(state: JourneyState): JourneyStage {
  *
  * `stage` 必须与后端 `Question.stage` 的取值一致：诊断选题按
  * `subject + stage + PUBLISHED` 精确筛选并强制 join 知识点关联，没有模糊匹配。
- * 当前题库实况：仅 `math/junior` 有题；`primary`/`senior` 暂无题库，
- * 对应页面走「题库建设中」空态（P1 §6.1 补一二年级题库、P3 补高中题库）。
+ * 学段之下再选具体年级（`grades`，grade1~12）；API 调用携带年级时，
+ * 题目范围会经知识点 grade 列收窄到人教版教材进度（见后端 grade_scope）。
  */
-export const GRADE_BANDS: Record<
-  GradeBand,
-  { label: string; theme: "kids" | "focus"; subject: string; grade: string; stage: string }
-> = {
-  primary: { label: "小学低年级", theme: "kids", subject: "math", grade: "grade1", stage: "primary" },
-  junior: { label: "初中", theme: "focus", subject: "math", grade: "grade7", stage: "junior" },
-  senior: { label: "高中", theme: "focus", subject: "math", grade: "grade10", stage: "senior" },
+export interface GradeBandPreset {
+  label: string;
+  theme: "kids" | "focus";
+  subject: string;
+  /** 默认年级（学段内第一个年级） */
+  grade: string;
+  /** 该学段可选的年级（grade1~12），onboarding 第二步从这里选 */
+  grades: readonly string[];
+  stage: string;
+}
+
+export const GRADE_BANDS: Record<GradeBand, GradeBandPreset> = {
+  primary: {
+    label: "小学",
+    theme: "kids",
+    subject: "math",
+    grade: "grade1",
+    grades: ["grade1", "grade2", "grade3", "grade4", "grade5", "grade6"],
+    stage: "primary",
+  },
+  junior: {
+    label: "初中",
+    theme: "focus",
+    subject: "math",
+    grade: "grade7",
+    grades: ["grade7", "grade8", "grade9"],
+    stage: "junior",
+  },
+  senior: {
+    label: "高中",
+    theme: "focus",
+    subject: "math",
+    grade: "grade10",
+    grades: ["grade10", "grade11", "grade12"],
+    stage: "senior",
+  },
 };
+
+/** 年级的中文名（与后端 curriculum.GRADE_NAMES 一致，高中用高一/高二/高三）。 */
+export const GRADE_LABELS: Record<string, string> = {
+  grade1: "一年级",
+  grade2: "二年级",
+  grade3: "三年级",
+  grade4: "四年级",
+  grade5: "五年级",
+  grade6: "六年级",
+  grade7: "七年级",
+  grade8: "八年级",
+  grade9: "九年级",
+  grade10: "高一",
+  grade11: "高二",
+  grade12: "高三",
+};
+
+export function gradeLabel(grade: string): string {
+  return GRADE_LABELS[grade] ?? grade;
+}
 
 export function defaultJourneyState(overrides: Partial<JourneyState> = {}): JourneyState {
   return {

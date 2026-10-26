@@ -34,7 +34,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import Settings
-from app.data.curriculum import KnowledgePoint, get_curriculum
+from app.data.curriculum import KnowledgePoint, get_curriculum, stage_for_grade
 from app.models import (
     KnowledgePoint as KnowledgePointModel,
 )
@@ -55,9 +55,6 @@ if TYPE_CHECKING:
     from app.services.llm_client import LlmClient
 
 logger = logging.getLogger("xueban.content.pipeline")
-
-# P1 小学内容的学段标识；与既有 knowledge_graph 的 elementary（初中）区分
-ELEMENTARY_STAGE = "grade1_2"
 
 # 题库来源标记，便于与存量 self-built 题区分
 PIPELINE_SOURCE = "llm-pipeline-v1"
@@ -170,15 +167,22 @@ class QuestionPipeline:
             select(KnowledgePointModel).where(KnowledgePointModel.code == point.id)
         )
         record = existing.scalar_one_or_none()
+        stage = stage_for_grade(point.grade)
         if record is None:
             record = KnowledgePointModel(
                 code=point.id,
                 name=point.name,
                 subject=point.subject,
-                stage=ELEMENTARY_STAGE,
+                stage=stage,
+                grade=point.grade,
                 sort_order=sort_order,
             )
             session.add(record)
+            await session.flush()
+        elif record.grade != point.grade or record.stage != stage:
+            # 历史行（如 stage='grade1_2' 的旧数据）按权威映射就地校正。
+            record.grade = point.grade
+            record.stage = stage
             await session.flush()
         return record.id
 
@@ -309,7 +313,7 @@ class QuestionPipeline:
         for question in dedupe_result.kept:
             record = QuestionModel(
                 subject=point.subject,
-                stage=ELEMENTARY_STAGE,
+                stage=stage_for_grade(point.grade),
                 qtype=QuestionType(question.qtype),
                 stem=question.stem,
                 options=question.options,
@@ -386,7 +390,6 @@ class QuestionPipeline:
 
 __all__ = [
     "DEDUP_THRESHOLD",
-    "ELEMENTARY_STAGE",
     "HUMAN_REVIEW_RATE",
     "PIPELINE_SOURCE",
     "PipelineReport",

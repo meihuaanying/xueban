@@ -22,6 +22,7 @@ from app.schemas.diagnosis import (
 )
 from app.schemas.profile import MasteryPointResponse
 from app.services import diagnosis_service, ocr_client
+from app.services.grade_scope import knowledge_point_ids_for_grade
 
 router = APIRouter(prefix="/v1/diagnosis", tags=["diagnosis"])
 
@@ -51,13 +52,17 @@ async def start(
     user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> DiagnosisStartResponse:
-    """创建诊断并按初始难度给出第一题。"""
+    """创建诊断并按初始难度给出第一题；带 grade 时收窄到该年级教材进度。"""
+    grade_kp_ids = None
+    if payload.grade is not None:
+        grade_kp_ids = await knowledge_point_ids_for_grade(session, grade=payload.grade)
     exam, question = await diagnosis_service.start_diagnosis(
         session,
         user=user,
         subject=payload.subject,
         stage=payload.stage,
         target_count=payload.target_count,
+        grade_kp_ids=grade_kp_ids,
     )
     response = DiagnosisStartResponse(
         exam_id=exam.id,

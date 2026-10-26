@@ -22,7 +22,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import Settings
-from app.data.curriculum import KnowledgePoint, get_curriculum
+from app.data.curriculum import KnowledgePoint, get_curriculum, stage_for_grade
 from app.models import KnowledgePoint as KnowledgePointModel
 from app.models import Question as QuestionModel
 from app.models import QuestionKnowledgePoint, QuestionStatus, QuestionType
@@ -39,7 +39,6 @@ from app.services.question_generator import (
     QuestionGenerator,
 )
 from app.services.question_pipeline import (
-    ELEMENTARY_STAGE,
     HUMAN_REVIEW_RATE,
     PIPELINE_SOURCE,
     QuestionPipeline,
@@ -352,6 +351,54 @@ def test_rule_verify_rejects_missing_hint() -> None:
 
 def test_rule_verify_rejects_long_stem() -> None:
     assert rule_verify(make_question(stem="字" * 301), CHINESE_POINT) is not None
+
+
+def test_rule_verify_allows_longer_stem_for_senior() -> None:
+    """题干长度上限按学段放宽：高中情境题允许到 900 字，小学仍是 300。"""
+    senior_point = KnowledgePoint(
+        id="g10m-test-quadratic",
+        name="一元二次方程",
+        subject="math",
+        grade="grade10",
+        unit_code="g10m-u2",
+        unit_name="函数与方程",
+        objective="会解一元二次方程",
+        question_types=("choice", "fill"),
+        difficulty_band=2,
+        prerequisites=(),
+    )
+    assert rule_verify(make_question(stem="字" * 301), senior_point) is None
+    assert rule_verify(make_question(stem="字" * 901), senior_point) is not None
+
+
+def test_math_rule_defers_symbolic_equations_to_judge() -> None:
+    """含变量的等式（方程/恒等式）不是数值对拍能判的，规则通道必须放行给 judge。
+
+    回归用例：扩段前 `x²-3x+2=0 的解是？` 会被 SymPy 当成「左侧表达式求值
+    与答案不一致」直接拒收，导致初高中方程类题 100% 进不了库。
+    """
+    math_point = KnowledgePoint(
+        id="g10m-eq",
+        name="解一元二次方程",
+        subject="math",
+        grade="grade10",
+        unit_code="g10m-u2",
+        unit_name="方程",
+        objective="会解一元二次方程",
+        question_types=("choice", "fill"),
+        difficulty_band=2,
+        prerequisites=(),
+    )
+    equation = make_question(
+        qtype="fill",
+        stem="解方程：$x^2 - 3x + 2 = 0$，x = ？",
+        options=None,
+        answer="1 或 2",
+    )
+    assert rule_verify(equation, math_point) is None
+
+    numeric = make_question(qtype="fill", stem="12 + 7 = ？", options=None, answer="20")
+    assert rule_verify(numeric, math_point) is not None, "纯数值算错仍须被规则拒收"
 
 
 def test_rule_verify_rejects_duplicate_options() -> None:
@@ -791,9 +838,18 @@ def test_subject_of_point_id() -> None:
     assert _subject_of("weird") == "unknown"
 
 
-def test_pipeline_uses_isolated_elementary_stage() -> None:
-    """小学内容必须与存量 elementary（初中）题库隔离。"""
-    assert ELEMENTARY_STAGE == "grade1_2"
+def test_stage_for_grade_covers_all_bands() -> None:
+    """学段映射是全项目 stage 的唯一权威：年级→三段，未知年级抛错。"""
+    assert stage_for_grade("grade1") == "primary"
+    assert stage_for_grade("grade6") == "primary"
+    assert stage_for_grade("grade7") == "junior"
+    assert stage_for_grade("grade9") == "junior"
+    assert stage_for_grade("grade10") == "senior"
+    assert stage_for_grade("grade12") == "senior"
+    with pytest.raises(Exception, match="未知年级"):
+        stage_for_grade("grade13")
+    with pytest.raises(Exception, match="未知年级"):
+        stage_for_grade("kindergarten")
 
 
 def test_pipeline_review_rate_is_five_percent() -> None:
@@ -839,7 +895,7 @@ async def test_pipeline_skips_point_already_at_target(
         for index in range(2):
             record = QuestionModel(
                 subject="chinese",
-                stage=ELEMENTARY_STAGE,
+                stage="primary",
                 qtype=QuestionType.CHOICE,
                 stem=f"预置题目 {index}",
                 answer="A",
@@ -882,7 +938,7 @@ async def test_pipeline_counts_only_published_questions(
         ):
             record = QuestionModel(
                 subject="chinese",
-                stage=ELEMENTARY_STAGE,
+                stage="primary",
                 qtype=QuestionType.CHOICE,
                 stem=f"预置题目 {index}",
                 answer="A",
@@ -1003,7 +1059,8 @@ async def test_pipeline_inserts_published_questions(
         ).scalars().all()
         assert len(rows) == outcome.inserted
         for row in rows:
-            assert row.stage == ELEMENTARY_STAGE
+            # CHINESE_POINT 是 grade1 知识点 → 题目与知识点都必须落 primary 段
+            assert row.stage == "primary"
             assert row.status in (QuestionStatus.REVIEW, QuestionStatus.PUBLISHED)
             assert "第1层·思路提示" in (row.analysis or "")
             assert "第3层·完整解答" in (row.analysis or "")
@@ -1015,7 +1072,8 @@ async def test_pipeline_inserts_published_questions(
                 )
             )
         ).scalar_one()
-        assert kp.stage == ELEMENTARY_STAGE
+        assert kp.stage == "primary"
+        assert kp.grade == "grade1"
         linked = await session.scalar(
             select(func.count())
             .select_from(QuestionKnowledgePoint)

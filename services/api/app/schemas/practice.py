@@ -29,6 +29,8 @@ class PracticeGenerateRequest(BaseModel):
 
     subject: str = Field(default="math", max_length=32)
     stage: str | None = Field(default=None, max_length=20)
+    # 可选年级过滤（grade1~12），口径与诊断一致：经知识点 grade 列 narrowing。
+    grade: str | None = Field(default=None, max_length=8)
     count: int = Field(default=5, ge=1, le=20)
     knowledge_point_ids: list[uuid.UUID] | None = None
 

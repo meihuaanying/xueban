@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 
 import {
   GRADE_BANDS,
+  GRADE_LABELS,
   STAGES,
   canEnter,
   defaultJourneyState,
@@ -30,6 +31,7 @@ const STATE_KEY = "xueban.journey";
 const THEME_KEY = "xueban.theme";
 const MODE_KEY = "xueban.mode";
 const BAND_KEY = "xueban.gradeBand";
+const GRADE_KEY = "xueban.grade";
 
 export type ThemeName = "focus" | "kids";
 
@@ -40,6 +42,9 @@ interface JourneyContextValue {
   mode: "light" | "dark";
   band: GradeBand | null;
   setBand: (band: GradeBand) => void;
+  /** 学段内选定的年级（grade1~12）；未选过时为学段默认年级 */
+  grade: string | null;
+  setGrade: (grade: string) => void;
   goTo: (stage: JourneyStage) => void;
   advance: () => JourneyStage;
   mark: (patch: Partial<JourneyState>) => void;
@@ -102,6 +107,12 @@ export function JourneyProvider({
     const raw = readString(BAND_KEY);
     return raw && raw in GRADE_BANDS ? (raw as GradeBand) : null;
   });
+  // 年级跟随学段：切学段时若存的年级不属于新学段则回落到该学段默认年级。
+  const [grade, setGradeState] = useState<string | null>(() => {
+    const raw = readString(GRADE_KEY);
+    if (raw && raw in GRADE_LABELS) return raw;
+    return null;
+  });
   const [theme, setThemeState] = useState<ThemeName>(() => {
     const raw = readString(THEME_KEY);
     return raw === "kids" ? "kids" : "focus";
@@ -149,10 +160,21 @@ export function JourneyProvider({
   const setBand = useCallback((next: GradeBand) => {
     setBandState(next);
     writeString(BAND_KEY, next);
-    // onboarding 选学段 → 自动切主题（小学低年级走儿童皮肤）
+    // onboarding 选学段 → 自动切主题（小学走儿童皮肤）
     setThemeState(GRADE_BANDS[next].theme);
     writeString(THEME_KEY, GRADE_BANDS[next].theme);
     setState((prev) => ({ ...prev, hasProfile: true }));
+    // 学段切换时年级同步回落（旧年级多半不属于新学段）
+    setGradeState((prevGrade) => {
+      if (prevGrade && GRADE_BANDS[next].grades.includes(prevGrade)) return prevGrade;
+      writeString(GRADE_KEY, GRADE_BANDS[next].grade);
+      return GRADE_BANDS[next].grade;
+    });
+  }, []);
+
+  const setGrade = useCallback((next: string) => {
+    setGradeState(next);
+    writeString(GRADE_KEY, next);
   }, []);
 
   const setTheme = useCallback((next: ThemeName) => {
@@ -173,6 +195,8 @@ export function JourneyProvider({
       mode,
       band,
       setBand,
+      grade,
+      setGrade,
       goTo,
       advance,
       mark,
@@ -181,7 +205,7 @@ export function JourneyProvider({
       canEnter: (target: JourneyStage) => canEnter(target, state),
       pathOf: stagePath,
     }),
-    [advance, band, goTo, mark, mode, setBand, setMode, setTheme, state, theme],
+    [advance, band, goTo, grade, mark, mode, setBand, setGrade, setMode, setTheme, state, theme],
   );
 
   return <JourneyContext.Provider value={value}>{children}</JourneyContext.Provider>;

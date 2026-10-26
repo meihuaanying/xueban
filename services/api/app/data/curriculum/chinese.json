@@ -2,8 +2,8 @@
   "schema_version": "1.0",
   "subject": "chinese",
   "subject_name": "语文",
-  "curriculum_standard": "人教版小学语文",
-  "description": "一年级至二年级知识点树。以人教版教材目录为基准，按「单元 → 知识点」两级组织；prerequisites 为知识点 id 列表，构成先修关系；difficulty_band 为难度档（1=入门 2=基础 3=进阶）。",
+  "curriculum_standard": "统编版语文（小学至高中）",
+  "description": "一年级至高三知识点树（全学段扩展，2026-10）。以统编版教材目录与语文能力主线（字词句、阅读、文言、写作）为基准，按「单元 → 知识点」两级组织；prerequisites 为知识点 id 列表，构成先修关系；difficulty_band 为难度档（1=入门 2=基础 3=进阶）。",
   "difficulty_bands": {
     "1": "入门：直接感知与模仿",
     "2": "基础：理解规则并能独立运用",
@@ -279,6 +279,1216 @@
               "prerequisites": ["g2c-read-passage"],
               "objective": "能按事情发展顺序完整复述简单故事。",
               "question_types": ["fill", "match"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade3",
+      "grade_name": "三年级",
+      "units": [
+        {
+          "code": "g3c-u1",
+          "name": "字词积累",
+          "knowledge_points": [
+            {
+              "id": "g3c-polyphone",
+              "name": "多音字辨析",
+              "difficulty_band": 1,
+              "prerequisites": ["g2c-hanzi-accumulate"],
+              "objective": "能根据词语和语境判断多音字的正确读音。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g3c-synonym-antonym",
+              "name": "近义词与反义词",
+              "difficulty_band": 1,
+              "prerequisites": ["g2c-word-emotion"],
+              "objective": "能准确找出词语的近义词与反义词并正确运用。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g3c-idiom-basic",
+              "name": "成语积累与运用",
+              "difficulty_band": 2,
+              "prerequisites": ["g3c-synonym-antonym"],
+              "objective": "理解常用成语的意思，能在句子中恰当使用。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g3c-u2",
+          "name": "句子与标点",
+          "knowledge_points": [
+            {
+              "id": "g3c-sentence-transform",
+              "name": "把字句与被字句",
+              "difficulty_band": 2,
+              "prerequisites": ["g2c-sentence-expand"],
+              "objective": "掌握把字句与被字句的互换方法，理解句子意思不变。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g3c-sentence-fix",
+              "name": "修改病句入门",
+              "difficulty_band": 2,
+              "prerequisites": ["g3c-sentence-transform"],
+              "objective": "能识别并修改成分残缺、搭配不当等常见病句。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g3c-punctuation",
+              "name": "标点符号",
+              "difficulty_band": 2,
+              "prerequisites": ["g3c-sentence-fix"],
+              "objective": "掌握逗号、句号、问号、感叹号、冒号、引号的用法。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g3c-u3",
+          "name": "阅读理解与表达",
+          "knowledge_points": [
+            {
+              "id": "g3c-paragraph-main",
+              "name": "段落大意概括",
+              "difficulty_band": 2,
+              "prerequisites": ["g2c-read-passage"],
+              "objective": "能找出中心句并概括一段话的主要意思。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g3c-narrative-elements",
+              "name": "记叙文六要素",
+              "difficulty_band": 2,
+              "prerequisites": ["g3c-paragraph-main"],
+              "objective": "能找出记叙文的时间、地点、人物、起因、经过、结果。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g3c-poem-g3",
+              "name": "古诗积累（三年级）",
+              "difficulty_band": 2,
+              "prerequisites": ["g1c-read-short"],
+              "objective": "能背诵并理解《望天门山》《饮湖上初晴后雨》等古诗的意思。",
+              "question_types": ["fill", "choice"]
+            },
+            {
+              "id": "g3c-picture-writing",
+              "name": "看图写话",
+              "difficulty_band": 3,
+              "prerequisites": ["g3c-narrative-elements"],
+              "objective": "能按顺序观察图画，写一段通顺具体的话。",
+              "question_types": ["fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade4",
+      "grade_name": "四年级",
+      "units": [
+        {
+          "code": "g4c-u1",
+          "name": "字词与修辞",
+          "knowledge_points": [
+            {
+              "id": "g4c-word-discriminate",
+              "name": "形近字与同音字辨析",
+              "difficulty_band": 2,
+              "prerequisites": ["g3c-polyphone"],
+              "objective": "能辨析形近字、同音字并正确组词造句。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g4c-idiom-apply",
+              "name": "成语运用进阶",
+              "difficulty_band": 3,
+              "prerequisites": ["g3c-idiom-basic"],
+              "objective": "能根据语境选用成语，辨别成语使用是否恰当。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g4c-rhetoric",
+              "name": "比喻、拟人、排比",
+              "difficulty_band": 2,
+              "prerequisites": ["g3c-synonym-antonym"],
+              "objective": "能识别并运用比喻、拟人、排比等常见修辞手法。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g4c-u2",
+          "name": "阅读与理解",
+          "knowledge_points": [
+            {
+              "id": "g4c-expository-intro",
+              "name": "说明性文章阅读入门",
+              "difficulty_band": 2,
+              "prerequisites": ["g3c-paragraph-main"],
+              "objective": "能读懂浅显的说明性文章，提取关键信息。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g4c-narrative-summary",
+              "name": "概括主要内容",
+              "difficulty_band": 3,
+              "prerequisites": ["g3c-narrative-elements"],
+              "objective": "能用简洁的语言概括记叙文的主要内容。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g4c-classical-intro",
+              "name": "文言启蒙（精卫填海、王戎不取道旁李）",
+              "difficulty_band": 3,
+              "prerequisites": ["g3c-poem-g3"],
+              "objective": "能借助注释读懂浅易文言小故事并说出道理。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g4c-u3",
+          "name": "积累与习作",
+          "knowledge_points": [
+            {
+              "id": "g4c-writing-event",
+              "name": "习作：写一件事",
+              "difficulty_band": 3,
+              "prerequisites": ["g3c-picture-writing"],
+              "objective": "能按起因、经过、结果把一件事写清楚。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g4c-poem-g4",
+              "name": "古诗积累（四年级）",
+              "difficulty_band": 2,
+              "prerequisites": ["g3c-poem-g3"],
+              "objective": "能背诵并理解四年级教材古诗的意思与情感。",
+              "question_types": ["fill", "choice"]
+            },
+            {
+              "id": "g4c-connectives",
+              "name": "关联词",
+              "difficulty_band": 2,
+              "prerequisites": ["g3c-punctuation"],
+              "objective": "能正确使用因果、转折、递进、条件等关联词。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g4c-sentence-fix-2",
+              "name": "修改病句进阶",
+              "difficulty_band": 3,
+              "prerequisites": ["g3c-sentence-fix"],
+              "objective": "能修改语序不当、重复啰嗦、前后矛盾等病句。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade5",
+      "grade_name": "五年级",
+      "units": [
+        {
+          "code": "g5c-u1",
+          "name": "阅读方法",
+          "knowledge_points": [
+            {
+              "id": "g5c-expository-methods",
+              "name": "说明方法",
+              "difficulty_band": 2,
+              "prerequisites": ["g4c-expository-intro"],
+              "objective": "能识别举例子、列数字、打比方、作比较等说明方法及其作用。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g5c-character-description",
+              "name": "人物描写方法",
+              "difficulty_band": 3,
+              "prerequisites": ["g4c-narrative-summary"],
+              "objective": "能识别外貌、语言、动作、心理描写并分析人物形象。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g5c-summary-retell",
+              "name": "概括与复述",
+              "difficulty_band": 3,
+              "prerequisites": ["g4c-narrative-summary"],
+              "objective": "能概括文章主要内容并按要点复述。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g5c-reading-annotation",
+              "name": "阅读批注",
+              "difficulty_band": 2,
+              "prerequisites": ["g5c-summary-retell"],
+              "objective": "能对关键语句做批注，写出自己的理解与感受。",
+              "question_types": ["fill"]
+            }
+          ]
+        },
+        {
+          "code": "g5c-u2",
+          "name": "字词句",
+          "knowledge_points": [
+            {
+              "id": "g5c-word-emotion",
+              "name": "词语感情色彩",
+              "difficulty_band": 2,
+              "prerequisites": ["g4c-word-discriminate"],
+              "objective": "能辨别词语的褒义、贬义与中性色彩并恰当使用。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g5c-punctuation-advanced",
+              "name": "标点进阶（引号、分号）",
+              "difficulty_band": 2,
+              "prerequisites": ["g3c-punctuation"],
+              "objective": "掌握引号、分号、顿号、省略号的规范用法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g5c-sentence-order",
+              "name": "句子排序",
+              "difficulty_band": 3,
+              "prerequisites": ["g4c-connectives"],
+              "objective": "能按时间、空间或逻辑顺序给句子排序。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g5c-u3",
+          "name": "积累与习作",
+          "knowledge_points": [
+            {
+              "id": "g5c-poem-g5",
+              "name": "古诗文积累（示儿、题临安邸）",
+              "difficulty_band": 2,
+              "prerequisites": ["g4c-poem-g4"],
+              "objective": "能背诵并理解古诗文的意思与爱国情感。",
+              "question_types": ["fill", "choice"]
+            },
+            {
+              "id": "g5c-writing-person",
+              "name": "习作：写人",
+              "difficulty_band": 3,
+              "prerequisites": ["g4c-writing-event"],
+              "objective": "能通过具体事例和细节描写表现人物特点。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g5c-classical-g5",
+              "name": "文言启蒙进阶",
+              "difficulty_band": 3,
+              "prerequisites": ["g4c-classical-intro"],
+              "objective": "能借助注释阅读浅易文言文，理解古今词义差异。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g5c-comprehensive",
+              "name": "综合性学习",
+              "difficulty_band": 2,
+              "prerequisites": ["g5c-reading-annotation"],
+              "objective": "能围绕主题搜集、整理信息并做简单展示。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade6",
+      "grade_name": "六年级",
+      "units": [
+        {
+          "code": "g6c-u1",
+          "name": "文言与名著",
+          "knowledge_points": [
+            {
+              "id": "g6c-classical-basic",
+              "name": "文言文入门（学弈、两小儿辩日）",
+              "difficulty_band": 3,
+              "prerequisites": ["g5c-classical-g5"],
+              "objective": "能读懂浅易文言文，理解重点词句与文章道理。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g6c-classics-reading",
+              "name": "名著阅读（西游记）",
+              "difficulty_band": 2,
+              "prerequisites": ["g5c-summary-retell"],
+              "objective": "了解《西游记》主要人物与情节，能概述指定故事。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g6c-u2",
+          "name": "阅读进阶",
+          "knowledge_points": [
+            {
+              "id": "g6c-expository-advanced",
+              "name": "说明文阅读进阶",
+              "difficulty_band": 3,
+              "prerequisites": ["g5c-expository-methods"],
+              "objective": "能分析说明方法的作用并体会说明语言的准确性。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g6c-argument-intro",
+              "name": "议论性文章启蒙",
+              "difficulty_band": 3,
+              "prerequisites": ["g6c-expository-advanced"],
+              "objective": "能找出简单议论性文章的观点与支撑材料。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g6c-nonfiction",
+              "name": "非连续性文本阅读",
+              "difficulty_band": 3,
+              "prerequisites": ["g6c-expository-advanced"],
+              "objective": "能阅读图表、说明书等非连续性文本并提取信息。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g6c-u3",
+          "name": "积累与表达",
+          "knowledge_points": [
+            {
+              "id": "g6c-writing-scene",
+              "name": "习作：写景",
+              "difficulty_band": 3,
+              "prerequisites": ["g5c-writing-person"],
+              "objective": "能按观察顺序描写景物，做到动静结合、情景交融。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g6c-poem-g6",
+              "name": "诗词积累（六年级）",
+              "difficulty_band": 2,
+              "prerequisites": ["g5c-poem-g5"],
+              "objective": "能背诵并理解六年级教材诗词的意思与情感。",
+              "question_types": ["fill", "choice"]
+            },
+            {
+              "id": "g6c-cohesion",
+              "name": "句子衔接与排序",
+              "difficulty_band": 3,
+              "prerequisites": ["g5c-sentence-order"],
+              "objective": "能根据语境衔接句子，保持语意连贯。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g6c-sentence-fix-3",
+              "name": "病句综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g4c-sentence-fix-2"],
+              "objective": "能综合运用方法修改各类常见病句。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g6c-idiom-review",
+              "name": "成语与词语综合",
+              "difficulty_band": 2,
+              "prerequisites": ["g4c-idiom-apply"],
+              "objective": "能综合辨析和运用小学阶段积累的成语与词语。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g6c-transition",
+              "name": "小升初衔接",
+              "difficulty_band": 3,
+              "prerequisites": ["g6c-classical-basic"],
+              "objective": "能适应初中语文学习要求，完成由小学到初中的能力过渡。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade7",
+      "grade_name": "七年级",
+      "units": [
+        {
+          "code": "g7c-u1",
+          "name": "现代文阅读",
+          "knowledge_points": [
+            {
+              "id": "g7c-narrative-reading",
+              "name": "记叙文阅读（概括内容）",
+              "difficulty_band": 2,
+              "prerequisites": ["g6c-classics-reading"],
+              "objective": "能概括记叙文的主要内容与中心思想。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7c-narrative-appreciate",
+              "name": "记叙文阅读（赏析句子）",
+              "difficulty_band": 3,
+              "prerequisites": ["g7c-narrative-reading"],
+              "objective": "能从修辞、描写、用词角度赏析文中重要语句。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7c-modern-poem",
+              "name": "现代诗歌鉴赏入门",
+              "difficulty_band": 2,
+              "prerequisites": ["g7c-narrative-appreciate"],
+              "objective": "能把握现代诗歌的意象与情感，读出节奏与重音。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g7c-u2",
+          "name": "文言文与古诗",
+          "knowledge_points": [
+            {
+              "id": "g7c-classical-lunyu",
+              "name": "文言文：论语十二章",
+              "difficulty_band": 3,
+              "prerequisites": ["g6c-classical-basic"],
+              "objective": "能背诵并翻译《论语》十二章，理解其学习与修身思想。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7c-classical-jiezi",
+              "name": "文言文：诫子书",
+              "difficulty_band": 3,
+              "prerequisites": ["g7c-classical-lunyu"],
+              "objective": "能翻译《诫子书》并理解静以修身、俭以养德的道理。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7c-classical-words",
+              "name": "文言实词（古今异义、词类活用）",
+              "difficulty_band": 3,
+              "prerequisites": ["g7c-classical-jiezi"],
+              "objective": "掌握常见文言实词的古今异义与词类活用现象。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7c-poem-tang",
+              "name": "古代诗歌：观沧海、次北固山下",
+              "difficulty_band": 2,
+              "prerequisites": ["g6c-poem-g6"],
+              "objective": "能理解唐诗的意象、情感与表现手法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7c-poem-recite",
+              "name": "古诗文默写（七年级）",
+              "difficulty_band": 2,
+              "prerequisites": ["g7c-poem-tang"],
+              "objective": "能准确默写七年级教材要求背诵的古诗文名句。",
+              "question_types": ["fill"]
+            }
+          ]
+        },
+        {
+          "code": "g7c-u3",
+          "name": "语言运用与写作",
+          "knowledge_points": [
+            {
+              "id": "g7c-word-usage",
+              "name": "词语运用（近义辨析）",
+              "difficulty_band": 2,
+              "prerequisites": ["g6c-idiom-review"],
+              "objective": "能根据语境辨析近义词并正确选用词语。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7c-sentence-fix",
+              "name": "修改病句（搭配不当、成分残缺）",
+              "difficulty_band": 2,
+              "prerequisites": ["g6c-sentence-fix-3"],
+              "objective": "能识别并修改搭配不当、成分残缺等病句。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g7c-punctuation",
+              "name": "标点符号进阶",
+              "difficulty_band": 2,
+              "prerequisites": ["g5c-punctuation-advanced"],
+              "objective": "掌握引号、括号、破折号、省略号的规范用法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7c-cohesion",
+              "name": "句子衔接",
+              "difficulty_band": 3,
+              "prerequisites": ["g6c-cohesion"],
+              "objective": "能根据语境补写或选择衔接恰当的句子。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7c-classics-reading",
+              "name": "名著阅读：朝花夕拾",
+              "difficulty_band": 2,
+              "prerequisites": ["g6c-classics-reading"],
+              "objective": "了解《朝花夕拾》篇目内容与人物，能概括主题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7c-writing-event",
+              "name": "写作：记事写人",
+              "difficulty_band": 3,
+              "prerequisites": ["g6c-writing-scene"],
+              "objective": "能围绕中心选材，把事写清楚、把人物写具体。",
+              "question_types": ["fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade8",
+      "grade_name": "八年级",
+      "units": [
+        {
+          "code": "g8c-u1",
+          "name": "阅读进阶",
+          "knowledge_points": [
+            {
+              "id": "g8c-expository-reading",
+              "name": "说明文阅读（方法与顺序）",
+              "difficulty_band": 3,
+              "prerequisites": ["g6c-expository-advanced"],
+              "objective": "能分析说明方法、说明顺序与说明语言的特点。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8c-prose-reading",
+              "name": "散文阅读（情感线索）",
+              "difficulty_band": 3,
+              "prerequisites": ["g7c-narrative-appreciate"],
+              "objective": "能梳理散文的情感线索，品味语言，理解主旨。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8c-rhetoric-appreciate",
+              "name": "修辞鉴赏",
+              "difficulty_band": 3,
+              "prerequisites": ["g4c-rhetoric"],
+              "objective": "能分析比喻、拟人、排比、夸张等修辞的表达效果。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8c-coherence",
+              "name": "语言连贯（排序与补写）",
+              "difficulty_band": 3,
+              "prerequisites": ["g8c-rhetoric-appreciate"],
+              "objective": "能根据语境排序或补写句子，做到语意连贯。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8c-u2",
+          "name": "文言文与古诗",
+          "knowledge_points": [
+            {
+              "id": "g8c-classical-taohua",
+              "name": "文言文：桃花源记",
+              "difficulty_band": 3,
+              "prerequisites": ["g7c-classical-words"],
+              "objective": "能翻译《桃花源记》并理解其社会理想。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8c-classical-xiaoshitan",
+              "name": "文言文：小石潭记",
+              "difficulty_band": 3,
+              "prerequisites": ["g8c-classical-taohua"],
+              "objective": "能翻译《小石潭记》并体会景物描写与情感变化。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8c-classical-function",
+              "name": "文言虚词（之、其、而）",
+              "difficulty_band": 3,
+              "prerequisites": ["g7c-classical-words"],
+              "objective": "掌握常见文言虚词在具体语境中的用法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8c-poem-appreciation",
+              "name": "唐诗鉴赏（意象与情感）",
+              "difficulty_band": 3,
+              "prerequisites": ["g7c-poem-tang"],
+              "objective": "能把握唐诗的意象、意境与情感，理解表现手法。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8c-u3",
+          "name": "语言运用与写作",
+          "knowledge_points": [
+            {
+              "id": "g8c-sentence-fix",
+              "name": "病句综合（语序、重复）",
+              "difficulty_band": 3,
+              "prerequisites": ["g7c-sentence-fix"],
+              "objective": "能修改语序不当、重复啰嗦、否定不当等病句。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g8c-word-usage",
+              "name": "词语运用进阶（成语）",
+              "difficulty_band": 3,
+              "prerequisites": ["g7c-word-usage"],
+              "objective": "能在语境中辨析成语的感情色彩与使用对象。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g8c-news-writing",
+              "name": "新闻写作",
+              "difficulty_band": 3,
+              "prerequisites": ["g7c-writing-event"],
+              "objective": "掌握新闻标题、导语、主体的写作要求。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g8c-expository-writing",
+              "name": "说明文写作",
+              "difficulty_band": 3,
+              "prerequisites": ["g8c-expository-reading"],
+              "objective": "能围绕事物特征，合理安排说明顺序并使用说明方法。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g8c-classics-hongxing",
+              "name": "名著阅读：红星照耀中国",
+              "difficulty_band": 2,
+              "prerequisites": ["g7c-classics-reading"],
+              "objective": "了解《红星照耀中国》的主要内容与纪实作品特点。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade9",
+      "grade_name": "九年级",
+      "units": [
+        {
+          "code": "g9c-u1",
+          "name": "议论文与阅读综合",
+          "knowledge_points": [
+            {
+              "id": "g9c-argument-reading",
+              "name": "议论文阅读（论点、论据、论证）",
+              "difficulty_band": 3,
+              "prerequisites": ["g6c-argument-intro"],
+              "objective": "能找出中心论点与分论点，辨识论据类型与论证方法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9c-exam-reading",
+              "name": "中考现代文阅读综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g8c-prose-reading"],
+              "objective": "能综合运用记叙文、说明文、议论文阅读方法完成中考题型。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9c-u2",
+          "name": "文言文与诗词",
+          "knowledge_points": [
+            {
+              "id": "g9c-classical-yueyang",
+              "name": "文言文：岳阳楼记",
+              "difficulty_band": 3,
+              "prerequisites": ["g8c-classical-function"],
+              "objective": "能翻译《岳阳楼记》并理解先忧后乐的思想境界。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9c-classical-zuiweng",
+              "name": "文言文：醉翁亭记",
+              "difficulty_band": 3,
+              "prerequisites": ["g9c-classical-yueyang"],
+              "objective": "能翻译《醉翁亭记》并理解与民同乐的情怀。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9c-poem-song",
+              "name": "宋词鉴赏（水调歌头）",
+              "difficulty_band": 3,
+              "prerequisites": ["g8c-poem-appreciation"],
+              "objective": "能把握宋词的意象、情感与艺术手法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9c-exam-classical",
+              "name": "中考文言文综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g9c-classical-zuiweng"],
+              "objective": "能综合完成中考文言文阅读的实词、翻译与内容理解题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9c-poem-recite",
+              "name": "古诗文默写冲刺（九年级）",
+              "difficulty_band": 2,
+              "prerequisites": ["g7c-poem-recite"],
+              "objective": "能准确默写九年级教材要求背诵的古诗文名句。",
+              "question_types": ["fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9c-u3",
+          "name": "语言运用与写作",
+          "knowledge_points": [
+            {
+              "id": "g9c-argument-writing",
+              "name": "议论文写作（结构）",
+              "difficulty_band": 3,
+              "prerequisites": ["g8c-expository-writing"],
+              "objective": "能围绕观点选用论据，写出结构完整、论证有力的议论文。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g9c-textbook-literature",
+              "name": "文学文化常识",
+              "difficulty_band": 2,
+              "prerequisites": ["g8c-classics-hongxing"],
+              "objective": "掌握教材涉及的重要作家作品与文学文化常识。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g9c-sentence-fix",
+              "name": "标点病句综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g8c-sentence-fix"],
+              "objective": "能综合修改标点与病句，做到语句规范。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g9c-oral-communication",
+              "name": "口语交际",
+              "difficulty_band": 2,
+              "prerequisites": ["g8c-coherence"],
+              "objective": "能做到表达得体、条理清晰、应对恰当。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9c-writing-review",
+              "name": "考场作文升格",
+              "difficulty_band": 3,
+              "prerequisites": ["g9c-argument-writing"],
+              "objective": "能从立意、结构、语言三方面修改提升考场作文。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g9c-classics-rulin",
+              "name": "名著阅读：儒林外史",
+              "difficulty_band": 2,
+              "prerequisites": ["g8c-classics-hongxing"],
+              "objective": "了解《儒林外史》的讽刺艺术与主要人物形象。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade10",
+      "grade_name": "高一",
+      "units": [
+        {
+          "code": "g10c-u1",
+          "name": "现代文阅读",
+          "knowledge_points": [
+            {
+              "id": "g10c-argumentative-text",
+              "name": "论述类文本阅读（论证分析）",
+              "difficulty_band": 3,
+              "prerequisites": ["g9c-argument-reading"],
+              "objective": "能梳理论述类文本的论证结构、论证方法与观点态度。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10c-novel-reading",
+              "name": "文学类文本：小说阅读",
+              "difficulty_band": 3,
+              "prerequisites": ["g9c-exam-reading"],
+              "objective": "能分析小说的人物、情节、环境与主题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10c-prose-reading",
+              "name": "文学类文本：散文阅读",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-novel-reading"],
+              "objective": "能梳理散文结构，品味语言，理解情感与主旨。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10c-modern-poem",
+              "name": "现代诗歌鉴赏",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-prose-reading"],
+              "objective": "能把握现代诗歌的意象、手法与情感。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10c-whole-book",
+              "name": "整本书阅读：乡土中国",
+              "difficulty_band": 2,
+              "prerequisites": ["g10c-argumentative-text"],
+              "objective": "能把握《乡土中国》的核心概念与论述逻辑。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g10c-u2",
+          "name": "文言文与古诗",
+          "knowledge_points": [
+            {
+              "id": "g10c-classical-words",
+              "name": "文言实词（120 个常考）",
+              "difficulty_band": 3,
+              "prerequisites": ["g9c-exam-classical"],
+              "objective": "掌握高考常考文言实词的含义与用法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10c-classical-functions",
+              "name": "文言虚词（18 个）",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-classical-words"],
+              "objective": "掌握 18 个常见文言虚词在不同语境中的意义与用法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10c-classical-syntax",
+              "name": "文言句式与翻译",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-classical-functions"],
+              "objective": "能识别判断句、被动句、倒装句、省略句并准确翻译。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10c-poem-imagery",
+              "name": "古诗鉴赏：意象与意境",
+              "difficulty_band": 3,
+              "prerequisites": ["g9c-poem-song"],
+              "objective": "能通过意象分析诗歌意境与情感。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10c-poem-techniques",
+              "name": "古诗鉴赏：表达技巧",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-poem-imagery"],
+              "objective": "能辨识诗歌的表达技巧并分析其效果。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10c-recite-required",
+              "name": "名篇名句默写（必修上）",
+              "difficulty_band": 2,
+              "prerequisites": ["g9c-poem-recite"],
+              "objective": "能准确默写必修上册要求背诵的名篇名句。",
+              "question_types": ["fill"]
+            }
+          ]
+        },
+        {
+          "code": "g10c-u3",
+          "name": "语言运用与写作",
+          "knowledge_points": [
+            {
+              "id": "g10c-language-usage",
+              "name": "语言文字运用（词语、病句）",
+              "difficulty_band": 3,
+              "prerequisites": ["g9c-sentence-fix"],
+              "objective": "能在具体语境中正确使用词语并辨析修改病句。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10c-argument-writing",
+              "name": "议论文写作：结构升格",
+              "difficulty_band": 3,
+              "prerequisites": ["g9c-writing-review"],
+              "objective": "能构建清晰的论证结构，写出有思辨性的议论文。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g10c-literary-knowledge",
+              "name": "文学常识与文体",
+              "difficulty_band": 2,
+              "prerequisites": ["g9c-textbook-literature"],
+              "objective": "掌握高中阶段重要作家作品、文体与文学流派常识。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade11",
+      "grade_name": "高二",
+      "units": [
+        {
+          "code": "g11c-u1",
+          "name": "文学类文本进阶",
+          "knowledge_points": [
+            {
+              "id": "g11c-drama-reading",
+              "name": "文学类文本：戏剧阅读",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-prose-reading"],
+              "objective": "能分析戏剧冲突、人物台词与舞台说明的作用。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11c-prose-advanced",
+              "name": "散文阅读进阶（探究）",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-drama-reading"],
+              "objective": "能对散文的深层意蕴与艺术特色进行探究性分析。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11c-nonfiction",
+              "name": "非连续性文本阅读",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-argumentative-text"],
+              "objective": "能比较整合多则材料的信息并作出推断。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11c-whole-book",
+              "name": "整本书阅读：红楼梦",
+              "difficulty_band": 2,
+              "prerequisites": ["g10c-whole-book"],
+              "objective": "能把握《红楼梦》的主要人物、情节线索与主题。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g11c-u2",
+          "name": "文言文与诗词",
+          "knowledge_points": [
+            {
+              "id": "g11c-classical-chibi",
+              "name": "文言文：赤壁赋",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-classical-syntax"],
+              "objective": "能翻译《赤壁赋》并理解其哲理与情感。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11c-classical-xiangji",
+              "name": "文言文：项脊轩志",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-classical-chibi"],
+              "objective": "能翻译《项脊轩志》并体会其叙事抒情艺术。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11c-translation",
+              "name": "文言翻译进阶",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-classical-xiangji"],
+              "objective": "掌握留、删、换、调、补、变的翻译方法，做到信达雅。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11c-song-poem",
+              "name": "宋词鉴赏进阶",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-poem-techniques"],
+              "objective": "能鉴赏宋词的意象、风格与情感，比较不同词作。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11c-recite-required",
+              "name": "名句默写（必修下/选择性必修）",
+              "difficulty_band": 2,
+              "prerequisites": ["g10c-recite-required"],
+              "objective": "能准确默写必修下册与选择性必修要求背诵的名篇名句。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g11c-cultural-knowledge",
+              "name": "古代文化常识",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-literary-knowledge"],
+              "objective": "掌握古代官职、科举、礼俗、称谓等文化常识。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g11c-u3",
+          "name": "语言运用与写作",
+          "knowledge_points": [
+            {
+              "id": "g11c-language-coherence",
+              "name": "语言衔接与补写",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-language-usage"],
+              "objective": "能根据语境补写句子、调整语序，做到衔接自然。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11c-argument-advanced",
+              "name": "议论文写作进阶（思辨）",
+              "difficulty_band": 3,
+              "prerequisites": ["g10c-argument-writing"],
+              "objective": "能进行辩证分析，写出有深度与思辨性的议论文。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g11c-writing-material",
+              "name": "写作素材与论证方法",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-argument-advanced"],
+              "objective": "能积累并恰当选用素材，运用多种论证方法。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade12",
+      "grade_name": "高三",
+      "units": [
+        {
+          "code": "g12c-u1",
+          "name": "高考阅读综合",
+          "knowledge_points": [
+            {
+              "id": "g12c-exam-modern",
+              "name": "高考现代文阅读综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-prose-advanced"],
+              "objective": "能综合完成高考现代文阅读（信息类与文学类）各类题型。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12c-literary-explore",
+              "name": "文学类文本探究题",
+              "difficulty_band": 3,
+              "prerequisites": ["g12c-exam-modern"],
+              "objective": "能对文本进行多角度、有深度的探究并规范作答。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12c-practical-text",
+              "name": "实用类文本综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-nonfiction"],
+              "objective": "能整合实用类文本信息并进行比较、推断与评价。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12c-exam-classical",
+              "name": "高考文言文阅读综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-translation"],
+              "objective": "能综合完成高考文言文的断句、实词、翻译与内容理解题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12c-classical-punctuation",
+              "name": "文言断句",
+              "difficulty_band": 3,
+              "prerequisites": ["g12c-exam-classical"],
+              "objective": "能根据语法与文意给文言文准确断句。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12c-exam-poem",
+              "name": "高考诗歌鉴赏综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-song-poem"],
+              "objective": "能综合完成高考古代诗歌鉴赏的选择与简答题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12c-exam-language",
+              "name": "高考语言文字运用综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-language-coherence"],
+              "objective": "能综合完成词语、病句、衔接、修辞等语用题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12c-recite-sprint",
+              "name": "名篇名句默写冲刺",
+              "difficulty_band": 2,
+              "prerequisites": ["g11c-recite-required"],
+              "objective": "能准确默写高考 64 篇（或统编版要求）名篇名句。",
+              "question_types": ["fill"]
+            }
+          ]
+        },
+        {
+          "code": "g12c-u2",
+          "name": "高考写作",
+          "knowledge_points": [
+            {
+              "id": "g12c-task-writing",
+              "name": "任务驱动型作文",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-writing-material"],
+              "objective": "能准确解读任务指令，写出符合要求的任务驱动型作文。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g12c-writing-topic",
+              "name": "作文审题立意",
+              "difficulty_band": 3,
+              "prerequisites": ["g12c-task-writing"],
+              "objective": "能准确审题，提炼深刻且有话可说的立意。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g12c-writing-structure",
+              "name": "作文结构升格",
+              "difficulty_band": 3,
+              "prerequisites": ["g11c-argument-advanced"],
+              "objective": "能优化文章结构，使论证层次清晰、逻辑严密。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g12c-exam-strategy",
+              "name": "考场时间分配与策略",
+              "difficulty_band": 2,
+              "prerequisites": ["g12c-writing-topic"],
+              "objective": "掌握高考语文各题型的时间分配与答题顺序策略。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12c-mock-review",
+              "name": "高考真题综合演练",
+              "difficulty_band": 3,
+              "prerequisites": ["g12c-exam-strategy"],
+              "objective": "能限时完成高考真题并针对失分点查漏补缺。",
+              "question_types": ["choice", "fill"]
             }
           ]
         }

@@ -23,6 +23,7 @@ from app.schemas.plan import (
     TodayTaskOut,
 )
 from app.services import planner_service
+from app.services.grade_scope import knowledge_point_ids_for_grade
 from app.services.planner_service import DailyStatus
 
 router = APIRouter(prefix="/v1/plan", tags=["plan"])
@@ -80,11 +81,17 @@ def _today_response(plan: Plan, tasks: list[PlanTask], status: DailyStatus) -> T
 @router.get("/path", response_model=PathResponse, summary="个性化学习路径（F-06）")
 async def get_path(
     subject: str | None = Query(default=None, max_length=32),
+    grade: str | None = Query(default=None, max_length=8),
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> PathResponse:
-    """获取活跃路径（不存在则自动生成）。"""
-    plan = await planner_service.get_or_create_path(session, user_id=user.id, subject=subject)
+    """获取活跃路径（不存在则自动生成）；grade 收窄到该年级教材进度。"""
+    grade_kp_ids = None
+    if grade is not None:
+        grade_kp_ids = await knowledge_point_ids_for_grade(session, grade=grade)
+    plan = await planner_service.get_or_create_path(
+        session, user_id=user.id, subject=subject, grade_kp_ids=grade_kp_ids
+    )
     response = _path_response(plan)
     await session.commit()
     return response
@@ -98,11 +105,17 @@ async def get_path(
 )
 async def regenerate_path(
     subject: str | None = Query(default=None, max_length=32),
+    grade: str | None = Query(default=None, max_length=8),
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> PathResponse:
-    """按最新学情重排（旧路径归档）。"""
-    plan = await planner_service.generate_path(session, user_id=user.id, subject=subject)
+    """按最新学情重排（旧路径归档）；grade 收窄到该年级教材进度。"""
+    grade_kp_ids = None
+    if grade is not None:
+        grade_kp_ids = await knowledge_point_ids_for_grade(session, grade=grade)
+    plan = await planner_service.generate_path(
+        session, user_id=user.id, subject=subject, grade_kp_ids=grade_kp_ids
+    )
     response = _path_response(plan)
     await session.commit()
     return response

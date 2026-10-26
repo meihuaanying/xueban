@@ -18,6 +18,7 @@ from app.data.curriculum import (
     all_curricula,
     get_curriculum,
     iter_all_points,
+    stage_for_grade,
     topological_order,
 )
 
@@ -95,7 +96,27 @@ def test_each_subject_loads(subject: str) -> None:
 def test_real_data_covers_grade1_and_grade2(subject: str) -> None:
     curriculum = get_curriculum(subject)
     grades = {point.grade for point in curriculum.points}
-    assert grades == {"grade1", "grade2"}, f"{subject} 必须覆盖一年级与二年级"
+    assert {"grade1", "grade2"}.issubset(grades), f"{subject} 必须覆盖一年级与二年级"
+
+
+def test_math_covers_all_twelve_grades() -> None:
+    """数学是全学段扩写的首个学科：grade1~grade12 必须全有知识点。
+
+    其他学科按阶段补齐；这里只钉住数学——它是「高中生自学」的主战场，
+    缺任何一个年级都意味着该年级学生打开应用是空题库。
+    """
+    curriculum = get_curriculum("math")
+    grades = {point.grade for point in curriculum.points}
+    expected = {f"grade{i}" for i in range(1, 13)}
+    missing = expected - grades
+    assert not missing, f"数学缺年级：{sorted(missing)}"
+
+
+def test_math_grades_map_to_valid_stages() -> None:
+    """每个知识点的年级都能映射到合法学段（primary/junior/senior）。"""
+    curriculum = get_curriculum("math")
+    for point in curriculum.points:
+        assert stage_for_grade(point.grade) in {"primary", "junior", "senior"}
 
 
 @pytest.mark.parametrize("subject", SUBJECTS)
@@ -151,7 +172,10 @@ def test_real_data_lookups() -> None:
         p.subject == "math" and p.grade == "grade1"
         for p in math.by_subject_and_grade("math", "grade1")
     )
-    assert math.by_subject_and_grade("math", "grade9") == ()
+    # 全学段后九年级已有内容：正向断言 + 未知年级返回空
+    grade9 = math.by_subject_and_grade("math", "grade9")
+    assert grade9 and all(p.grade == "grade9" for p in grade9)
+    assert math.by_subject_and_grade("math", "kindergarten") == ()
 
 
 def test_iter_all_points_covers_every_subject() -> None:

@@ -31,13 +31,11 @@ from _common import database_session
 from sqlalchemy import func, select
 
 from app.config import settings
+from app.data.curriculum import stage_for_grade
 from app.models import KnowledgePoint, Question, QuestionKnowledgePoint, QuestionStatus
 from app.services.llm_client import LlmClient
 from app.services.observability import ObservabilityService
-from app.services.question_pipeline import (
-    ELEMENTARY_STAGE,
-    QuestionPipeline,
-)
+from app.services.question_pipeline import QuestionPipeline
 
 
 def parse_args() -> argparse.Namespace:
@@ -104,30 +102,35 @@ async def run(args: argparse.Namespace) -> int:
             print(json.dumps(summary, ensure_ascii=False, indent=2))
             await session.commit()
 
-            totals = await _db_totals(session)
+            totals = await _db_totals(session, stages=_stages_for(grades))
             print(json.dumps(totals, ensure_ascii=False, indent=2))
     finally:
         await client.aclose()
     return 0
 
 
-async def _db_totals(session: object) -> dict[str, int]:
-    """核对数据库里的实际入库量，避免报告与库不一致。"""
+def _stages_for(grades: tuple[str, ...]) -> tuple[str, ...]:
+    """本次所跑年级覆盖到的学段（去重、保序）。"""
+    return tuple(dict.fromkeys(stage_for_grade(grade) for grade in grades))
+
+
+async def _db_totals(session: object, *, stages: tuple[str, ...]) -> dict[str, int]:
+    """核对数据库里的实际入库量，避免报告与库不一致（stages 按所跑年级推导）。"""
     rows = (
         await session.execute(  # type: ignore[attr-defined]
             select(Question.subject, func.count())
-            .where(Question.stage == ELEMENTARY_STAGE)
+            .where(Question.stage.in_(stages))
             .group_by(Question.subject)
         )
     ).all()
     by_subject = {subject: int(count) for subject, count in rows}
     total = await session.scalar(  # type: ignore[attr-defined]
-        select(func.count()).select_from(Question).where(Question.stage == ELEMENTARY_STAGE)
+        select(func.count()).select_from(Question).where(Question.stage.in_(stages))
     )
     points = await session.scalar(  # type: ignore[attr-defined]
         select(func.count())
         .select_from(KnowledgePoint)
-        .where(KnowledgePoint.stage == ELEMENTARY_STAGE)
+        .where(KnowledgePoint.stage.in_(stages))
     )
     below = (
         await session.execute(  # type: ignore[attr-defined]
@@ -138,7 +141,7 @@ async def _db_totals(session: object) -> dict[str, int]:
                 Question.id == QuestionKnowledgePoint.question_id,
             )
             .where(
-                Question.stage == ELEMENTARY_STAGE,
+                Question.stage.in_(stages),
                 # 只数 PUBLISHED：这个口径必须和 practice_service 取题口径一致，
                 # 否则报告说「都达标了」，学生端实际少 5% 的题。
                 Question.status == QuestionStatus.PUBLISHED,

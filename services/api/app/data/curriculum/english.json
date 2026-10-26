@@ -2,8 +2,8 @@
   "schema_version": "1.0",
   "subject": "english",
   "subject_name": "英语",
-  "curriculum_standard": "人教版 PEP 小学英语起点",
-  "description": "一年级至二年级知识点树。以字母、自然拼读入门、高频词为主线，按「单元 → 知识点」两级组织；prerequisites 为知识点 id 列表，构成先修关系；difficulty_band 为难度档（1=入门 2=基础 3=进阶）。",
+  "curriculum_standard": "人教版英语（小学至高中）",
+  "description": "一年级至高三知识点树（全学段扩展，2026-10）。以人教版教材目录与英语能力主线（语音、词汇、语法、阅读、写作）为基准，按「单元 → 知识点」两级组织；prerequisites 为知识点 id 列表，构成先修关系；difficulty_band 为难度档（1=入门 2=基础 3=进阶）。",
   "difficulty_bands": {
     "1": "入门：听音辨形，直接指认",
     "2": "基础：理解规则并能拼读",
@@ -193,6 +193,1026 @@
               "prerequisites": ["g2e-sentence-be", "g2e-word-school"],
               "objective": "能用 This is... 介绍物品。",
               "question_types": ["fill", "choice", "match"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade3",
+      "grade_name": "三年级",
+      "units": [
+        {
+          "code": "g3e-u1",
+          "name": "语音与词汇",
+          "knowledge_points": [
+            {
+              "id": "g3e-phonics-review",
+              "name": "字母与自然拼读巩固",
+              "difficulty_band": 1,
+              "prerequisites": ["g2e-phonics-blend"],
+              "objective": "能拼读常见辅音+元音组合，见词能读、听音能写。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g3e-numbers",
+              "name": "数字 1~20",
+              "difficulty_band": 1,
+              "prerequisites": ["g1e-word-color-number"],
+              "objective": "能认读并书写 1~20 的英文数字。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g3e-colors-clothes",
+              "name": "颜色与衣物",
+              "difficulty_band": 1,
+              "prerequisites": ["g1e-word-color-number"],
+              "objective": "能听说认读颜色与常见衣物类词汇。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g3e-family",
+              "name": "家庭成员",
+              "difficulty_band": 1,
+              "prerequisites": ["g1e-word-family"],
+              "objective": "能听说认读家庭成员称谓并做简单介绍。",
+              "question_types": ["choice", "match"]
+            }
+          ]
+        },
+        {
+          "code": "g3e-u2",
+          "name": "句型与交际",
+          "knowledge_points": [
+            {
+              "id": "g3e-greetings",
+              "name": "问候与自我介绍",
+              "difficulty_band": 1,
+              "prerequisites": ["g1e-word-greeting"],
+              "objective": "能用 Hello/Good morning/My name is... 进行简单交流。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g3e-be-verbs",
+              "name": "be 动词 am/is/are",
+              "difficulty_band": 2,
+              "prerequisites": ["g2e-sentence-be"],
+              "objective": "能根据主语正确使用 am/is/are。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g3e-nouns-plural",
+              "name": "名词单复数入门",
+              "difficulty_band": 2,
+              "prerequisites": ["g3e-be-verbs"],
+              "objective": "掌握名词复数的一般变化规则并正确使用。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g3e-classroom",
+              "name": "课堂用语与指令",
+              "difficulty_band": 1,
+              "prerequisites": ["g3e-greetings"],
+              "objective": "能听懂并回应 Open your book 等课堂指令。",
+              "question_types": ["choice", "match"]
+            }
+          ]
+        },
+        {
+          "code": "g3e-u3",
+          "name": "读写启蒙",
+          "knowledge_points": [
+            {
+              "id": "g3e-reading-picture",
+              "name": "图文阅读",
+              "difficulty_band": 2,
+              "prerequisites": ["g3e-numbers", "g3e-colors-clothes"],
+              "objective": "能借助图片读懂简单句并选择正确图片。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g3e-writing-sentence",
+              "name": "书写规范与简单句",
+              "difficulty_band": 2,
+              "prerequisites": ["g3e-be-verbs"],
+              "objective": "能规范书写字母与单词，写出简单句。",
+              "question_types": ["fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade4",
+      "grade_name": "四年级",
+      "units": [
+        {
+          "code": "g4e-u1",
+          "name": "时间与生活",
+          "knowledge_points": [
+            {
+              "id": "g4e-time",
+              "name": "时间表达",
+              "difficulty_band": 2,
+              "prerequisites": ["g3e-numbers"],
+              "objective": "能认读并表达整点与半点时间（What time is it?）。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g4e-days-dates",
+              "name": "星期与日期",
+              "difficulty_band": 2,
+              "prerequisites": ["g4e-time"],
+              "objective": "能听说认读星期名称并简单表达日期。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g4e-weather",
+              "name": "天气与季节",
+              "difficulty_band": 2,
+              "prerequisites": ["g4e-days-dates"],
+              "objective": "能描述天气与季节（How's the weather?）。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g4e-food-shopping",
+              "name": "食物与购物",
+              "difficulty_band": 2,
+              "prerequisites": ["g3e-colors-clothes"],
+              "objective": "能听说认读食物词汇并进行简单购物对话。",
+              "question_types": ["choice", "match"]
+            }
+          ]
+        },
+        {
+          "code": "g4e-u2",
+          "name": "语法入门",
+          "knowledge_points": [
+            {
+              "id": "g4e-prepositions",
+              "name": "方位介词",
+              "difficulty_band": 2,
+              "prerequisites": ["g3e-be-verbs"],
+              "objective": "掌握 in/on/under/near/behind 等方位介词的用法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g4e-present-simple",
+              "name": "一般现在时（I/you）",
+              "difficulty_band": 2,
+              "prerequisites": ["g3e-be-verbs"],
+              "objective": "能用一般现在时描述习惯性动作。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g4e-can",
+              "name": "情态动词 can",
+              "difficulty_band": 2,
+              "prerequisites": ["g4e-present-simple"],
+              "objective": "能用 can 表达能力与请求。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g4e-adjectives",
+              "name": "形容词",
+              "difficulty_band": 2,
+              "prerequisites": ["g4e-weather"],
+              "objective": "能用常见形容词描述人、物与天气。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g4e-u3",
+          "name": "读写进阶",
+          "knowledge_points": [
+            {
+              "id": "g4e-reading-short",
+              "name": "短文阅读理解",
+              "difficulty_band": 2,
+              "prerequisites": ["g3e-reading-picture"],
+              "objective": "能读懂 30~50 词的短文并提取关键信息。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g4e-writing-short",
+              "name": "写作：仿写句子",
+              "difficulty_band": 3,
+              "prerequisites": ["g3e-writing-sentence"],
+              "objective": "能仿照范例写 3~5 句连贯的话。",
+              "question_types": ["fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade5",
+      "grade_name": "五年级",
+      "units": [
+        {
+          "code": "g5e-u1",
+          "name": "话题词汇",
+          "knowledge_points": [
+            {
+              "id": "g5e-jobs",
+              "name": "职业与家庭",
+              "difficulty_band": 2,
+              "prerequisites": ["g3e-family"],
+              "objective": "能听说认读职业词汇并介绍家人职业。",
+              "question_types": ["choice", "match"]
+            },
+            {
+              "id": "g5e-daily-routines",
+              "name": "日常活动与频率副词",
+              "difficulty_band": 2,
+              "prerequisites": ["g4e-present-simple"],
+              "objective": "能描述日常活动并使用 always/usually/sometimes 等频率副词。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g5e-possessive",
+              "name": "物主代词",
+              "difficulty_band": 3,
+              "prerequisites": ["g4e-adjectives"],
+              "objective": "掌握 my/your/his/her 等物主代词的用法。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g5e-u2",
+          "name": "时态入门",
+          "knowledge_points": [
+            {
+              "id": "g5e-present-continuous",
+              "name": "现在进行时",
+              "difficulty_band": 3,
+              "prerequisites": ["g4e-present-simple"],
+              "objective": "理解现在进行时的结构与用法，能描述正在发生的动作。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g5e-past-simple-intro",
+              "name": "一般过去时入门",
+              "difficulty_band": 3,
+              "prerequisites": ["g5e-present-continuous"],
+              "objective": "了解一般过去时的基本用法与常见规则动词过去式。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g5e-there-be",
+              "name": "there be 句型",
+              "difficulty_band": 2,
+              "prerequisites": ["g4e-prepositions"],
+              "objective": "能用 there be 句型描述存在的人或物。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g5e-u3",
+          "name": "读写进阶",
+          "knowledge_points": [
+            {
+              "id": "g5e-reading-passage",
+              "name": "短文理解",
+              "difficulty_band": 3,
+              "prerequisites": ["g4e-reading-short"],
+              "objective": "能读懂 60~80 词的短文并完成判断与选择。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g5e-writing-short",
+              "name": "写作：小短文",
+              "difficulty_band": 3,
+              "prerequisites": ["g4e-writing-short"],
+              "objective": "能围绕熟悉话题写 5~8 句的小短文。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g5e-wh-questions",
+              "name": "特殊疑问句",
+              "difficulty_band": 3,
+              "prerequisites": ["g4e-present-simple"],
+              "objective": "掌握 what/where/who/when/how 引导的特殊疑问句。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade6",
+      "grade_name": "六年级",
+      "units": [
+        {
+          "code": "g6e-u1",
+          "name": "时态与语法",
+          "knowledge_points": [
+            {
+              "id": "g6e-future",
+              "name": "一般将来时",
+              "difficulty_band": 3,
+              "prerequisites": ["g5e-past-simple-intro"],
+              "objective": "掌握 will 与 be going to 的表达，能描述将来计划。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g6e-comparison",
+              "name": "比较级与最高级",
+              "difficulty_band": 3,
+              "prerequisites": ["g4e-adjectives"],
+              "objective": "掌握形容词比较级与最高级的构成与用法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g6e-modal-verbs",
+              "name": "情态动词进阶",
+              "difficulty_band": 3,
+              "prerequisites": ["g4e-can"],
+              "objective": "掌握 must/should/may 等情态动词的基本用法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g6e-exclamation",
+              "name": "感叹句与祈使句",
+              "difficulty_band": 3,
+              "prerequisites": ["g5e-wh-questions"],
+              "objective": "能用 What/How 引导的感叹句与祈使句表达情感与指令。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g6e-u2",
+          "name": "读写与过渡",
+          "knowledge_points": [
+            {
+              "id": "g6e-core-words",
+              "name": "小学核心词汇",
+              "difficulty_band": 2,
+              "prerequisites": ["g5e-daily-routines"],
+              "objective": "掌握小学阶段约 700 个核心词汇的拼写与用法。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g6e-reading",
+              "name": "阅读（细节与主旨）",
+              "difficulty_band": 3,
+              "prerequisites": ["g5e-reading-passage"],
+              "objective": "能读懂 80~100 词短文，把握细节与主旨。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g6e-writing",
+              "name": "写作：邮件与短文",
+              "difficulty_band": 3,
+              "prerequisites": ["g5e-writing-short"],
+              "objective": "能写简单的英文邮件与话题短文。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g6e-phonics-stress",
+              "name": "语音语调",
+              "difficulty_band": 2,
+              "prerequisites": ["g3e-phonics-review"],
+              "objective": "掌握单词重音与句子语调的基本规律。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g6e-transition",
+              "name": "小升初衔接",
+              "difficulty_band": 3,
+              "prerequisites": ["g6e-future"],
+              "objective": "能适应初中英语学习要求，完成由小学到初中的能力过渡。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade7",
+      "grade_name": "七年级",
+      "units": [
+        {
+          "code": "g7e-u1",
+          "name": "词法与基础语法",
+          "knowledge_points": [
+            {
+              "id": "g7e-nouns-pronouns",
+              "name": "名词与代词",
+              "difficulty_band": 2,
+              "prerequisites": ["g3e-nouns-plural"],
+              "objective": "掌握可数/不可数名词与人称代词、物主代词、指示代词的用法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7e-articles",
+              "name": "冠词与数词",
+              "difficulty_band": 2,
+              "prerequisites": ["g6e-core-words"],
+              "objective": "掌握 a/an/the 的用法与基数词、序数词。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7e-present-simple-third",
+              "name": "一般现在时（第三人称单数）",
+              "difficulty_band": 3,
+              "prerequisites": ["g6e-future"],
+              "objective": "掌握一般现在时的第三人称单数变化与否定、疑问形式。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7e-present-continuous",
+              "name": "现在进行时",
+              "difficulty_band": 3,
+              "prerequisites": ["g5e-present-continuous"],
+              "objective": "掌握现在进行时的构成与现在分词变化规则。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7e-past-simple",
+              "name": "一般过去时",
+              "difficulty_band": 3,
+              "prerequisites": ["g7e-present-continuous"],
+              "objective": "掌握规则与不规则动词过去式，能描述过去发生的事。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7e-there-be",
+              "name": "there be 句型",
+              "difficulty_band": 2,
+              "prerequisites": ["g5e-there-be"],
+              "objective": "掌握 there be 句型的肯定、否定与疑问形式。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7e-prepositions",
+              "name": "介词",
+              "difficulty_band": 2,
+              "prerequisites": ["g4e-prepositions"],
+              "objective": "掌握时间介词（in/on/at）与方位介词的常见用法。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g7e-u2",
+          "name": "阅读与写作",
+          "knowledge_points": [
+            {
+              "id": "g7e-reading-detail",
+              "name": "阅读（细节理解题）",
+              "difficulty_band": 2,
+              "prerequisites": ["g6e-reading"],
+              "objective": "能快速定位文中细节信息并完成选择题。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g7e-writing-intro",
+              "name": "书面表达（介绍类）",
+              "difficulty_band": 3,
+              "prerequisites": ["g6e-writing"],
+              "objective": "能用 50~60 词介绍自己、家人或朋友。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g7e-phonics",
+              "name": "音标与拼读",
+              "difficulty_band": 2,
+              "prerequisites": ["g6e-phonics-stress"],
+              "objective": "掌握 48 个国际音标的认读与单词拼读。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g7e-sentence-transform",
+              "name": "句型转换",
+              "difficulty_band": 3,
+              "prerequisites": ["g7e-present-simple-third"],
+              "objective": "能进行肯定句、否定句、一般疑问句之间的转换。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade8",
+      "grade_name": "八年级",
+      "units": [
+        {
+          "code": "g8e-u1",
+          "name": "时态进阶",
+          "knowledge_points": [
+            {
+              "id": "g8e-future",
+              "name": "一般将来时",
+              "difficulty_band": 3,
+              "prerequisites": ["g7e-past-simple"],
+              "objective": "掌握 will 与 be going to 的用法与区别。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8e-past-continuous",
+              "name": "过去进行时",
+              "difficulty_band": 3,
+              "prerequisites": ["g8e-future"],
+              "objective": "掌握过去进行时的构成与用法，能描述过去某时正在发生的动作。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8e-present-perfect-intro",
+              "name": "现在完成时入门",
+              "difficulty_band": 3,
+              "prerequisites": ["g8e-past-continuous"],
+              "objective": "理解现在完成时的意义，掌握 for/since 与过去分词的用法。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8e-u2",
+          "name": "从句与句型",
+          "knowledge_points": [
+            {
+              "id": "g8e-comparison",
+              "name": "比较级与最高级进阶",
+              "difficulty_band": 3,
+              "prerequisites": ["g6e-comparison"],
+              "objective": "掌握 as...as、not as...as 与比较级最高级的综合用法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8e-object-clause",
+              "name": "宾语从句",
+              "difficulty_band": 3,
+              "prerequisites": ["g7e-sentence-transform"],
+              "objective": "掌握宾语从句的引导词、语序与时态呼应。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8e-conditional-clause",
+              "name": "条件状语从句",
+              "difficulty_band": 3,
+              "prerequisites": ["g8e-future"],
+              "objective": "掌握 if 条件句（主将从现）的用法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8e-modal-verbs",
+              "name": "情态动词进阶",
+              "difficulty_band": 3,
+              "prerequisites": ["g6e-modal-verbs"],
+              "objective": "掌握 must/have to/need/should 的用法与区别。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8e-word-formation",
+              "name": "构词法入门",
+              "difficulty_band": 2,
+              "prerequisites": ["g6e-core-words"],
+              "objective": "了解常见前缀、后缀与合成词的构词规律。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8e-u3",
+          "name": "阅读与写作",
+          "knowledge_points": [
+            {
+              "id": "g8e-reading-inference",
+              "name": "阅读（推理判断题）",
+              "difficulty_band": 3,
+              "prerequisites": ["g7e-reading-detail"],
+              "objective": "能根据上下文进行合理推断并完成阅读题。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g8e-cloze-intro",
+              "name": "完形填空入门",
+              "difficulty_band": 3,
+              "prerequisites": ["g8e-reading-inference"],
+              "objective": "能结合上下文与语法线索完成简单完形填空。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8e-writing-narrative",
+              "name": "写作（记叙类）",
+              "difficulty_band": 3,
+              "prerequisites": ["g7e-writing-intro"],
+              "objective": "能写 60~80 词的记叙短文，叙述完整、时态正确。",
+              "question_types": ["fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade9",
+      "grade_name": "九年级",
+      "units": [
+        {
+          "code": "g9e-u1",
+          "name": "中考核心语法",
+          "knowledge_points": [
+            {
+              "id": "g9e-present-perfect",
+              "name": "现在完成时",
+              "difficulty_band": 3,
+              "prerequisites": ["g8e-present-perfect-intro"],
+              "objective": "掌握现在完成时的构成、标志词与与一般过去时的区别。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9e-passive-voice",
+              "name": "被动语态",
+              "difficulty_band": 3,
+              "prerequisites": ["g9e-present-perfect"],
+              "objective": "掌握各时态被动语态的构成与用法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9e-attributive-clause",
+              "name": "定语从句",
+              "difficulty_band": 3,
+              "prerequisites": ["g8e-object-clause"],
+              "objective": "掌握 who/which/that 引导的定语从句及关系代词的选择。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9e-object-clause-advanced",
+              "name": "宾语从句进阶",
+              "difficulty_band": 3,
+              "prerequisites": ["g8e-object-clause"],
+              "objective": "掌握宾语从句的时态呼应与语序，能辨析易错点。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9e-adverbial-clause",
+              "name": "状语从句综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g8e-conditional-clause"],
+              "objective": "掌握时间、原因、条件、让步状语从句的连词与用法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9e-sentence-transform",
+              "name": "句型转换综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g9e-adverbial-clause"],
+              "objective": "能综合完成同义句改写、对划线部分提问等句型转换。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9e-u2",
+          "name": "中考应试",
+          "knowledge_points": [
+            {
+              "id": "g9e-exam-reading",
+              "name": "中考阅读理解",
+              "difficulty_band": 3,
+              "prerequisites": ["g8e-reading-inference"],
+              "objective": "能完成中考阅读的细节、推断、主旨与词义猜测题。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g9e-exam-cloze",
+              "name": "中考完形填空",
+              "difficulty_band": 3,
+              "prerequisites": ["g8e-cloze-intro"],
+              "objective": "能综合运用词汇与语境线索完成中考完形填空。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9e-exam-writing",
+              "name": "中考写作",
+              "difficulty_band": 3,
+              "prerequisites": ["g8e-writing-narrative"],
+              "objective": "能按中考要求写出内容完整、语言得体的 80 词作文。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g9e-vocabulary-sprint",
+              "name": "中考词汇冲刺",
+              "difficulty_band": 2,
+              "prerequisites": ["g8e-word-formation"],
+              "objective": "掌握中考约 1600 个核心词汇的拼写与用法。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g9e-grammar-fill-intro",
+              "name": "语法填空入门",
+              "difficulty_band": 3,
+              "prerequisites": ["g9e-passive-voice"],
+              "objective": "能在语篇中根据语法与语境填写正确的词形。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9e-listening",
+              "name": "听力策略",
+              "difficulty_band": 2,
+              "prerequisites": ["g7e-phonics"],
+              "objective": "掌握听前预测、抓关键词与速记的听力策略。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade10",
+      "grade_name": "高一",
+      "units": [
+        {
+          "code": "g10e-u1",
+          "name": "高中核心语法",
+          "knowledge_points": [
+            {
+              "id": "g10e-attributive-advanced",
+              "name": "定语从句进阶",
+              "difficulty_band": 3,
+              "prerequisites": ["g9e-attributive-clause"],
+              "objective": "掌握关系副词（when/where/why）与介词+关系代词引导的定语从句。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10e-noun-clause",
+              "name": "名词性从句",
+              "difficulty_band": 3,
+              "prerequisites": ["g9e-object-clause-advanced"],
+              "objective": "掌握主语从句、表语从句、同位语从句与宾语从句的综合用法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10e-infinitive-gerund",
+              "name": "非谓语动词（不定式与动名词）",
+              "difficulty_band": 3,
+              "prerequisites": ["g9e-passive-voice"],
+              "objective": "掌握不定式与动名词作主语、宾语、表语、定语的用法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10e-tense-voice",
+              "name": "时态语态综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g9e-passive-voice"],
+              "objective": "能在语篇中综合判断并使用正确的时态与语态。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10e-vocabulary-1",
+              "name": "核心词汇（必修一）",
+              "difficulty_band": 2,
+              "prerequisites": ["g9e-vocabulary-sprint"],
+              "objective": "掌握必修一核心词汇的音形义与常见搭配。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g10e-phonics-stress",
+              "name": "语音与重音",
+              "difficulty_band": 2,
+              "prerequisites": ["g9e-listening"],
+              "objective": "掌握多音节词重音、连读与弱读的规律。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g10e-u2",
+          "name": "高考题型入门",
+          "knowledge_points": [
+            {
+              "id": "g10e-reading-main",
+              "name": "高考阅读（细节与主旨）",
+              "difficulty_band": 3,
+              "prerequisites": ["g9e-exam-reading"],
+              "objective": "能完成高考阅读的细节理解与主旨大意题。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g10e-seven-five",
+              "name": "七选五",
+              "difficulty_band": 3,
+              "prerequisites": ["g10e-reading-main"],
+              "objective": "能根据语篇结构与衔接手段完成七选五。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10e-grammar-fill",
+              "name": "语法填空",
+              "difficulty_band": 3,
+              "prerequisites": ["g9e-grammar-fill-intro"],
+              "objective": "能在语篇中准确填写词形变化与语法功能词。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10e-writing-applied",
+              "name": "应用文写作",
+              "difficulty_band": 3,
+              "prerequisites": ["g9e-exam-writing"],
+              "objective": "能写申请信、建议信、通知等常见应用文。",
+              "question_types": ["fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade11",
+      "grade_name": "高二",
+      "units": [
+        {
+          "code": "g11e-u1",
+          "name": "语法进阶",
+          "knowledge_points": [
+            {
+              "id": "g11e-participle",
+              "name": "非谓语动词（分词）",
+              "difficulty_band": 3,
+              "prerequisites": ["g10e-infinitive-gerund"],
+              "objective": "掌握现在分词与过去分词作定语、状语、补语的用法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11e-subjunctive",
+              "name": "虚拟语气",
+              "difficulty_band": 3,
+              "prerequisites": ["g10e-tense-voice"],
+              "objective": "掌握虚拟语气在条件句、宾语从句与 wish 句中的用法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11e-inversion",
+              "name": "倒装句",
+              "difficulty_band": 3,
+              "prerequisites": ["g11e-subjunctive"],
+              "objective": "掌握完全倒装与部分倒装的常见结构。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11e-emphasis",
+              "name": "强调句",
+              "difficulty_band": 3,
+              "prerequisites": ["g11e-inversion"],
+              "objective": "掌握 It is/was...that... 强调句的结构与判断方法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11e-vocabulary-2",
+              "name": "核心词汇（必修二、三）",
+              "difficulty_band": 2,
+              "prerequisites": ["g10e-vocabulary-1"],
+              "objective": "掌握必修二、三核心词汇与常见搭配。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g11e-grammar-fill-advanced",
+              "name": "语法填空进阶",
+              "difficulty_band": 3,
+              "prerequisites": ["g10e-grammar-fill"],
+              "objective": "能综合判断语篇中的非谓语、从句与词形变化。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g11e-u2",
+          "name": "高考题型进阶",
+          "knowledge_points": [
+            {
+              "id": "g11e-reading-inference",
+              "name": "阅读（推断与词义猜测）",
+              "difficulty_band": 3,
+              "prerequisites": ["g10e-reading-main"],
+              "objective": "能进行推理判断、词义猜测与作者态度分析。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g11e-cloze-advanced",
+              "name": "完形填空进阶",
+              "difficulty_band": 3,
+              "prerequisites": ["g9e-exam-cloze"],
+              "objective": "能把握语篇逻辑与情感线索，完成高考完形填空。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11e-continuation-intro",
+              "name": "读后续写入门",
+              "difficulty_band": 3,
+              "prerequisites": ["g10e-writing-applied"],
+              "objective": "能读懂故事、把握情节走向并续写两段合理内容。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g11e-summary-intro",
+              "name": "概要写作入门",
+              "difficulty_band": 3,
+              "prerequisites": ["g11e-reading-inference"],
+              "objective": "能提炼文章要点并用自己的话写出 60 词概要。",
+              "question_types": ["fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade12",
+      "grade_name": "高三",
+      "units": [
+        {
+          "code": "g12e-u1",
+          "name": "高考题型冲刺",
+          "knowledge_points": [
+            {
+              "id": "g12e-grammar-comprehensive",
+              "name": "高考语法综合",
+              "difficulty_band": 3,
+              "prerequisites": ["g11e-grammar-fill-advanced"],
+              "objective": "能综合运用从句、非谓语、时态语态解决高考语法题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12e-reading-strategy",
+              "name": "高考阅读策略",
+              "difficulty_band": 3,
+              "prerequisites": ["g11e-reading-inference"],
+              "objective": "掌握高考阅读的篇章结构分析、定位与排除策略。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g12e-seven-five-sprint",
+              "name": "七选五冲刺",
+              "difficulty_band": 3,
+              "prerequisites": ["g10e-seven-five"],
+              "objective": "能综合运用代词指代、逻辑衔接与复现线索完成七选五。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12e-cloze-sprint",
+              "name": "完形冲刺",
+              "difficulty_band": 3,
+              "prerequisites": ["g11e-cloze-advanced"],
+              "objective": "能在限时内完成高考完形填空并稳定正确率。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12e-vocabulary-sprint",
+              "name": "高考词汇冲刺",
+              "difficulty_band": 2,
+              "prerequisites": ["g11e-vocabulary-2"],
+              "objective": "掌握高考约 3500 词的核心词义与高频搭配。",
+              "question_types": ["choice", "fill", "match"]
+            }
+          ]
+        },
+        {
+          "code": "g12e-u2",
+          "name": "写作与综合",
+          "knowledge_points": [
+            {
+              "id": "g12e-continuation-advanced",
+              "name": "读后续写进阶",
+              "difficulty_band": 3,
+              "prerequisites": ["g11e-continuation-intro"],
+              "objective": "能写出情节连贯、描写生动、主题升华的续写。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g12e-summary",
+              "name": "概要写作",
+              "difficulty_band": 3,
+              "prerequisites": ["g11e-summary-intro"],
+              "objective": "能准确概括文章要点并做到语言简洁连贯。",
+              "question_types": ["fill"]
+            },
+            {
+              "id": "g12e-writing-patterns",
+              "name": "书面表达高分句型",
+              "difficulty_band": 3,
+              "prerequisites": ["g12e-continuation-advanced"],
+              "objective": "掌握倒装、强调、非谓语等高分句型并在写作中得体使用。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12e-mock-review",
+              "name": "高考真题演练",
+              "difficulty_band": 3,
+              "prerequisites": ["g12e-grammar-comprehensive"],
+              "objective": "能限时完成高考真题并针对失分点查漏补缺。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12e-exam-strategy",
+              "name": "考场时间分配与策略",
+              "difficulty_band": 2,
+              "prerequisites": ["g12e-mock-review"],
+              "objective": "掌握高考英语各题型的时间分配与答题顺序策略。",
+              "question_types": ["choice", "fill"]
             }
           ]
         }

@@ -35,6 +35,7 @@ from app.data.curriculum import (
 from app.data.curriculum import (
     find_point,
     grade_name,
+    stage_for_grade,
     subject_name,
 )
 from app.errors import AppError, LlmError, NotFoundError, RateLimitedError
@@ -57,17 +58,15 @@ from app.services.explainer_sanitize import SanitizeResult, sanitize_explainer_h
 from app.services.llm_client import LlmClient
 from app.services.llm_json import extract_json_object
 from app.services.prompts import (
-    EXPLAINER_DESIGN_SYSTEM_PROMPT,
     EXPLAINER_DESIGN_USER_TEMPLATE,
-    EXPLAINER_HTML_SYSTEM_PROMPT,
     EXPLAINER_HTML_USER_TEMPLATE,
+    explainer_audience,
+    explainer_design_system_prompt,
+    explainer_html_system_prompt,
 )
 from app.services.safety_service import SafetyService
 
 logger = logging.getLogger("xueban.explainer")
-
-#: 题库管线与讲解共用同一个学段常量，避免两处各写一个字符串。
-ELEMENTARY_STAGE = "grade1_2"
 
 
 class ExplainerError(AppError):
@@ -99,6 +98,8 @@ async def ensure_knowledge_point(
     """把课程树里的知识点写进 knowledge_points（幂等）。
 
     讲解与出题共用同一套知识点行，所以这里不新建表、也不复制数据。
+    stage 由调用方经 stage_for_grade(grade) 推导；grade 一并落库，
+    供诊断/练习按年级过滤。
     """
     existing = await session.execute(
         select(KnowledgePointModel).where(KnowledgePointModel.code == point.id)
@@ -110,6 +111,7 @@ async def ensure_knowledge_point(
             name=point.name,
             subject=point.subject,
             stage=stage,
+            grade=point.grade,
             sort_order=sort_order,
         )
         session.add(record)
@@ -148,7 +150,7 @@ async def resolve_point(
         )
     if record is None:
         record_id = await ensure_knowledge_point(
-            session, point, stage=ELEMENTARY_STAGE, sort_order=point.difficulty_band
+            session, point, stage=stage_for_grade(point.grade), sort_order=point.difficulty_band
         )
         await session.flush()
         found = await session.execute(
@@ -284,16 +286,18 @@ def extract_html_document(raw: str) -> str:
 async def design_script(
     *, llm: LlmClient, point: CurriculumPoint, profile: str, settings: Settings
 ) -> dict[str, Any]:
-    """① 教学设计：输出 ≤4 幕的教学脚本 JSON。"""
+    """① 教学设计：输出 ≤4 幕的教学脚本 JSON（提示词按学段分档）。"""
+    stage = stage_for_grade(point.grade)
     response = await llm.complete(
         [
-            {"role": "system", "content": EXPLAINER_DESIGN_SYSTEM_PROMPT},
+            {"role": "system", "content": explainer_design_system_prompt(stage)},
             {
                 "role": "user",
                 "content": EXPLAINER_DESIGN_USER_TEMPLATE.format(
                     subject=point.subject,
                     subject_name=subject_name(point.subject),
                     grade_name=grade_name(point.grade),
+                    audience=explainer_audience(stage),
                     unit_name=point.unit_name,
                     point_name=point.name,
                     objective=point.objective,
@@ -343,9 +347,10 @@ async def render_html(
     acts = script.get("acts", [])
     # HTML 比脚本长得多，但推理模型的开销不随页数线性增长；给足预算避免正文被截断。
     max_tokens = min(settings.content_max_tokens, settings.content_tokens_per_question * 8)
+    html_system = explainer_html_system_prompt(stage_for_grade(point.grade))
     response = await llm.complete(
         [
-            {"role": "system", "content": EXPLAINER_HTML_SYSTEM_PROMPT},
+            {"role": "system", "content": html_system},
             {
                 "role": "user",
                 "content": EXPLAINER_HTML_USER_TEMPLATE.format(
@@ -712,7 +717,6 @@ async def record_feedback(
 
 
 __all__ = [
-    "ELEMENTARY_STAGE",
     "ExplainerError",
     "cache_key",
     "daily_usage",

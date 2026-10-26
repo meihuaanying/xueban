@@ -37,7 +37,46 @@ SUBJECT_NAMES: dict[str, str] = {
     "math": "数学",
     "english": "英语",
 }
-GRADE_NAMES: dict[str, str] = {"grade1": "一年级", "grade2": "二年级"}
+
+#: 全学段年级（grade1~12）。高中用「高一/高二/高三」而非「十年级」，
+#: 与学生和家长的实际称呼一致。
+GRADE_NAMES: dict[str, str] = {
+    **{f"grade{i}": f"{_n}" for i, _n in enumerate(
+        ("一年级", "二年级", "三年级", "四年级", "五年级", "六年级"), start=1
+    )},
+    "grade7": "七年级",
+    "grade8": "八年级",
+    "grade9": "九年级",
+    "grade10": "高一",
+    "grade11": "高二",
+    "grade12": "高三",
+}
+
+#: 年级 → 学段（= 前端 GradeBand = Question.stage 的合法取值）。
+#: 这是全项目 stage 的唯一权威映射：管线入库、诊断/练习选题、讲解挂载
+#  都经 stage_for_grade 取值，禁止各处手写字符串。
+STAGE_FOR_GRADE: dict[str, str] = {
+    **{f"grade{i}": "primary" for i in range(1, 7)},
+    **{f"grade{i}": "junior" for i in range(7, 10)},
+    **{f"grade{i}": "senior" for i in range(10, 13)},
+}
+
+VALID_STAGES: frozenset[str] = frozenset({"primary", "junior", "senior"})
+
+
+def stage_for_grade(grade: str) -> str:
+    """年级对应的三段学段（primary/junior/senior），未知年级抛错。"""
+    stage = STAGE_FOR_GRADE.get(grade)
+    if stage is None:
+        raise CurriculumError(f"未知年级：{grade}（合法值 {sorted(STAGE_FOR_GRADE)}）")
+    return stage
+
+
+def grades_for_stage(stage: str) -> tuple[str, ...]:
+    """学段下的全部年级，按升序。"""
+    if stage not in VALID_STAGES:
+        raise CurriculumError(f"未知学段：{stage}（合法值 {sorted(VALID_STAGES)}）")
+    return tuple(grade for grade, value in STAGE_FOR_GRADE.items() if value == stage)
 
 
 def subject_name(subject: str) -> str:
@@ -142,6 +181,7 @@ def _parse_subject(path: Path) -> Curriculum:
 
     for stage in raw.get("stages", []):
         grade = _require_str(stage.get("grade"), f"{path.name}：stage 缺少 grade")
+        _require(grade in GRADE_NAMES, f"{path.name}：未知年级 {grade}（合法值见 GRADE_NAMES）")
         for unit in stage.get("units", []):
             unit_code = _require_str(
                 unit.get("code"), f"{path.name}：{grade} 下的单元缺少 code/name"

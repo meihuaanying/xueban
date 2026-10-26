@@ -20,14 +20,14 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from app.config import Settings
-from app.data.curriculum import KnowledgePoint
+from app.data.curriculum import KnowledgePoint, stage_for_grade
 from app.data.curriculum import grade_name as _grade_name
 from app.data.curriculum import subject_name as _subject_name
 from app.errors import LlmError
 from app.services.llm_client import LlmClient
 from app.services.prompts import (
-    QUESTION_GEN_SYSTEM_PROMPT,
     QUESTION_GEN_USER_TEMPLATE,
+    question_gen_system_prompt,
 )
 
 logger = logging.getLogger("xueban.content.gen")
@@ -154,7 +154,10 @@ class QuestionGenerator:
 
     def _build_messages(self, point: KnowledgePoint, count: int) -> list[dict[str, str]]:
         return [
-            {"role": "system", "content": QUESTION_GEN_SYSTEM_PROMPT},
+            {
+                "role": "system",
+                "content": question_gen_system_prompt(stage_for_grade(point.grade)),
+            },
             {
                 "role": "user",
                 "content": QUESTION_GEN_USER_TEMPLATE.format(

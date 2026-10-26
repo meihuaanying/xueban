@@ -15,6 +15,7 @@ from app.schemas.practice import (
     PracticeQuestionOut,
 )
 from app.services import diagnosis_service, practice_service
+from app.services.grade_scope import knowledge_point_ids_for_grade
 
 router = APIRouter(prefix="/v1/practice", tags=["practice"])
 
@@ -29,7 +30,10 @@ async def generate(
     user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> PracticeGenerateResponse:
-    """薄弱知识点占比 ≥60%，近 7 天去重。"""
+    """薄弱知识点占比 ≥60%，近 7 天去重；带 grade 时收窄到教材进度。"""
+    grade_kp_ids = None
+    if payload.grade is not None:
+        grade_kp_ids = await knowledge_point_ids_for_grade(session, grade=payload.grade)
     practice_set = await practice_service.generate_practice(
         session,
         user=user,
@@ -37,6 +41,7 @@ async def generate(
         stage=payload.stage,
         count=payload.count,
         knowledge_point_ids=payload.knowledge_point_ids,
+        grade_kp_ids=grade_kp_ids,
     )
     questions: list[PracticeQuestionOut] = []
     for item in practice_set.items:

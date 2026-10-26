@@ -6,13 +6,14 @@ import { Button, Card, CardContent, CardHeader, CardTitle, QuestionCard } from "
 import { AsyncFeedback, JourneyStepper } from "../../components/journey-blocks";
 import { StageShell } from "../../components/stage-shell";
 import { useJourney } from "../../journey/journey-context";
-import { GRADE_BANDS } from "../../journey/stages";
+import { GRADE_BANDS, gradeLabel } from "../../journey/stages";
 import { useDiagnosis } from "../../journey/use-journey-data";
 
 export default function DiagnosisStagePage() {
-  const { band, theme, mark, goTo } = useJourney();
+  const { band, grade, theme, mark, goTo } = useJourney();
   const diag = useDiagnosis();
   const preset = band ? GRADE_BANDS[band] : GRADE_BANDS.primary;
+  const activeGrade = grade ?? preset.grade;
   // 该学段题库尚未覆盖：后端返回 409 DIAGNOSIS_NO_QUESTIONS，按空态而非错误处理
   const noBank = diag.errorCode === "DIAGNOSIS_NO_QUESTIONS";
   const question = diag.start?.question ?? null;
@@ -35,11 +36,12 @@ export default function DiagnosisStagePage() {
             </CardHeader>
             <CardContent className="flex flex-col items-start gap-sm">
               <p className="text-app-sm text-muted-foreground">
-                共 20 题，答错也没关系——诊断只是为了定位你的薄弱点。
+                共 20 题，答错也没关系——诊断只是为了定位
+                {gradeLabel(activeGrade)}的薄弱点。
               </p>
               {noBank ? (
                 <p className="text-app-sm text-muted-foreground" data-testid="diagnosis-empty">
-                  {preset.label}题库正在建设中，先用已有学段的题练一练，规划与练习不受影响。
+                  {gradeLabel(activeGrade)}的题库正在建设中，先用已有学段的题练一练，规划与练习不受影响。
                 </p>
               ) : null}
               {diag.error && !noBank ? (
@@ -49,7 +51,7 @@ export default function DiagnosisStagePage() {
                 type="button"
                 data-testid="diagnosis-start"
                 disabled={diag.busy}
-                onClick={() => void diag.begin(preset.subject, preset.stage)}
+                onClick={() => void diag.begin(preset.subject, preset.stage, 20, activeGrade)}
               >
                 {diag.busy ? "准备中…" : "开始诊断"}
               </Button>

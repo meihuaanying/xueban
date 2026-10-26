@@ -236,8 +236,14 @@ async def start_diagnosis(
     subject: str,
     stage: str,
     target_count: int = DEFAULT_TARGET_COUNT,
+    grade_kp_ids: set[uuid.UUID] | None = None,
 ) -> tuple[Exam, Question]:
-    """开启诊断：创建测评实例并返回第一题。"""
+    """开启诊断：创建测评实例并返回第一题。
+
+    ``grade_kp_ids``：某年级（人教版课程树）在库内的知识点 id 集合，
+    由路由层经 grade_scope 解析。传入时候选题与诊断范围都收窄到该年级
+    的教材进度（题目须至少挂一个该年级的知识点）。
+    """
     if not MIN_TARGET_COUNT <= target_count <= MAX_TARGET_COUNT:
         raise AppError(
             f"诊断题量需在 {MIN_TARGET_COUNT}~{MAX_TARGET_COUNT} 之间",
@@ -247,6 +253,13 @@ async def start_diagnosis(
     candidates, scope_kp_ids = await _build_candidates(
         session, subject=subject, stage=stage, exclude=set()
     )
+    if grade_kp_ids is not None:
+        scope_kp_ids = {kp_id for kp_id in scope_kp_ids if kp_id in grade_kp_ids}
+        candidates = [
+            candidate
+            for candidate in candidates
+            if any(kp_id in grade_kp_ids for kp_id in candidate.knowledge_point_ids)
+        ]
     if not candidates or not scope_kp_ids:
         raise AppError("题库中暂无可用题目", code="DIAGNOSIS_NO_QUESTIONS", status_code=409)
 

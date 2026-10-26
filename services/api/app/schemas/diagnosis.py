@@ -15,6 +15,9 @@ class DiagnosisStartRequest(BaseModel):
 
     subject: str = Field(default="math", max_length=32)
     stage: str = Field(default="junior", max_length=20)
+    # 可选年级过滤（grade1~12）：传了就只在课程树该年级的知识点范围内出题，
+    # 不传则按学段整段出题（兼容旧演示题库）。
+    grade: str | None = Field(default=None, max_length=8)
     target_count: int = Field(default=25, ge=20, le=30, description="题量 20~30")
 
 

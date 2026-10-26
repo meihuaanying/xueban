@@ -25,10 +25,12 @@ from fractions import Fraction
 import sympy
 
 from app.config import Settings
-from app.data.curriculum import KnowledgePoint
+from app.data.curriculum import KnowledgePoint, stage_for_grade
+from app.data.curriculum import grade_name as _grade_name
+from app.data.curriculum import subject_name as _subject_name
 from app.services.llm_client import LlmClient
 from app.services.math_verify import is_pure_math, parse_math, strip_latex
-from app.services.prompts import CONTENT_JUDGE_SYSTEM_PROMPT, CONTENT_JUDGE_USER_TEMPLATE
+from app.services.prompts import CONTENT_JUDGE_USER_TEMPLATE, content_judge_system_prompt
 from app.services.question_generator import GeneratedQuestion
 
 logger = logging.getLogger("xueban.content.verify")
@@ -281,12 +283,25 @@ def _check_math_answer(question: GeneratedQuestion) -> str | None:
     再交给 :func:`numbers_agree`：``simplify`` 主判 + 精确分数补充。
     """
     stem = _normalize_math_text(question.stem)
+    # 含字母的等式（方程/公式/带单位情境）不是数值对拍能判的：
+    # 「x²-3x+2=0 的解是？」「长 5m 宽 3m，面积 = ？」的左侧不是纯数字算式，
+    # 任何「左侧求值 vs 答案」的比较都会误拒。统一交给 judge 通道。
+    # 宁可放行给 LLM 复核，也不能把整类初高中方程题拒之门外。
+    if "=" in stem:
+        raw_left = strip_latex(stem.rpartition("=")[0])
+        if re.search(r"[A-Za-z]", raw_left):
+            return None
     left = _math_left_side(stem)
     if left is not None:
         expr = parse_math(left)
         if expr is not None:
             try:
                 expected = normalize_math_number(expr.evalf())
+                # 含变量的等式（方程/恒等式/函数）不是数值对拍能判的：
+                # 「x²-3x+2=0 的解是？」的左侧是符号表达式，交给 judge 通道。
+                # 只有纯数值算式才走 SymPy 硬对拍。
+                if not getattr(expected, "is_number", False):
+                    return None
                 answer_expr = parse_math(question.answer)
                 if answer_expr is None:
                     return f"标准答案 {question.answer} 不是可计算的数学表达式"
@@ -315,8 +330,10 @@ def rule_verify(question: GeneratedQuestion, point: KnowledgePoint) -> str | Non
     """规则通道；返回 None 表示通过，否则返回拒绝理由。"""
     if not question.stem.strip():
         return "题干为空"
-    if len(question.stem) > 300:
-        return "题干过长，不适合低年级朗读"
+    # 题干长度上限按学段放宽：小学 300 字（要能朗读），初高中允许情境题/阅读材料。
+    max_stem = 300 if stage_for_grade(point.grade) == "primary" else 900
+    if len(question.stem) > max_stem:
+        return f"题干过长（{len(question.stem)} > {max_stem}）"
     for name in ("analysis", "hint1", "hint2", "hint3"):
         if not getattr(question, name).strip():
             return f"{name} 为空"
@@ -378,17 +395,16 @@ class QuestionVerifier:
             or "（无选项）"
         )
         messages = [
-            {"role": "system", "content": CONTENT_JUDGE_SYSTEM_PROMPT},
+            {
+                "role": "system",
+                "content": content_judge_system_prompt(stage_for_grade(point.grade)),
+            },
             {
                 "role": "user",
                 "content": CONTENT_JUDGE_USER_TEMPLATE.format(
                     point_name=point.name,
-                    grade_name={"grade1": "一年级", "grade2": "二年级"}.get(
-                        point.grade, point.grade
-                    ),
-                    subject_name={"math": "数学", "chinese": "语文", "english": "英语"}.get(
-                        point.subject, point.subject
-                    ),
+                    grade_name=_grade_name(point.grade),
+                    subject_name=_subject_name(point.subject),
                     objective=point.objective,
                     qtype=question.qtype,
                     stem=question.stem,

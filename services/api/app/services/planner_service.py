@@ -290,15 +290,30 @@ async def generate_path(
     user_id: uuid.UUID,
     subject: str | None = None,
     limit: int = PATH_LIMIT,
+    grade_kp_ids: set[uuid.UUID] | None = None,
 ) -> Plan:
-    """生成并保存学习路径（旧路径归档）。"""
+    """生成并保存学习路径（旧路径归档）。
+
+    ``grade_kp_ids``：某年级教材进度内的知识点集合（路由层经 grade_scope
+    解析）。传入时弱项/兜底路径都限定在该年级内——高一新生的规划不该
+    从一年级的知识点兜底开始。
+    """
     from app.services import mastery_service
 
     overview = await mastery_service.get_mastery_overview(session, user_id=user_id, subject=subject)
+    if grade_kp_ids is not None:
+        overview = [point for point in overview if point.knowledge_point_id in grade_kp_ids]
     mastery_by_kp = {point.knowledge_point_id: point.mastery for point in overview}
     weak_points = [_as_path_point(point) for point in overview][:limit]
     if not weak_points:
-        weak_points = await _fallback_points(session, subject=subject, limit=5)
+        # 兜底查询不带年级条件（其函数体为既有实现），放大取数后在应用层
+        # 按年级过滤，保证跨年级行不会挤掉目标年级的知识点。
+        fallback = await _fallback_points(
+            session, subject=subject, limit=limit * 8 if grade_kp_ids is not None else limit
+        )
+        if grade_kp_ids is not None:
+            fallback = [p for p in fallback if p.id in grade_kp_ids][:limit]
+        weak_points = fallback
     strong_points = [
         _as_path_point(point)
         for point in overview
@@ -347,9 +362,13 @@ async def generate_path(
 
 
 async def get_or_create_path(
-    session: AsyncSession, *, user_id: uuid.UUID, subject: str | None = None
+    session: AsyncSession,
+    *,
+    user_id: uuid.UUID,
+    subject: str | None = None,
+    grade_kp_ids: set[uuid.UUID] | None = None,
 ) -> Plan:
-    """获取活跃路径，不存在则生成。"""
+    """获取活跃路径，不存在则生成（首次生成时应用年级收窄）。"""
     existing = (
         await session.execute(
             select(Plan)
@@ -363,7 +382,9 @@ async def get_or_create_path(
     ).scalars().first()
     if existing is not None:
         return existing
-    return await generate_path(session, user_id=user_id, subject=subject)
+    return await generate_path(
+        session, user_id=user_id, subject=subject, grade_kp_ids=grade_kp_ids
+    )
 
 
 REVIEW_TASK_PREFIX = "复习到期卡片"

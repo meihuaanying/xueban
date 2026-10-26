@@ -59,6 +59,9 @@ class KnowledgePoint(Base, TimestampMixin):
     name: Mapped[str] = mapped_column(String(128), nullable=False)
     subject: Mapped[str] = mapped_column(String(32), index=True, nullable=False)
     stage: Mapped[str] = mapped_column(String(20), default="junior", nullable=False)
+    # 人教版课程树的年级（grade1~12）；旧自动展开图谱的知识点没有年级，置空。
+    # 诊断/练习按年级过滤时经本列 narrowing（stage_for_grade 是唯一权威映射）。
+    grade: Mapped[str | None] = mapped_column(String(8), index=True)
     parent_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), ForeignKey("knowledge_points.id", ondelete="SET NULL")
     )

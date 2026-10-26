@@ -19,7 +19,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import Settings, settings
-from app.data.curriculum import find_point
+from app.data.curriculum import find_point, stage_for_grade
 from app.errors import LlmError, NotFoundError, RateLimitedError
 from app.models import (
     ExplainerContent,
@@ -415,17 +415,18 @@ async def pending_content(
     """
     point = find_point(POINT_CODE)
     assert point is not None
+    stage = stage_for_grade(point.grade)
     async with sessionmaker() as session:
         kp_id = await explainer_service.ensure_knowledge_point(
-            session, point, stage=explainer_service.ELEMENTARY_STAGE, sort_order=1
+            session, point, stage=stage, sort_order=1
         )
         content = ExplainerContent(
             knowledge_point_id=kp_id,
-            stage=explainer_service.ELEMENTARY_STAGE,
+            stage=stage,
             mode=ExplainerMode.INTERACTIVE,
             style_version=settings.explainer_style_version,
             cache_key=explainer_service.cache_key(
-                point.id, explainer_service.ELEMENTARY_STAGE, settings.explainer_style_version
+                point.id, stage, settings.explainer_style_version
             ),
             title=point.name,
         )
@@ -807,11 +808,11 @@ async def linked_question(
     assert point is not None
     async with sessionmaker() as session:
         kp_id = await explainer_service.ensure_knowledge_point(
-            session, point, stage=explainer_service.ELEMENTARY_STAGE, sort_order=1
+            session, point, stage=stage_for_grade(point.grade), sort_order=1
         )
         question = Question(
             subject="math",
-            stage="grade1_2",
+            stage="primary",
             qtype=QuestionType.CHOICE,
             stem="8 + 5 = ?",
             options={"A": "12", "B": "13", "C": "14"},

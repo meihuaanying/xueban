@@ -599,8 +599,13 @@ export const api = {
   logout: (refreshToken: string) => post<void>("/v1/auth/logout", { refresh_token: refreshToken }),
 
   // 诊断与画像
-  startDiagnosis: (payload: { subject: string; stage: string; target_count: number }) =>
-    post<DiagnosisStart>("/v1/diagnosis/start", payload),
+  startDiagnosis: (payload: {
+    subject: string;
+    stage: string;
+    target_count: number;
+    /** 年级过滤（grade1~12）：题目范围收窄到该年级教材进度 */
+    grade?: string;
+  }) => post<DiagnosisStart>("/v1/diagnosis/start", payload),
   answerDiagnosis: (examId: string, payload: { question_id: string; answer: string }) =>
     post<DiagnosisAnswer>(`/v1/diagnosis/${examId}/answer`, payload),
   diagnosisReport: (examId: string) => get<DiagnosisReport>(`/v1/diagnosis/${examId}/report`),
@@ -616,8 +621,18 @@ export const api = {
   behavior: () => get<BehaviorProfile>("/v1/profile/behavior"),
 
   // 规划
-  path: (subject?: string) => get<PathResponse>(`/v1/plan/path${subject ? `?subject=${subject}` : ""}`),
-  regeneratePath: () => post<PathResponse>("/v1/plan/path/regenerate"),
+  path: (subject?: string, options?: { grade?: string }) => {
+    const params = new URLSearchParams();
+    if (subject) params.set("subject", subject);
+    if (options?.grade) params.set("grade", options.grade);
+    const query = params.toString();
+    return get<PathResponse>(`/v1/plan/path${query ? `?${query}` : ""}`);
+  },
+  regeneratePath: (options?: { grade?: string }) =>
+    post<PathResponse>(
+      `/v1/plan/path/regenerate${options?.grade ? `?grade=${options.grade}` : ""}`,
+      {},
+    ),
   today: () => get<TodayResponse>("/v1/plan/today"),
   completeTask: (taskId: string) => post<CompleteTaskResponse>(`/v1/plan/tasks/${taskId}/complete`),
   examCountdown: (payload: { exam_date: string; target_score?: number }) =>
@@ -640,8 +655,13 @@ export const api = {
     ),
 
   // 练习与错题
-  generatePractice: (payload: { subject: string; count: number; knowledge_point_ids?: string[] }) =>
-    post<PracticeGenerate>("/v1/practice/generate", payload),
+  generatePractice: (payload: {
+    subject: string;
+    count: number;
+    knowledge_point_ids?: string[];
+    /** 年级过滤（grade1~12）：出题范围收窄到该年级教材进度 */
+    grade?: string;
+  }) => post<PracticeGenerate>("/v1/practice/generate", payload),
   answerPractice: (payload: { question_id: string; answer: string; source: string }) =>
     post<PracticeAnswer>("/v1/practice/answer", payload),
   mistakes: (params?: { state?: string; error_reason?: string; limit?: number }) => {

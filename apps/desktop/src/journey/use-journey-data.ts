@@ -92,26 +92,29 @@ export function useDiagnosis() {
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
 
-  const begin = useCallback(async (subject: string, stage: string, count = 20) => {
-    setBusy(true);
-    setError(null);
-    setErrorCode(null);
-    setLast(null);
-    try {
-      setStart(await api.startDiagnosis({ subject, stage, target_count: count }));
-    } catch (caught) {
-      // 409 题库暂无可用题目属正常空态（该学段题库待补），需与真故障区分
-      if (caught instanceof ApiError) {
-        setError(caught.message);
-        setErrorCode(caught.code);
-      } else {
-        setError(caught instanceof Error ? caught.message : "诊断启动失败。");
-        setErrorCode(null);
+  const begin = useCallback(
+    async (subject: string, stage: string, count = 20, grade?: string) => {
+      setBusy(true);
+      setError(null);
+      setErrorCode(null);
+      setLast(null);
+      try {
+        setStart(await api.startDiagnosis({ subject, stage, target_count: count, grade }));
+      } catch (caught) {
+        // 409 题库暂无可用题目属正常空态（该学段题库待补），需与真故障区分
+        if (caught instanceof ApiError) {
+          setError(caught.message);
+          setErrorCode(caught.code);
+        } else {
+          setError(caught instanceof Error ? caught.message : "诊断启动失败。");
+          setErrorCode(null);
+        }
+      } finally {
+        setBusy(false);
       }
-    } finally {
-      setBusy(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   const answer = useCallback(async (questionId: string, value: string) => {
     if (!start) return;
@@ -144,7 +147,7 @@ export function useMastery(subject: string) {
 }
 
 /* ---------- 练习 ---------- */
-export function usePractice(subject: string) {
+export function usePractice(subject: string, grade?: string) {
   const [set, setSet] = useState<PracticeGenerate | null>(null);
   const [index, setIndex] = useState(0);
   const [last, setLast] = useState<PracticeAnswer | null>(null);
@@ -159,14 +162,14 @@ export function usePractice(subject: string) {
     setLast(null);
     setWrongStreak(0);
     try {
-      setSet(await api.generatePractice({ subject, count: 5 }));
+      setSet(await api.generatePractice({ subject, count: 5, grade }));
       setIndex(0);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "出题失败，请稍后重试。");
     } finally {
       setBusy(false);
     }
-  }, [subject]);
+  }, [grade, subject]);
 
   const answer = useCallback(
     async (questionId: string, value: string) => {

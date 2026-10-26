@@ -12,9 +12,13 @@ import { api, type PathPhase } from "../../lib/api";
 import { KnowledgeMapCard } from "./knowledge-map-card";
 
 export default function PlanStagePage() {
-  const { band, theme, mark, goTo } = useJourney();
+  const { band, grade, theme, mark, goTo } = useJourney();
   const preset = band ? GRADE_BANDS[band] : GRADE_BANDS.primary;
-  const path = useAsync(() => api.path(preset.subject), [preset.subject]);
+  const activeGrade = grade ?? preset.grade;
+  const path = useAsync(
+    () => api.path(preset.subject, { grade: activeGrade }),
+    [activeGrade, preset.subject],
+  );
   const mastery = useMastery(preset.subject);
   const phases = path.data?.phases ?? [];
   const hasPath = Boolean(path.data?.has_path) && phases.length > 0;

@@ -1,7 +1,7 @@
 """练习服务（F-10/F-17/F-18 作答闭环；FSRS 见 fsrs_service）。
 
 - F-10 动态难度：accuracy_of + choose_next_difficulty（阈值升降档）
-- F-17 智能出题：薄弱知识点占比 ≥60%，近 7 天去重
+- F-17 智能出题：薄弱知识点占比 ≥60%，近 7 天去重；支持按年级收窄范围
 - F-18 错题自动归集与重练移出
 """
 
@@ -183,11 +183,18 @@ async def generate_practice(
     stage: str | None = None,
     count: int = 5,
     knowledge_point_ids: list[uuid.UUID] | None = None,
+    grade_kp_ids: set[uuid.UUID] | None = None,
 ) -> PracticeSet:
-    """智能出题（F-17）：薄弱知识点 ≥60% + 近 7 天去重。"""
+    """智能出题（F-17）：薄弱知识点 ≥60% + 近 7 天去重。
+
+    ``grade_kp_ids``：某年级在库内的知识点 id 集合（路由层经 grade_scope
+    解析）。传入时整个出题范围（薄弱 + 拓展）都收窄到该年级的教材进度。
+    """
     recent = await _recent_question_ids(session, user.id)
     overview = await mastery_service.get_mastery_overview(session, user_id=user.id, subject=subject)
     scope = await _subject_knowledge_points(session, subject=subject, stage=stage)
+    if grade_kp_ids is not None:
+        scope = {kp_id: name for kp_id, name in scope.items() if kp_id in grade_kp_ids}
 
     weak_ids = [point.knowledge_point_id for point in overview if point.mastery < WEAK_THRESHOLD]
     if knowledge_point_ids:

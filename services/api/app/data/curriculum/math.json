@@ -2,8 +2,8 @@
   "schema_version": "1.0",
   "subject": "math",
   "subject_name": "数学",
-  "curriculum_standard": "人教版小学数学",
-  "description": "一年级至二年级知识点树。以人教版教材目录为基准，按「单元 → 知识点」两级组织；prerequisites 为知识点 id 列表，构成先修关系；difficulty_band 为难度档（1=入门 2=基础 3=进阶）。",
+  "curriculum_standard": "人教版数学（小学至高中）",
+  "description": "一年级至高三知识点树（全学段扩展，2026-10）。以人教版教材目录为基准，按「单元 → 知识点」两级组织；prerequisites 为知识点 id 列表，构成先修关系；difficulty_band 为难度档（1=入门 2=基础 3=进阶）。",
   "difficulty_bands": {
     "1": "入门：单一步骤，直接套用",
     "2": "基础：一到两步思考，需理解概念",
@@ -399,6 +399,1880 @@
               "prerequisites": ["g1m-solid-shapes"],
               "objective": "知道从不同位置看到的物体形状可能不同。",
               "question_types": ["choice", "match"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade3",
+      "grade_name": "三年级",
+      "units": [
+        {
+          "code": "g3m-u1",
+          "name": "时分秒与测量",
+          "knowledge_points": [
+            {
+              "id": "g3m-time",
+              "name": "时、分、秒",
+              "difficulty_band": 1,
+              "prerequisites": ["g2m-time-minute"],
+              "objective": "认识时间单位时、分、秒，会进行时间单位换算与经过时间的计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g3m-measure-units",
+              "name": "长度与质量单位",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "认识毫米、分米、千米、吨，会进行单位换算与简单估测。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g3m-u2",
+          "name": "万以内的加法和减法",
+          "knowledge_points": [
+            {
+              "id": "g3m-add-sub-10000",
+              "name": "万以内的加减法",
+              "difficulty_band": 2,
+              "prerequisites": ["g2m-vertical-add-sub"],
+              "objective": "掌握三位数加、减三位数的笔算方法（含进位与退位），会验算。",
+              "question_types": ["choice", "fill", "oral"]
+            }
+          ]
+        },
+        {
+          "code": "g3m-u3",
+          "name": "乘除法",
+          "knowledge_points": [
+            {
+              "id": "g3m-multiply-one-digit",
+              "name": "多位数乘一位数",
+              "difficulty_band": 2,
+              "prerequisites": ["g2m-table-1-9"],
+              "objective": "掌握多位数乘一位数的笔算方法，会解决简单的乘法实际问题。",
+              "question_types": ["choice", "fill", "oral"]
+            },
+            {
+              "id": "g3m-multiply-two-digit",
+              "name": "两位数乘两位数",
+              "difficulty_band": 3,
+              "prerequisites": ["g3m-multiply-one-digit"],
+              "objective": "掌握两位数乘两位数的笔算方法，理解算理。",
+              "question_types": ["choice", "fill", "oral"]
+            },
+            {
+              "id": "g3m-times-concept",
+              "name": "倍的认识",
+              "difficulty_band": 2,
+              "prerequisites": ["g3m-multiply-one-digit"],
+              "objective": "理解「倍」的含义，会求一个数的几倍是多少。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g3m-u4",
+          "name": "图形与面积",
+          "knowledge_points": [
+            {
+              "id": "g3m-rectangle-square",
+              "name": "长方形和正方形的周长",
+              "difficulty_band": 2,
+              "prerequisites": ["g1m-plane-shapes"],
+              "objective": "掌握长方形与正方形的周长公式，会解决实际问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g3m-area",
+              "name": "面积与面积单位",
+              "difficulty_band": 2,
+              "prerequisites": ["g3m-rectangle-square"],
+              "objective": "认识面积与常用面积单位，掌握长方形、正方形的面积公式。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g3m-u5",
+          "name": "分数与小数的初步认识",
+          "knowledge_points": [
+            {
+              "id": "g3m-fraction-intro",
+              "name": "分数的初步认识",
+              "difficulty_band": 2,
+              "prerequisites": ["g2m-div-meaning"],
+              "objective": "理解几分之一、几分之几的含义，会比较简单分数的大小并做同分母加减。",
+              "question_types": ["choice", "fill", "match"]
+            },
+            {
+              "id": "g3m-decimal-intro",
+              "name": "小数的初步认识",
+              "difficulty_band": 2,
+              "prerequisites": ["g3m-fraction-intro"],
+              "objective": "理解小数的含义，会读写小数并比较一位小数的大小。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade4",
+      "grade_name": "四年级",
+      "units": [
+        {
+          "code": "g4m-u1",
+          "name": "大数与计算工具",
+          "knowledge_points": [
+            {
+              "id": "g4m-big-numbers",
+              "name": "大数的认识",
+              "difficulty_band": 2,
+              "prerequisites": ["g3m-add-sub-10000"],
+              "objective": "认识亿以内的数，掌握数位顺序表、读写与改写、求近似数。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g4m-area-units-large",
+              "name": "公顷和平方千米",
+              "difficulty_band": 2,
+              "prerequisites": ["g3m-area"],
+              "objective": "认识公顷和平方千米，会进行面积单位换算。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g4m-u2",
+          "name": "乘除法与运算定律",
+          "knowledge_points": [
+            {
+              "id": "g4m-multiply-three-two",
+              "name": "三位数乘两位数",
+              "difficulty_band": 2,
+              "prerequisites": ["g3m-multiply-two-digit"],
+              "objective": "掌握三位数乘两位数的笔算方法，会解决相应的实际问题。",
+              "question_types": ["choice", "fill", "oral"]
+            },
+            {
+              "id": "g4m-divide-two-digit",
+              "name": "除数是两位数的除法",
+              "difficulty_band": 3,
+              "prerequisites": ["g3m-multiply-two-digit"],
+              "objective": "掌握除数是两位数的笔算除法，会试商与调商。",
+              "question_types": ["choice", "fill", "oral"]
+            },
+            {
+              "id": "g4m-operations-laws",
+              "name": "四则运算与运算定律",
+              "difficulty_band": 3,
+              "prerequisites": ["g4m-multiply-three-two"],
+              "objective": "掌握加法、乘法运算定律，会进行简便计算。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g4m-u3",
+          "name": "小数的意义和性质",
+          "knowledge_points": [
+            {
+              "id": "g4m-decimal-meaning",
+              "name": "小数的意义和性质",
+              "difficulty_band": 2,
+              "prerequisites": ["g3m-decimal-intro"],
+              "objective": "理解小数的意义与性质，会小数点位置移动引起大小变化的规律。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g4m-decimal-add-sub",
+              "name": "小数的加法和减法",
+              "difficulty_band": 2,
+              "prerequisites": ["g4m-decimal-meaning"],
+              "objective": "掌握小数加减法的计算方法，会解决实际问题。",
+              "question_types": ["choice", "fill", "oral"]
+            }
+          ]
+        },
+        {
+          "code": "g4m-u4",
+          "name": "图形与几何",
+          "knowledge_points": [
+            {
+              "id": "g4m-angle-measure",
+              "name": "角的度量",
+              "difficulty_band": 2,
+              "prerequisites": ["g2m-angle-compare"],
+              "objective": "认识角的度量单位，会用量角器量角与画角。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g4m-triangle",
+              "name": "三角形的特性",
+              "difficulty_band": 2,
+              "prerequisites": ["g4m-angle-measure"],
+              "objective": "认识三角形的特性与分类，知道三角形的内角和是 180°。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g4m-parallelogram-trapezoid",
+              "name": "平行四边形和梯形",
+              "difficulty_band": 2,
+              "prerequisites": ["g4m-triangle"],
+              "objective": "认识平行四边形与梯形的特征，理解平行与垂直。",
+              "question_types": ["choice", "match"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade5",
+      "grade_name": "五年级",
+      "units": [
+        {
+          "code": "g5m-u1",
+          "name": "小数乘除法",
+          "knowledge_points": [
+            {
+              "id": "g5m-decimal-multiply",
+              "name": "小数乘法",
+              "difficulty_band": 2,
+              "prerequisites": ["g4m-decimal-add-sub"],
+              "objective": "掌握小数乘法的计算方法，会求积的近似数。",
+              "question_types": ["choice", "fill", "oral"]
+            },
+            {
+              "id": "g5m-decimal-divide",
+              "name": "小数除法",
+              "difficulty_band": 3,
+              "prerequisites": ["g5m-decimal-multiply"],
+              "objective": "掌握小数除法的计算方法，理解循环小数的概念。",
+              "question_types": ["choice", "fill", "oral"]
+            }
+          ]
+        },
+        {
+          "code": "g5m-u2",
+          "name": "简易方程",
+          "knowledge_points": [
+            {
+              "id": "g5m-letter-expression",
+              "name": "用字母表示数",
+              "difficulty_band": 2,
+              "prerequisites": ["g4m-operations-laws"],
+              "objective": "理解用字母表示数的意义，会表示数量关系与运算定律。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g5m-simple-equation",
+              "name": "解简易方程",
+              "difficulty_band": 3,
+              "prerequisites": ["g5m-letter-expression"],
+              "objective": "理解方程的意义与等式的性质，会解简易方程并检验。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g5m-u3",
+          "name": "多边形的面积",
+          "knowledge_points": [
+            {
+              "id": "g5m-polygon-area",
+              "name": "多边形面积的计算",
+              "difficulty_band": 3,
+              "prerequisites": ["g3m-area", "g4m-parallelogram-trapezoid"],
+              "objective": "掌握平行四边形、三角形、梯形的面积公式，会解决组合图形面积问题。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g5m-u4",
+          "name": "因数与倍数",
+          "knowledge_points": [
+            {
+              "id": "g5m-factor-multiple",
+              "name": "因数与倍数",
+              "difficulty_band": 2,
+              "prerequisites": ["g3m-multiply-one-digit"],
+              "objective": "理解因数与倍数的概念，会找一个数的因数与倍数。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g5m-prime-composite",
+              "name": "质数与合数",
+              "difficulty_band": 2,
+              "prerequisites": ["g5m-factor-multiple"],
+              "objective": "理解质数与合数的概念，会判断质数并分解质因数。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g5m-gcd-lcm",
+              "name": "公因数与公倍数",
+              "difficulty_band": 3,
+              "prerequisites": ["g5m-prime-composite"],
+              "objective": "会求两个数的最大公因数与最小公倍数，并解决实际问题。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g5m-u5",
+          "name": "分数的意义和性质",
+          "knowledge_points": [
+            {
+              "id": "g5m-fraction-meaning",
+              "name": "分数的意义与基本性质",
+              "difficulty_band": 2,
+              "prerequisites": ["g3m-fraction-intro"],
+              "objective": "理解分数的意义与基本性质，会约分、通分与分数大小比较。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g5m-fraction-add-sub",
+              "name": "分数的加法和减法",
+              "difficulty_band": 3,
+              "prerequisites": ["g5m-fraction-meaning"],
+              "objective": "掌握同分母、异分母分数加减法的计算方法。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade6",
+      "grade_name": "六年级",
+      "units": [
+        {
+          "code": "g6m-u1",
+          "name": "分数乘除法",
+          "knowledge_points": [
+            {
+              "id": "g6m-fraction-multiply",
+              "name": "分数乘法",
+              "difficulty_band": 2,
+              "prerequisites": ["g5m-fraction-add-sub"],
+              "objective": "掌握分数乘法的计算方法，会解决求一个数的几分之几是多少的问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g6m-fraction-divide",
+              "name": "分数除法",
+              "difficulty_band": 3,
+              "prerequisites": ["g6m-fraction-multiply"],
+              "objective": "理解倒数的概念，掌握分数除法的计算方法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g6m-ratio",
+              "name": "比",
+              "difficulty_band": 2,
+              "prerequisites": ["g6m-fraction-divide"],
+              "objective": "理解比的意义与基本性质，会化简比并解决按比分配的问题。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g6m-u2",
+          "name": "圆与百分数",
+          "knowledge_points": [
+            {
+              "id": "g6m-circle",
+              "name": "圆的认识与周长面积",
+              "difficulty_band": 2,
+              "prerequisites": ["g5m-polygon-area"],
+              "objective": "认识圆的各部分名称，掌握圆的周长与面积公式。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g6m-percentage",
+              "name": "百分数",
+              "difficulty_band": 2,
+              "prerequisites": ["g6m-fraction-divide"],
+              "objective": "理解百分数的意义，会进行百分数与分数、小数的互化及百分数应用。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g6m-u3",
+          "name": "圆柱与圆锥",
+          "knowledge_points": [
+            {
+              "id": "g6m-cylinder",
+              "name": "圆柱的表面积与体积",
+              "difficulty_band": 3,
+              "prerequisites": ["g6m-circle"],
+              "objective": "理解圆柱的特征，掌握其表面积与体积计算方法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g6m-cone",
+              "name": "圆锥的体积",
+              "difficulty_band": 3,
+              "prerequisites": ["g6m-cylinder"],
+              "objective": "理解圆锥的特征，掌握圆锥体积公式及其与圆柱的关系。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g6m-u4",
+          "name": "比例与负数",
+          "knowledge_points": [
+            {
+              "id": "g6m-proportion",
+              "name": "比例",
+              "difficulty_band": 3,
+              "prerequisites": ["g6m-ratio"],
+              "objective": "理解比例的意义与基本性质，会解比例并解决比例尺问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g6m-negative-intro",
+              "name": "负数的初步认识",
+              "difficulty_band": 2,
+              "prerequisites": ["g4m-big-numbers"],
+              "objective": "理解负数的意义，会在数轴上表示正负数并比较大小。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade7",
+      "grade_name": "七年级",
+      "units": [
+        {
+          "code": "g7m-u1",
+          "name": "有理数",
+          "knowledge_points": [
+            {
+              "id": "g7m-positive-negative",
+              "name": "正数和负数",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "理解正数、负数与 0 的意义，会用正负数表示具有相反意义的量。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g7m-rational-add-sub",
+              "name": "有理数的加减法",
+              "difficulty_band": 1,
+              "prerequisites": ["g7m-positive-negative"],
+              "objective": "掌握有理数加法与减法法则，会进行含负数的加减混合运算。",
+              "question_types": ["choice", "fill", "oral"]
+            },
+            {
+              "id": "g7m-rational-mul-div",
+              "name": "有理数的乘除法",
+              "difficulty_band": 2,
+              "prerequisites": ["g7m-rational-add-sub"],
+              "objective": "掌握有理数乘法与除法法则，理解倒数的概念，会进行乘除混合运算。",
+              "question_types": ["choice", "fill", "oral"]
+            },
+            {
+              "id": "g7m-rational-power",
+              "name": "有理数的乘方",
+              "difficulty_band": 2,
+              "prerequisites": ["g7m-rational-mul-div"],
+              "objective": "理解乘方的意义，掌握有理数的混合运算顺序并会计算。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g7m-u2",
+          "name": "整式的加减",
+          "knowledge_points": [
+            {
+              "id": "g7m-monomial-polynomial",
+              "name": "单项式与多项式",
+              "difficulty_band": 1,
+              "prerequisites": ["g7m-rational-power"],
+              "objective": "理解单项式、多项式的概念，能指出系数与次数。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7m-like-terms",
+              "name": "合并同类项",
+              "difficulty_band": 1,
+              "prerequisites": ["g7m-monomial-polynomial"],
+              "objective": "理解同类项的概念，掌握合并同类项法则并会化简整式。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7m-bracket-removal",
+              "name": "去括号与添括号",
+              "difficulty_band": 2,
+              "prerequisites": ["g7m-like-terms"],
+              "objective": "掌握去括号与添括号法则，会进行整式的加减运算。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g7m-u3",
+          "name": "一元一次方程",
+          "knowledge_points": [
+            {
+              "id": "g7m-equation-concept",
+              "name": "方程的概念等式的性质",
+              "difficulty_band": 1,
+              "prerequisites": ["g7m-like-terms"],
+              "objective": "理解方程、方程的解的概念，掌握等式的基本性质。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g7m-linear-equation-solve",
+              "name": "解一元一次方程",
+              "difficulty_band": 2,
+              "prerequisites": ["g7m-equation-concept"],
+              "objective": "掌握解一元一次方程的步骤（去分母、去括号、移项、合并、系数化 1）。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7m-linear-equation-application",
+              "name": "实际问题与一元一次方程",
+              "difficulty_band": 3,
+              "prerequisites": ["g7m-linear-equation-solve"],
+              "objective": "会列一元一次方程解决行程、工程、销售等实际问题。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g7m-u4",
+          "name": "几何图形初步",
+          "knowledge_points": [
+            {
+              "id": "g7m-lines-rays-segments",
+              "name": "直线、射线、线段",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "理解直线、射线、线段的区别与联系，会进行线段的和差与中点计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7m-angle-measure",
+              "name": "角的度量与比较",
+              "difficulty_band": 1,
+              "prerequisites": ["g7m-lines-rays-segments"],
+              "objective": "掌握角的度量单位换算，会进行角的和差与角平分线计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7m-complementary-supplementary",
+              "name": "余角和补角",
+              "difficulty_band": 2,
+              "prerequisites": ["g7m-angle-measure"],
+              "objective": "理解余角、补角的概念与性质，会进行相关计算。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g7m-u5",
+          "name": "相交线与平行线",
+          "knowledge_points": [
+            {
+              "id": "g7m-intersecting-lines",
+              "name": "相交线与对顶角",
+              "difficulty_band": 1,
+              "prerequisites": ["g7m-angle-measure"],
+              "objective": "理解对顶角、邻补角的概念与性质，会进行角度计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7m-parallel-judge",
+              "name": "平行线的判定",
+              "difficulty_band": 2,
+              "prerequisites": ["g7m-intersecting-lines"],
+              "objective": "掌握平行线的判定方法（同位角、内错角、同旁内角）。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7m-parallel-properties",
+              "name": "平行线的性质",
+              "difficulty_band": 2,
+              "prerequisites": ["g7m-parallel-judge"],
+              "objective": "掌握平行线的性质，会进行平行线中的角度推理与计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7m-translation",
+              "name": "平移",
+              "difficulty_band": 2,
+              "prerequisites": ["g7m-parallel-properties"],
+              "objective": "理解平移的概念与性质，会进行简单的平移作图与坐标变化。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g7m-u6",
+          "name": "实数",
+          "knowledge_points": [
+            {
+              "id": "g7m-square-cube-root",
+              "name": "平方根与立方根",
+              "difficulty_band": 2,
+              "prerequisites": ["g7m-rational-power"],
+              "objective": "理解平方根、算术平方根、立方根的概念，会求简单数的平方根与立方根。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7m-real-number",
+              "name": "实数的概念与运算",
+              "difficulty_band": 2,
+              "prerequisites": ["g7m-square-cube-root", "g7m-rational-mul-div"],
+              "objective": "理解无理数与实数的概念，会比较实数大小并进行简单运算。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g7m-u7",
+          "name": "平面直角坐标系",
+          "knowledge_points": [
+            {
+              "id": "g7m-coordinate-system",
+              "name": "平面直角坐标系",
+              "difficulty_band": 1,
+              "prerequisites": ["g7m-positive-negative"],
+              "objective": "理解有序数对与平面直角坐标系，会根据坐标描点并判断象限。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7m-coordinate-translation",
+              "name": "用坐标表示平移",
+              "difficulty_band": 2,
+              "prerequisites": ["g7m-coordinate-system", "g7m-translation"],
+              "objective": "掌握点的平移与坐标变化规律，会求平移后的点坐标。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g7m-u8",
+          "name": "二元一次方程组",
+          "knowledge_points": [
+            {
+              "id": "g7m-linear-system-solve",
+              "name": "二元一次方程组的解法",
+              "difficulty_band": 2,
+              "prerequisites": ["g7m-linear-equation-solve"],
+              "objective": "掌握代入消元法与加减消元法，会解二元一次方程组。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g7m-linear-system-application",
+              "name": "实际问题与二元一次方程组",
+              "difficulty_band": 3,
+              "prerequisites": ["g7m-linear-system-solve"],
+              "objective": "会列二元一次方程组解决与实际情境相关的应用题。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade8",
+      "grade_name": "八年级",
+      "units": [
+        {
+          "code": "g8m-u1",
+          "name": "三角形",
+          "knowledge_points": [
+            {
+              "id": "g8m-triangle-concept",
+              "name": "三角形的基本概念",
+              "difficulty_band": 1,
+              "prerequisites": ["g7m-angle-measure"],
+              "objective": "理解三角形的边、角、高、中线、角平分线等概念。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g8m-triangle-sides",
+              "name": "三角形的三边关系",
+              "difficulty_band": 2,
+              "prerequisites": ["g8m-triangle-concept"],
+              "objective": "掌握三角形三边关系定理，会判断三条线段能否构成三角形。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g8m-triangle-angles",
+              "name": "三角形的内角与外角",
+              "difficulty_band": 2,
+              "prerequisites": ["g8m-triangle-concept"],
+              "objective": "掌握三角形内角和定理与外角性质，会进行角度计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8m-polygon-angles",
+              "name": "多边形的内角和",
+              "difficulty_band": 2,
+              "prerequisites": ["g8m-triangle-angles"],
+              "objective": "掌握多边形内角和与外角和公式并会应用。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8m-u2",
+          "name": "全等三角形",
+          "knowledge_points": [
+            {
+              "id": "g8m-congruent-properties",
+              "name": "全等三角形的性质",
+              "difficulty_band": 1,
+              "prerequisites": ["g8m-triangle-sides"],
+              "objective": "理解全等三角形的概念，掌握全等三角形的对应边、对应角相等。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8m-congruent-judge",
+              "name": "全等三角形的判定",
+              "difficulty_band": 2,
+              "prerequisites": ["g8m-congruent-properties"],
+              "objective": "掌握 SSS、SAS、ASA、AAS、HL 五种判定方法并会证明三角形全等。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8m-angle-bisector",
+              "name": "角平分线的性质",
+              "difficulty_band": 2,
+              "prerequisites": ["g8m-congruent-judge"],
+              "objective": "掌握角平分线的性质与判定，会进行相关证明与计算。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8m-u3",
+          "name": "轴对称",
+          "knowledge_points": [
+            {
+              "id": "g8m-axis-symmetry",
+              "name": "轴对称与轴对称图形",
+              "difficulty_band": 1,
+              "prerequisites": ["g8m-congruent-properties"],
+              "objective": "理解轴对称与轴对称图形的概念，会画简单图形的对称轴。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g8m-perpendicular-bisector",
+              "name": "线段的垂直平分线",
+              "difficulty_band": 2,
+              "prerequisites": ["g8m-axis-symmetry"],
+              "objective": "掌握线段垂直平分线的性质与判定，会解决相关作图与计算问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8m-isosceles-triangle",
+              "name": "等腰三角形",
+              "difficulty_band": 3,
+              "prerequisites": ["g8m-perpendicular-bisector"],
+              "objective": "掌握等腰三角形与等边三角形的性质及判定，会进行相关证明。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8m-u4",
+          "name": "整式的乘法与因式分解",
+          "knowledge_points": [
+            {
+              "id": "g8m-power-rules",
+              "name": "幂的运算",
+              "difficulty_band": 1,
+              "prerequisites": ["g7m-rational-power", "g7m-like-terms"],
+              "objective": "掌握同底数幂的乘除、幂的乘方、积的乘方等运算性质。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8m-integer-multiplication",
+              "name": "整式的乘法",
+              "difficulty_band": 2,
+              "prerequisites": ["g8m-power-rules"],
+              "objective": "掌握单项式乘单项式、单项式乘多项式、多项式乘多项式的法则。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8m-multiplication-formulas",
+              "name": "乘法公式",
+              "difficulty_band": 2,
+              "prerequisites": ["g8m-integer-multiplication"],
+              "objective": "掌握平方差公式与完全平方公式，会进行相关计算与变形。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8m-factorization",
+              "name": "因式分解",
+              "difficulty_band": 3,
+              "prerequisites": ["g8m-multiplication-formulas"],
+              "objective": "掌握提公因式法与公式法进行因式分解。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8m-u5",
+          "name": "分式",
+          "knowledge_points": [
+            {
+              "id": "g8m-fraction-concept",
+              "name": "分式的概念与性质",
+              "difficulty_band": 1,
+              "prerequisites": ["g8m-factorization"],
+              "objective": "理解分式的概念，掌握分式的基本性质与约分、通分。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8m-fraction-operations",
+              "name": "分式的运算",
+              "difficulty_band": 2,
+              "prerequisites": ["g8m-fraction-concept"],
+              "objective": "掌握分式的乘除、加减与混合运算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8m-fraction-equation",
+              "name": "分式方程",
+              "difficulty_band": 3,
+              "prerequisites": ["g8m-fraction-operations"],
+              "objective": "会解可化为一元一次方程的分式方程，并会检验增根。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8m-u6",
+          "name": "二次根式",
+          "knowledge_points": [
+            {
+              "id": "g8m-radical-concept",
+              "name": "二次根式的概念",
+              "difficulty_band": 1,
+              "prerequisites": ["g7m-real-number"],
+              "objective": "理解二次根式的概念与有意义的条件，掌握其基本性质。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8m-radical-operations",
+              "name": "二次根式的运算",
+              "difficulty_band": 2,
+              "prerequisites": ["g8m-radical-concept"],
+              "objective": "掌握二次根式的乘除与加减法则，会进行化简与混合运算。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8m-u7",
+          "name": "勾股定理",
+          "knowledge_points": [
+            {
+              "id": "g8m-pythagorean",
+              "name": "勾股定理",
+              "difficulty_band": 2,
+              "prerequisites": ["g7m-square-cube-root"],
+              "objective": "掌握勾股定理，会求直角三角形的边长并解决简单实际问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8m-pythagorean-converse",
+              "name": "勾股定理的逆定理",
+              "difficulty_band": 2,
+              "prerequisites": ["g8m-pythagorean"],
+              "objective": "掌握勾股定理的逆定理，会判断直角三角形。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g8m-u8",
+          "name": "平行四边形",
+          "knowledge_points": [
+            {
+              "id": "g8m-parallelogram-properties",
+              "name": "平行四边形的性质与判定",
+              "difficulty_band": 2,
+              "prerequisites": ["g7m-parallel-properties"],
+              "objective": "掌握平行四边形的性质与判定定理，会进行相关证明与计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8m-special-parallelogram",
+              "name": "矩形、菱形、正方形",
+              "difficulty_band": 3,
+              "prerequisites": ["g8m-parallelogram-properties"],
+              "objective": "掌握矩形、菱形、正方形的性质与判定，理解它们之间的关系。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8m-triangle-midsegment",
+              "name": "三角形的中位线",
+              "difficulty_band": 3,
+              "prerequisites": ["g8m-parallelogram-properties"],
+              "objective": "掌握三角形中位线定理并会应用。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8m-u9",
+          "name": "一次函数",
+          "knowledge_points": [
+            {
+              "id": "g8m-function-variable",
+              "name": "变量与函数",
+              "difficulty_band": 1,
+              "prerequisites": ["g7m-coordinate-system"],
+              "objective": "理解变量与函数的概念，会求自变量的取值范围与函数值。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8m-linear-function-graph",
+              "name": "一次函数的图象与性质",
+              "difficulty_band": 2,
+              "prerequisites": ["g8m-function-variable"],
+              "objective": "掌握一次函数的图象与性质，会根据 k、b 的符号判断图象经过的象限。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8m-linear-function-equation",
+              "name": "一次函数与方程、不等式",
+              "difficulty_band": 3,
+              "prerequisites": ["g8m-linear-function-graph", "g7m-linear-equation-solve"],
+              "objective": "理解一次函数与一元一次方程、不等式、二元一次方程组之间的联系。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g8m-u10",
+          "name": "数据的分析",
+          "knowledge_points": [
+            {
+              "id": "g8m-average-median-mode",
+              "name": "平均数、中位数与众数",
+              "difficulty_band": 1,
+              "prerequisites": ["g7m-coordinate-system"],
+              "objective": "理解平均数、加权平均数、中位数、众数的概念并会计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g8m-variance",
+              "name": "方差",
+              "difficulty_band": 2,
+              "prerequisites": ["g8m-average-median-mode"],
+              "objective": "理解方差的意义，会计算方差并比较数据的波动大小。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade9",
+      "grade_name": "九年级",
+      "units": [
+        {
+          "code": "g9m-u1",
+          "name": "一元二次方程",
+          "knowledge_points": [
+            {
+              "id": "g9m-quadratic-equation-concept",
+              "name": "一元二次方程的概念",
+              "difficulty_band": 1,
+              "prerequisites": ["g7m-linear-equation-solve"],
+              "objective": "理解一元二次方程的一般形式，会判断方程是否为一元二次方程。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g9m-quadratic-equation-solve",
+              "name": "一元二次方程的解法",
+              "difficulty_band": 2,
+              "prerequisites": ["g9m-quadratic-equation-concept", "g8m-factorization"],
+              "objective": "掌握直接开平方法、配方法、公式法、因式分解法解一元二次方程。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9m-quadratic-discriminant",
+              "name": "根的判别式与韦达定理",
+              "difficulty_band": 3,
+              "prerequisites": ["g9m-quadratic-equation-solve"],
+              "objective": "会用判别式判断根的情况，会利用韦达定理求两根之和与积。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9m-quadratic-equation-application",
+              "name": "实际问题与一元二次方程",
+              "difficulty_band": 3,
+              "prerequisites": ["g9m-quadratic-equation-solve"],
+              "objective": "会列一元二次方程解决增长率、面积、销售等实际问题。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9m-u2",
+          "name": "二次函数",
+          "knowledge_points": [
+            {
+              "id": "g9m-quadratic-function-graph",
+              "name": "二次函数的图象与性质",
+              "difficulty_band": 2,
+              "prerequisites": ["g9m-quadratic-equation-concept", "g8m-linear-function-graph"],
+              "objective": "掌握二次函数的图象（抛物线）与性质，会求顶点、对称轴与最值。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9m-quadratic-function-equation",
+              "name": "二次函数与一元二次方程",
+              "difficulty_band": 3,
+              "prerequisites": ["g9m-quadratic-function-graph", "g9m-quadratic-discriminant"],
+              "objective": "理解二次函数图象与 x 轴交点个数与判别式的关系。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9m-quadratic-function-application",
+              "name": "实际问题与二次函数",
+              "difficulty_band": 3,
+              "prerequisites": ["g9m-quadratic-function-graph"],
+              "objective": "会建立二次函数模型解决最大利润、最大面积等最值问题。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9m-u3",
+          "name": "旋转",
+          "knowledge_points": [
+            {
+              "id": "g9m-rotation",
+              "name": "旋转的性质",
+              "difficulty_band": 2,
+              "prerequisites": ["g8m-axis-symmetry"],
+              "objective": "理解旋转的概念与性质，会进行简单的旋转作图。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9m-center-symmetry",
+              "name": "中心对称",
+              "difficulty_band": 2,
+              "prerequisites": ["g9m-rotation"],
+              "objective": "理解中心对称与中心对称图形的概念，会判断与作图。",
+              "question_types": ["choice", "judge"]
+            }
+          ]
+        },
+        {
+          "code": "g9m-u4",
+          "name": "圆",
+          "knowledge_points": [
+            {
+              "id": "g9m-circle-properties",
+              "name": "圆的有关性质",
+              "difficulty_band": 2,
+              "prerequisites": ["g7m-complementary-supplementary"],
+              "objective": "掌握垂径定理、圆心角与圆周角定理，会进行圆中的角度与线段计算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9m-point-line-circle",
+              "name": "点、直线和圆的位置关系",
+              "difficulty_band": 2,
+              "prerequisites": ["g9m-circle-properties"],
+              "objective": "理解点与圆、直线与圆的位置关系，掌握切线的判定与性质。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9m-arc-sector",
+              "name": "弧长与扇形面积",
+              "difficulty_band": 3,
+              "prerequisites": ["g9m-point-line-circle"],
+              "objective": "掌握弧长公式与扇形面积公式，会计算简单组合图形的周长与面积。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9m-u5",
+          "name": "概率初步",
+          "knowledge_points": [
+            {
+              "id": "g9m-random-event",
+              "name": "随机事件",
+              "difficulty_band": 1,
+              "prerequisites": ["g8m-average-median-mode"],
+              "objective": "理解必然事件、不可能事件、随机事件的概念。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g9m-probability-calculation",
+              "name": "概率的计算",
+              "difficulty_band": 2,
+              "prerequisites": ["g9m-random-event"],
+              "objective": "会用列举法（列表、树状图）求简单随机事件的概率。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9m-frequency-probability",
+              "name": "用频率估计概率",
+              "difficulty_band": 2,
+              "prerequisites": ["g9m-probability-calculation"],
+              "objective": "理解频率与概率的关系，会用频率估计概率。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9m-u6",
+          "name": "反比例函数",
+          "knowledge_points": [
+            {
+              "id": "g9m-inverse-function",
+              "name": "反比例函数的图象与性质",
+              "difficulty_band": 2,
+              "prerequisites": ["g9m-quadratic-function-graph"],
+              "objective": "掌握反比例函数的图象与性质，会根据 k 的符号判断图象所在象限。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9m-inverse-function-application",
+              "name": "实际问题与反比例函数",
+              "difficulty_band": 3,
+              "prerequisites": ["g9m-inverse-function"],
+              "objective": "会建立反比例函数模型解决实际情境问题。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9m-u7",
+          "name": "相似",
+          "knowledge_points": [
+            {
+              "id": "g9m-similar-triangle-judge",
+              "name": "相似三角形的判定",
+              "difficulty_band": 2,
+              "prerequisites": ["g8m-congruent-judge"],
+              "objective": "掌握相似三角形的判定方法（两角、两边成比例夹角相等、三边成比例）。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9m-similar-triangle-properties",
+              "name": "相似三角形的性质",
+              "difficulty_band": 3,
+              "prerequisites": ["g9m-similar-triangle-judge"],
+              "objective": "掌握相似三角形的对应线段比、周长比与面积比的性质。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9m-homothety",
+              "name": "位似",
+              "difficulty_band": 3,
+              "prerequisites": ["g9m-similar-triangle-properties"],
+              "objective": "理解位似图形与位似比，会进行位似作图。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9m-u8",
+          "name": "锐角三角函数",
+          "knowledge_points": [
+            {
+              "id": "g9m-trig-ratio",
+              "name": "锐角三角函数",
+              "difficulty_band": 2,
+              "prerequisites": ["g8m-pythagorean"],
+              "objective": "理解正弦、余弦、正切的定义，会求特殊角的三角函数值。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g9m-right-triangle-solve",
+              "name": "解直角三角形及其应用",
+              "difficulty_band": 3,
+              "prerequisites": ["g9m-trig-ratio", "g8m-pythagorean"],
+              "objective": "会解直角三角形，并能解决仰角、俯角、坡度等实际问题。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g9m-u9",
+          "name": "投影与视图",
+          "knowledge_points": [
+            {
+              "id": "g9m-projection",
+              "name": "投影",
+              "difficulty_band": 1,
+              "prerequisites": ["g7m-lines-rays-segments"],
+              "objective": "理解平行投影与中心投影的概念，会判断投影现象。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g9m-three-views",
+              "name": "三视图",
+              "difficulty_band": 2,
+              "prerequisites": ["g9m-projection"],
+              "objective": "会画简单几何体的三视图，能由三视图还原几何体。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade10",
+      "grade_name": "高一",
+      "units": [
+        {
+          "code": "g10m-u1",
+          "name": "集合与常用逻辑用语",
+          "knowledge_points": [
+            {
+              "id": "g10m-set-concept",
+              "name": "集合的概念与表示",
+              "difficulty_band": 1,
+              "prerequisites": [],
+              "objective": "理解集合的含义，会用列举法与描述法表示集合，知道常用数集的记法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10m-set-relations",
+              "name": "集合间的基本关系",
+              "difficulty_band": 1,
+              "prerequisites": ["g10m-set-concept"],
+              "objective": "理解子集、真子集、集合相等的含义，会判断集合间的关系并求子集个数。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10m-set-operations",
+              "name": "集合的基本运算",
+              "difficulty_band": 2,
+              "prerequisites": ["g10m-set-relations"],
+              "objective": "会求集合的交集、并集、补集，能借助数轴与韦恩图处理集合运算问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10m-logic-conditions",
+              "name": "充分条件与必要条件",
+              "difficulty_band": 2,
+              "prerequisites": ["g10m-set-operations"],
+              "objective": "理解充分条件、必要条件、充要条件的含义，能判断命题间的推出关系。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g10m-logic-quantifiers",
+              "name": "全称量词与存在量词",
+              "difficulty_band": 2,
+              "prerequisites": ["g10m-logic-conditions"],
+              "objective": "理解全称量词与存在量词，会写出含量词命题的否定并判断真假。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g10m-u2",
+          "name": "一元二次函数、方程和不等式",
+          "knowledge_points": [
+            {
+              "id": "g10m-inequality-properties",
+              "name": "等式性质与不等式性质",
+              "difficulty_band": 1,
+              "prerequisites": ["g10m-set-concept"],
+              "objective": "掌握不等式的基本性质，会用作差法比较两个代数式的大小。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g10m-basic-inequality",
+              "name": "基本不等式",
+              "difficulty_band": 2,
+              "prerequisites": ["g10m-inequality-properties"],
+              "objective": "掌握基本不等式及其成立条件，会用基本不等式求最值（一正二定三相等）。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10m-quadratic-inequality",
+              "name": "二次函数与一元二次不等式",
+              "difficulty_band": 2,
+              "prerequisites": ["g10m-basic-inequality", "g10m-set-operations"],
+              "objective": "会解一元二次不等式，理解二次函数、一元二次方程与不等式三者之间的联系。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g10m-u3",
+          "name": "函数的概念与性质",
+          "knowledge_points": [
+            {
+              "id": "g10m-function-concept",
+              "name": "函数的概念及其表示",
+              "difficulty_band": 1,
+              "prerequisites": ["g10m-set-relations"],
+              "objective": "理解函数的概念与三要素，会求定义域与函数值，掌握解析法、列表法、图象法表示函数。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10m-function-properties",
+              "name": "函数的基本性质",
+              "difficulty_band": 2,
+              "prerequisites": ["g10m-function-concept"],
+              "objective": "掌握函数的单调性与奇偶性，会用定义证明单调性并利用性质比较大小、解不等式。",
+              "question_types": ["choice", "fill", "judge"]
+            },
+            {
+              "id": "g10m-power-function",
+              "name": "幂函数",
+              "difficulty_band": 2,
+              "prerequisites": ["g10m-function-properties"],
+              "objective": "掌握常见幂函数的图象与性质，能比较幂值大小。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10m-function-application",
+              "name": "函数的应用",
+              "difficulty_band": 3,
+              "prerequisites": ["g10m-function-properties"],
+              "objective": "能建立函数模型解决实际情境中的最值、分段计费等应用问题。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g10m-u4",
+          "name": "指数函数与对数函数",
+          "knowledge_points": [
+            {
+              "id": "g10m-exponent",
+              "name": "指数与指数幂的运算",
+              "difficulty_band": 1,
+              "prerequisites": ["g10m-function-concept"],
+              "objective": "理解 n 次方根与分数指数幂，掌握指数幂的运算性质并会化简求值。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10m-exponential-function",
+              "name": "指数函数",
+              "difficulty_band": 2,
+              "prerequisites": ["g10m-exponent", "g10m-function-properties"],
+              "objective": "掌握指数函数的图象与性质，会利用单调性比较大小、解指数不等式。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10m-logarithm",
+              "name": "对数与对数运算",
+              "difficulty_band": 2,
+              "prerequisites": ["g10m-exponent"],
+              "objective": "理解对数的概念，掌握对数运算法则与换底公式，会进行对数式化简。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10m-logarithmic-function",
+              "name": "对数函数",
+              "difficulty_band": 2,
+              "prerequisites": ["g10m-logarithm", "g10m-exponential-function"],
+              "objective": "掌握对数函数的图象与性质，理解指数函数与对数函数互为反函数。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10m-function-zero",
+              "name": "函数的零点与二分法",
+              "difficulty_band": 3,
+              "prerequisites": ["g10m-logarithmic-function"],
+              "objective": "理解函数零点的概念，会用零点存在定理判断零点所在区间。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g10m-u5",
+          "name": "三角函数",
+          "knowledge_points": [
+            {
+              "id": "g10m-angle-radian",
+              "name": "任意角与弧度制",
+              "difficulty_band": 1,
+              "prerequisites": ["g10m-function-concept"],
+              "objective": "理解任意角与象限角的概念，掌握角度与弧度的换算及弧长、扇形面积公式。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10m-trig-definition",
+              "name": "三角函数的概念",
+              "difficulty_band": 2,
+              "prerequisites": ["g10m-angle-radian"],
+              "objective": "理解任意角三角函数的定义，掌握各象限角的三角函数符号与特殊角的值。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10m-trig-identities",
+              "name": "诱导公式",
+              "difficulty_band": 2,
+              "prerequisites": ["g10m-trig-definition"],
+              "objective": "掌握诱导公式，能把任意角的三角函数化为锐角三角函数求值。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10m-trig-graph",
+              "name": "三角函数的图象与性质",
+              "difficulty_band": 3,
+              "prerequisites": ["g10m-trig-identities"],
+              "objective": "掌握正弦、余弦、正切函数的图象与性质（周期、单调性、最值、对称性）。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10m-trig-transform",
+              "name": "三角恒等变换",
+              "difficulty_band": 3,
+              "prerequisites": ["g10m-trig-graph"],
+              "objective": "掌握两角和与差、二倍角公式，会进行简单的三角恒等变换与化简求值。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g10m-trig-sinusoid",
+              "name": "函数 y=Asin(ωx+φ)",
+              "difficulty_band": 3,
+              "prerequisites": ["g10m-trig-transform"],
+              "objective": "理解 A、ω、φ 对函数图象的影响，会由图象求解析式并解决简单应用问题。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade11",
+      "grade_name": "高二",
+      "units": [
+        {
+          "code": "g11m-u1",
+          "name": "平面向量及其应用",
+          "knowledge_points": [
+            {
+              "id": "g11m-vector-concept",
+              "name": "平面向量的概念与线性运算",
+              "difficulty_band": 1,
+              "prerequisites": ["g10m-function-concept"],
+              "objective": "理解向量的概念，掌握向量的加法、减法与数乘运算及其几何意义。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11m-vector-dot",
+              "name": "平面向量的数量积",
+              "difficulty_band": 2,
+              "prerequisites": ["g11m-vector-concept"],
+              "objective": "掌握数量积的定义与坐标运算，会求夹角、模与垂直条件。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11m-vector-basis",
+              "name": "平面向量基本定理及坐标表示",
+              "difficulty_band": 2,
+              "prerequisites": ["g11m-vector-concept"],
+              "objective": "理解平面向量基本定理，会用坐标表示向量并进行线性运算。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11m-sine-rule",
+              "name": "正弦定理",
+              "difficulty_band": 2,
+              "prerequisites": ["g10m-trig-graph"],
+              "objective": "掌握正弦定理，会解三角形并判断解的个数。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11m-cosine-rule",
+              "name": "余弦定理",
+              "difficulty_band": 2,
+              "prerequisites": ["g11m-vector-dot"],
+              "objective": "掌握余弦定理，会解三角形并进行边角互化。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g11m-u2",
+          "name": "复数",
+          "knowledge_points": [
+            {
+              "id": "g11m-complex-concept",
+              "name": "复数的概念",
+              "difficulty_band": 1,
+              "prerequisites": ["g10m-set-concept"],
+              "objective": "理解复数的概念与分类，掌握复数相等的条件与共轭复数。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11m-complex-operations",
+              "name": "复数的四则运算",
+              "difficulty_band": 2,
+              "prerequisites": ["g11m-complex-concept"],
+              "objective": "掌握复数的加、减、乘、除运算，会求复数的模。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g11m-u3",
+          "name": "立体几何初步",
+          "knowledge_points": [
+            {
+              "id": "g11m-solid-figures",
+              "name": "基本立体图形",
+              "difficulty_band": 1,
+              "prerequisites": ["g2m-observe-views"],
+              "objective": "认识棱柱、棱锥、棱台、圆柱、圆锥、圆台、球的结构特征，理解三视图与直观图。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g11m-solid-measure",
+              "name": "表面积与体积",
+              "difficulty_band": 2,
+              "prerequisites": ["g11m-solid-figures"],
+              "objective": "掌握柱、锥、台、球的表面积与体积公式，会解决简单的组合体度量问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11m-space-positions",
+              "name": "空间点、直线、平面的位置关系",
+              "difficulty_band": 2,
+              "prerequisites": ["g11m-solid-figures"],
+              "objective": "理解空间点、直线、平面之间的位置关系，掌握基本事实与推论。",
+              "question_types": ["choice", "judge"]
+            },
+            {
+              "id": "g11m-parallel-proof",
+              "name": "直线、平面平行的判定与性质",
+              "difficulty_band": 3,
+              "prerequisites": ["g11m-space-positions"],
+              "objective": "掌握线面平行、面面平行的判定定理与性质定理，会进行平行关系的证明。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11m-perpendicular-proof",
+              "name": "直线、平面垂直的判定与性质",
+              "difficulty_band": 3,
+              "prerequisites": ["g11m-parallel-proof"],
+              "objective": "掌握线面垂直、面面垂直的判定定理与性质定理，会进行垂直关系的证明。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g11m-u4",
+          "name": "统计与概率",
+          "knowledge_points": [
+            {
+              "id": "g11m-sampling",
+              "name": "随机抽样",
+              "difficulty_band": 1,
+              "prerequisites": ["g10m-set-concept"],
+              "objective": "理解简单随机抽样、分层随机抽样的方法，会估计总体均值与比例。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11m-sample-estimate",
+              "name": "用样本估计总体",
+              "difficulty_band": 2,
+              "prerequisites": ["g11m-sampling"],
+              "objective": "会计算平均数、中位数、众数、方差、百分位数，能由样本估计总体。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11m-classical-probability",
+              "name": "古典概型",
+              "difficulty_band": 2,
+              "prerequisites": ["g11m-sampling"],
+              "objective": "理解随机事件与样本空间，掌握古典概型的概率计算方法。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11m-event-independence",
+              "name": "事件的相互独立性",
+              "difficulty_band": 3,
+              "prerequisites": ["g11m-classical-probability"],
+              "objective": "理解事件独立的含义，会用独立事件概率公式计算概率。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g11m-u5",
+          "name": "数列",
+          "knowledge_points": [
+            {
+              "id": "g11m-sequence-concept",
+              "name": "数列的概念",
+              "difficulty_band": 1,
+              "prerequisites": ["g10m-function-concept"],
+              "objective": "理解数列的概念与通项公式，掌握 an 与 Sn 的关系。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11m-arithmetic-sequence",
+              "name": "等差数列",
+              "difficulty_band": 2,
+              "prerequisites": ["g11m-sequence-concept"],
+              "objective": "掌握等差数列的通项公式与前 n 项和公式，会解决基本量计算问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11m-geometric-sequence",
+              "name": "等比数列",
+              "difficulty_band": 2,
+              "prerequisites": ["g11m-arithmetic-sequence"],
+              "objective": "掌握等比数列的通项公式与前 n 项和公式，会解决基本量计算问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11m-sequence-sum",
+              "name": "数列求和",
+              "difficulty_band": 3,
+              "prerequisites": ["g11m-geometric-sequence"],
+              "objective": "掌握分组求和、裂项相消、错位相减等求和方法。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g11m-u6",
+          "name": "直线和圆的方程",
+          "knowledge_points": [
+            {
+              "id": "g11m-line-slope",
+              "name": "直线的倾斜角与斜率",
+              "difficulty_band": 1,
+              "prerequisites": ["g10m-trig-definition"],
+              "objective": "理解倾斜角与斜率的概念，掌握斜率公式与倾斜角范围。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11m-line-equation",
+              "name": "直线的方程",
+              "difficulty_band": 2,
+              "prerequisites": ["g11m-line-slope"],
+              "objective": "掌握直线方程的五种形式，会求直线方程并判断两直线位置关系。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11m-circle-equation",
+              "name": "圆的方程",
+              "difficulty_band": 2,
+              "prerequisites": ["g11m-line-equation"],
+              "objective": "掌握圆的标准方程与一般方程，会求圆心、半径与圆的方程。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g11m-line-circle",
+              "name": "直线与圆的位置关系",
+              "difficulty_band": 3,
+              "prerequisites": ["g11m-circle-equation"],
+              "objective": "会用几何法与代数法判断直线与圆的位置关系，会求弦长与切线。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "grade": "grade12",
+      "grade_name": "高三",
+      "units": [
+        {
+          "code": "g12m-u1",
+          "name": "圆锥曲线",
+          "knowledge_points": [
+            {
+              "id": "g12m-ellipse",
+              "name": "椭圆",
+              "difficulty_band": 2,
+              "prerequisites": ["g11m-circle-equation"],
+              "objective": "掌握椭圆的定义、标准方程与几何性质，会求离心率与焦点三角形问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12m-hyperbola",
+              "name": "双曲线",
+              "difficulty_band": 3,
+              "prerequisites": ["g12m-ellipse"],
+              "objective": "掌握双曲线的定义、标准方程与几何性质，理解渐近线并会求离心率。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12m-parabola",
+              "name": "抛物线",
+              "difficulty_band": 2,
+              "prerequisites": ["g12m-ellipse"],
+              "objective": "掌握抛物线的定义、标准方程与几何性质，会解决焦点弦问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12m-conic-line",
+              "name": "直线与圆锥曲线的位置关系",
+              "difficulty_band": 3,
+              "prerequisites": ["g12m-hyperbola", "g12m-parabola"],
+              "objective": "会联立方程判断位置关系，掌握弦长公式、中点弦与定点定值问题的基本处理。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g12m-u2",
+          "name": "空间向量与立体几何",
+          "knowledge_points": [
+            {
+              "id": "g12m-space-vector",
+              "name": "空间向量及其运算",
+              "difficulty_band": 2,
+              "prerequisites": ["g11m-vector-concept"],
+              "objective": "掌握空间向量的线性运算、数量积与坐标表示，理解空间向量基本定理。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12m-space-vector-angle",
+              "name": "用空间向量求空间角",
+              "difficulty_band": 3,
+              "prerequisites": ["g12m-space-vector", "g11m-perpendicular-proof"],
+              "objective": "会用空间向量求异面直线所成角、线面角与二面角。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12m-space-vector-distance",
+              "name": "用空间向量求距离",
+              "difficulty_band": 3,
+              "prerequisites": ["g12m-space-vector-angle"],
+              "objective": "会用空间向量求点到直线、点到平面的距离。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g12m-u3",
+          "name": "导数及其应用",
+          "knowledge_points": [
+            {
+              "id": "g12m-derivative-concept",
+              "name": "导数的概念及其意义",
+              "difficulty_band": 2,
+              "prerequisites": ["g10m-function-properties"],
+              "objective": "理解导数的几何意义（切线斜率）与物理意义，会求曲线在某点处的切线方程。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12m-derivative-rules",
+              "name": "导数的运算",
+              "difficulty_band": 2,
+              "prerequisites": ["g12m-derivative-concept"],
+              "objective": "掌握基本初等函数的导数公式与四则运算法则，会求复合函数的导数。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12m-derivative-monotonicity",
+              "name": "导数与函数的单调性",
+              "difficulty_band": 3,
+              "prerequisites": ["g12m-derivative-rules"],
+              "objective": "会用导数判断函数的单调性并求单调区间。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12m-derivative-extremum",
+              "name": "导数与函数的极值、最值",
+              "difficulty_band": 3,
+              "prerequisites": ["g12m-derivative-monotonicity"],
+              "objective": "会求函数的极值与闭区间上的最值，能解决含参函数的单调性与极值问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12m-derivative-application",
+              "name": "导数的实际应用",
+              "difficulty_band": 3,
+              "prerequisites": ["g12m-derivative-extremum"],
+              "objective": "能建立函数模型并利用导数解决成本最低、用料最省等优化问题。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g12m-u4",
+          "name": "计数原理",
+          "knowledge_points": [
+            {
+              "id": "g12m-counting-principles",
+              "name": "分类加法与分步乘法计数原理",
+              "difficulty_band": 1,
+              "prerequisites": ["g11m-sample-estimate"],
+              "objective": "理解两个计数原理，会用它们解决简单的计数问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12m-permutation-combination",
+              "name": "排列与组合",
+              "difficulty_band": 2,
+              "prerequisites": ["g12m-counting-principles"],
+              "objective": "掌握排列数、组合数公式与性质，会解相邻、不相邻、分组等典型问题。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12m-binomial-theorem",
+              "name": "二项式定理",
+              "difficulty_band": 3,
+              "prerequisites": ["g12m-permutation-combination"],
+              "objective": "掌握二项式定理与通项公式，会求指定项系数与系数和。",
+              "question_types": ["choice", "fill"]
+            }
+          ]
+        },
+        {
+          "code": "g12m-u5",
+          "name": "随机变量及其分布",
+          "knowledge_points": [
+            {
+              "id": "g12m-conditional-probability",
+              "name": "条件概率与全概率公式",
+              "difficulty_band": 2,
+              "prerequisites": ["g11m-event-independence"],
+              "objective": "理解条件概率，掌握乘法公式与全概率公式并会应用。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12m-distribution",
+              "name": "离散型随机变量的分布列",
+              "difficulty_band": 2,
+              "prerequisites": ["g12m-conditional-probability"],
+              "objective": "会求离散型随机变量的分布列、均值与方差。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12m-binomial-distribution",
+              "name": "二项分布与超几何分布",
+              "difficulty_band": 3,
+              "prerequisites": ["g12m-distribution"],
+              "objective": "理解二项分布与超几何分布模型，会求相应概率与均值。",
+              "question_types": ["choice", "fill"]
+            },
+            {
+              "id": "g12m-normal-distribution",
+              "name": "正态分布",
+              "difficulty_band": 3,
+              "prerequisites": ["g12m-distribution"],
+              "objective": "了解正态分布的特征与 3σ 原则，会解决简单的正态分布概率问题。",
+              "question_types": ["choice", "fill"]
             }
           ]
         }
