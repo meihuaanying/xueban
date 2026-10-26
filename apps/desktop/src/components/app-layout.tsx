@@ -11,7 +11,7 @@ import { RestBreakGate } from "@/components/rest-break";
 import { useExplainer } from "@/journey/use-explainer";
 import { useJourney } from "@/journey/journey-context";
 import { useKnowledgeMastery } from "@/journey/use-knowledge-mastery";
-import { STAGES, GRADE_BANDS } from "@/journey/stages";
+import { STAGES, SUBJECT_OPTIONS, subjectLabel } from "@/journey/stages";
 import { ExplainerDock } from "@/routes/journey/explainer-launcher";
 import { SyncIndicator } from "@/lib/sync";
 
@@ -24,11 +24,11 @@ const SKIN_LABEL = {
 
 export function AppLayout() {
   const { user, logout } = useAuth();
-  const { theme, mode, stage, band, goTo, setTheme, setMode } = useJourney();
+  const { theme, mode, stage, band, subject, setSubject, goTo, setTheme, setMode } = useJourney();
   // 场景 3：知识地图节点 → 已预生成的讲解直接秒开。
-  // 必须按学段带科目去取：不带的话小学数学一二年级 38 个知识点会全糊在侧边栏。
-  const preset = band ? GRADE_BANDS[band] : GRADE_BANDS.primary;
-  const mastery = useKnowledgeMastery(preset.subject);
+  // 必须按学段/学科去取：不带的话小学数学一二年级 38 个知识点会全糊在侧边栏。
+  const subjectOptions = band ? SUBJECT_OPTIONS[band] : SUBJECT_OPTIONS.primary;
+  const mastery = useKnowledgeMastery(subject);
   const explainer = useExplainer();
 
   return (
@@ -56,6 +56,23 @@ export function AppLayout() {
           <h1 className="text-app text-muted-foreground">学伴学习旅程</h1>
           <div className="flex items-center gap-xs">
             <SyncIndicator />
+            {/* 学科切换：广东九科按学段开放（小学语数英；初中/高中九科） */}
+            <label htmlFor="subject-select" className="sr-only">
+              学科
+            </label>
+            <select
+              id="subject-select"
+              data-testid="subject-select"
+              value={subject}
+              onChange={(event) => setSubject(event.target.value)}
+              className="min-h-[var(--tap-min)] rounded-control border border-border-strong bg-card px-sm text-app"
+            >
+              {subjectOptions.map((item) => (
+                <option key={item} value={item}>
+                  {subjectLabel(item)}
+                </option>
+              ))}
+            </select>
             <Badge
               variant={theme === "kids" ? "warning" : "outline"}
               data-testid="theme-badge"

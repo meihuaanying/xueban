@@ -183,6 +183,30 @@ export const GRADE_BANDS: Record<GradeBand, GradeBandPreset> = {
   },
 };
 
+/** 学科的中文名与可选性（广东口径：小学语数英；初中九科；高中语数英 + 3+1+2 六科）。 */
+export const SUBJECT_LABELS: Record<string, string> = {
+  chinese: "语文",
+  math: "数学",
+  english: "英语",
+  physics: "物理",
+  chemistry: "化学",
+  biology: "生物",
+  history: "历史",
+  geography: "地理",
+  politics: "政治",
+};
+
+/** 各学段可切换的学科（顺序即展示顺序，默认仍是数学）。 */
+export const SUBJECT_OPTIONS: Record<GradeBand, readonly string[]> = {
+  primary: ["chinese", "math", "english"],
+  junior: ["chinese", "math", "english", "physics", "chemistry", "biology", "history", "geography", "politics"],
+  senior: ["chinese", "math", "english", "physics", "chemistry", "biology", "history", "geography", "politics"],
+};
+
+export function subjectLabel(subject: string): string {
+  return SUBJECT_LABELS[subject] ?? subject;
+}
+
 /** 年级的中文名（与后端 curriculum.GRADE_NAMES 一致，高中用高一/高二/高三）。 */
 export const GRADE_LABELS: Record<string, string> = {
   grade1: "一年级",

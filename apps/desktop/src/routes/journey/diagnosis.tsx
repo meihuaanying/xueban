@@ -10,7 +10,7 @@ import { GRADE_BANDS, gradeLabel } from "../../journey/stages";
 import { useDiagnosis } from "../../journey/use-journey-data";
 
 export default function DiagnosisStagePage() {
-  const { band, grade, theme, mark, goTo } = useJourney();
+  const { band, grade, subject, theme, mark, goTo } = useJourney();
   const diag = useDiagnosis();
   const preset = band ? GRADE_BANDS[band] : GRADE_BANDS.primary;
   const activeGrade = grade ?? preset.grade;
@@ -51,7 +51,7 @@ export default function DiagnosisStagePage() {
                 type="button"
                 data-testid="diagnosis-start"
                 disabled={diag.busy}
-                onClick={() => void diag.begin(preset.subject, preset.stage, 20, activeGrade)}
+                onClick={() => void diag.begin(subject, preset.stage, 20, activeGrade)}
               >
                 {diag.busy ? "准备中…" : "开始诊断"}
               </Button>

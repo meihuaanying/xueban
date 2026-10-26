@@ -24,9 +24,9 @@ import {
 const SUGGEST_AFTER_WRONG = 2;
 
 export default function UnitStagePage() {
-  const { band, grade, theme, mark, goTo } = useJourney();
+  const { band, grade, subject, theme, mark, goTo } = useJourney();
   const preset = band ? GRADE_BANDS[band] : GRADE_BANDS.primary;
-  const practice = usePractice(preset.subject, grade ?? preset.grade);
+  const practice = usePractice(subject, grade ?? preset.grade);
   const tutor = useTutorHints();
   const explainer = useExplainer();
   const sound = useSoundPreference();

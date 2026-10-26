@@ -12,14 +12,14 @@ import { api, type PathPhase } from "../../lib/api";
 import { KnowledgeMapCard } from "./knowledge-map-card";
 
 export default function PlanStagePage() {
-  const { band, grade, theme, mark, goTo } = useJourney();
+  const { band, grade, subject, theme, mark, goTo } = useJourney();
   const preset = band ? GRADE_BANDS[band] : GRADE_BANDS.primary;
   const activeGrade = grade ?? preset.grade;
   const path = useAsync(
-    () => api.path(preset.subject, { grade: activeGrade }),
-    [activeGrade, preset.subject],
+    () => api.path(subject, { grade: activeGrade }),
+    [activeGrade, subject],
   );
-  const mastery = useMastery(preset.subject);
+  const mastery = useMastery(subject);
   const phases = path.data?.phases ?? [];
   const hasPath = Boolean(path.data?.has_path) && phases.length > 0;
 
@@ -97,7 +97,7 @@ export default function PlanStagePage() {
 
         {/* 场景 3（§5.1）：知识地图节点 → 已预生成的讲解直接秒开。
             放在这一站是因为侧边栏在儿童模式下没有地图——那是妹妹真正用的主题。 */}
-        <KnowledgeMapCard subject={preset.subject} speakable={theme === "kids"} />
+        <KnowledgeMapCard subject={subject} speakable={theme === "kids"} />
 
         {hasPath ? (
           <Button
