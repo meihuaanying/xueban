@@ -641,12 +641,14 @@ export const api = {
   answerDiagnosis: (examId: string, payload: { question_id: string; answer: string }) =>
     post<DiagnosisAnswer>(`/v1/diagnosis/${examId}/answer`, payload),
   diagnosisReport: (examId: string) => get<DiagnosisReport>(`/v1/diagnosis/${examId}/report`),
-  mastery: (subject?: string, options?: { includeUnseen?: boolean }) => {
+  mastery: (subject?: string, options?: { includeUnseen?: boolean; stage?: string }) => {
     // include_unseen：知识地图要展示「还没练过」的知识点，否则新用户打开就是一片空白。
-    // 雷达图/画像不传，保持「我学过什么」的语义。
+    // 雷达图/画像不传，保持「我学过什么」的语义。stage 收窄到当前学段，
+    // 避免高中生看到初中/小学知识点。
     const params = new URLSearchParams();
     if (subject) params.set("subject", subject);
     if (options?.includeUnseen) params.set("include_unseen", "true");
+    if (options?.stage) params.set("stage", options.stage);
     const query = params.toString();
     return get<MasteryOverview>(`/v1/profile/mastery${query ? `?${query}` : ""}`);
   },
@@ -699,19 +701,36 @@ export const api = {
   }) => post<PracticeGenerate>("/v1/practice/generate", payload),
   answerPractice: (payload: { question_id: string; answer: string; source: string }) =>
     post<PracticeAnswer>("/v1/practice/answer", payload),
-  mistakes: (params?: { state?: string; error_reason?: string; limit?: number }) => {
+  mistakes: (params?: {
+    state?: string;
+    error_reason?: string;
+    limit?: number;
+    subject?: string;
+    stage?: string;
+  }) => {
     const query = new URLSearchParams();
     if (params?.state) query.set("state", params.state);
     if (params?.error_reason) query.set("error_reason", params.error_reason);
     if (params?.limit) query.set("limit", String(params.limit));
+    if (params?.subject) query.set("subject", params.subject);
+    if (params?.stage) query.set("stage", params.stage);
     const suffix = query.toString() ? `?${query.toString()}` : "";
     return get<MistakeList>(`/v1/mistakes${suffix}`);
   },
-  repractice: (payload: { count?: number; error_reason?: string } = {}) =>
-    post<MistakeRepractice>("/v1/mistakes/repractice", payload),
+  repractice: (payload: {
+    count?: number;
+    error_reason?: string;
+    subject?: string;
+    stage?: string;
+  } = {}) => post<MistakeRepractice>("/v1/mistakes/repractice", payload),
 
   // 复习（FSRS）
-  reviewDue: (limit = 10) => get<ReviewDue>(`/v1/review/due?limit=${limit}`),
+  reviewDue: (limit = 10, subject?: string, stage?: string) => {
+    const query = new URLSearchParams({ limit: String(limit) });
+    if (subject) query.set("subject", subject);
+    if (stage) query.set("stage", stage);
+    return get<ReviewDue>(`/v1/review/due?${query.toString()}`);
+  },
   reviewGrade: (cardId: string, grade: number) =>
     post<ReviewGrade>(`/v1/review/${cardId}/grade`, { grade }),
 

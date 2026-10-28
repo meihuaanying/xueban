@@ -18,7 +18,7 @@ from app.schemas.practice import (
     MistakeSummaryItem,
     QuestionBriefOut,
 )
-from app.services import diagnosis_service, mistake_book_service
+from app.services import diagnosis_service, mistake_book_service, mistake_scope
 from app.services.attribution_service import attribute_mistake
 
 router = APIRouter(prefix="/v1/mistakes", tags=["mistakes"])
@@ -29,12 +29,20 @@ async def list_mistakes(
     state: str | None = Query(default=None, max_length=20),
     error_reason: str | None = Query(default=None, max_length=32),
     limit: int = Query(default=50, ge=1, le=200),
+    subject: str | None = Query(default=None, max_length=32),
+    stage: str | None = Query(default=None, max_length=20),
     user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> MistakeListResponse:
-    """返回未移出的错题与错因分组统计。"""
-    views, summary = await mistake_book_service.list_mistakes(
-        session, user=user, state=state, error_reason=error_reason, limit=limit
+    """返回未移出的错题与错因分组统计；subject/stage 收窄到当前选科与学段。"""
+    views, summary = await mistake_scope.list_mistakes_scoped(
+        session,
+        user=user,
+        state=state,
+        error_reason=error_reason,
+        limit=limit,
+        subject=subject,
+        stage=stage,
     )
     counts = await mistake_book_service.mistake_summary(session, user=user)
     entries: list[MistakeEntryOut] = []
@@ -88,8 +96,13 @@ async def repractice(
     session: AsyncSession = Depends(get_session),
 ) -> MistakeRepracticeResponse:
     """拉取错题用于重练；作答 source=repractice 且答对后自动移出。"""
-    questions = await mistake_book_service.repractice_questions(
-        session, user=user, count=payload.count, error_reason=payload.error_reason
+    questions = await mistake_scope.repractice_questions_scoped(
+        session,
+        user=user,
+        count=payload.count,
+        error_reason=payload.error_reason,
+        subject=payload.subject,
+        stage=payload.stage,
     )
     payload_out: list[QuestionBriefOut] = []
     for question in questions:

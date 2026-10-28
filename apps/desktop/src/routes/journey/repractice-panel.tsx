@@ -3,6 +3,8 @@
 /** 错题重练面板：独立文件，避免错题页超过 150 行。 */
 import { Button, Card, CardContent, CardHeader, CardTitle } from "@xueban/ui";
 
+import { useJourney } from "@/journey/journey-context";
+import { GRADE_BANDS } from "@/journey/stages";
 import { useRepractice } from "@/journey/use-repractice";
 import { QuestionSection } from "./question-section";
 import { FeedbackCard } from "./unit-blocks";
@@ -17,9 +19,14 @@ export function RepracticePanel({
   speakable: boolean;
 }) {
   const repractice = useRepractice();
+  const { band, subject } = useJourney();
   const current = repractice.current;
 
-  const start = () => void repractice.start(5);
+  const start = () =>
+    void repractice.start(5, {
+      subject,
+      stage: band ? GRADE_BANDS[band].stage : undefined,
+    });
   const submit = async (value: string) => {
     const result = await repractice.answer(value);
     if (result) onAnswered();

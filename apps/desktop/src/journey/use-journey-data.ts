@@ -20,6 +20,9 @@ import {
   type WeeklyReport,
 } from "../lib/api";
 
+import { useJourney } from "./journey-context";
+import { GRADE_BANDS } from "./stages";
+
 export interface AsyncState<T> {
   data: T | null;
   loading: boolean;
@@ -215,12 +218,19 @@ export function usePractice(subject: string, grade?: string) {
 
 /* ---------- 错题本 ---------- */
 export function useMistakes() {
-  return useAsync<MistakeList>(() => api.mistakes({ limit: 20 }), []);
+  const { band, subject } = useJourney();
+  const stage = band ? GRADE_BANDS[band].stage : undefined;
+  return useAsync<MistakeList>(
+    () => api.mistakes({ limit: 20, subject, stage }),
+    [subject, stage],
+  );
 }
 
 /* ---------- 复习卡（FSRS 到期） ---------- */
 export function useReviewDue() {
-  return useAsync<ReviewDue>(() => api.reviewDue(10), []);
+  const { band, subject } = useJourney();
+  const stage = band ? GRADE_BANDS[band].stage : undefined;
+  return useAsync<ReviewDue>(() => api.reviewDue(10, subject, stage), [subject, stage]);
 }
 
 /* ---------- 周复盘 ---------- */

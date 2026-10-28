@@ -16,7 +16,7 @@ from app.schemas.practice import (
     ReviewGradeRequest,
     ReviewGradeResponse,
 )
-from app.services import diagnosis_service, fsrs_service
+from app.services import diagnosis_service, fsrs_service, mistake_scope
 
 router = APIRouter(prefix="/v1/review", tags=["review"])
 
@@ -24,12 +24,18 @@ router = APIRouter(prefix="/v1/review", tags=["review"])
 @router.get("/due", response_model=ReviewDueResponse, summary="到期复习卡片（F-19）")
 async def due(
     limit: int = Query(default=20, ge=1, le=100),
+    subject: str | None = Query(default=None, max_length=32),
+    stage: str | None = Query(default=None, max_length=20),
     user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> ReviewDueResponse:
-    """返回已到期（含逾期）的复习卡片。"""
-    cards = await fsrs_service.due_cards(session, user_id=user.id, limit=limit)
-    total = await fsrs_service.due_count(session, user_id=user.id)
+    """返回已到期（含逾期）的复习卡片；subject/stage 收窄到当前选科与学段。"""
+    cards = await mistake_scope.due_cards_scoped(
+        session, user_id=user.id, limit=limit, subject=subject, stage=stage
+    )
+    total = await mistake_scope.due_count_scoped(
+        session, user_id=user.id, subject=subject, stage=stage
+    )
     payload: list[ReviewCardOut] = []
     for card in cards:
         question = await session.get(Question, card.question_id)

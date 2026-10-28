@@ -13,21 +13,24 @@ export function useRepractice() {
   const [error, setError] = useState<string | null>(null);
   const [finished, setFinished] = useState(false);
 
-  const start = useCallback(async (count = 5) => {
-    setBusy(true);
-    setError(null);
-    setSet(null);
-    setLast(null);
-    setFinished(false);
-    setIndex(0);
-    try {
-      setSet(await api.repractice({ count }));
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "取错题失败，请稍后重试。");
-    } finally {
-      setBusy(false);
-    }
-  }, []);
+  const start = useCallback(
+    async (count = 5, scope: { subject?: string; stage?: string } = {}) => {
+      setBusy(true);
+      setError(null);
+      setSet(null);
+      setLast(null);
+      setFinished(false);
+      setIndex(0);
+      try {
+        setSet(await api.repractice({ count, ...scope }));
+      } catch (caught) {
+        setError(caught instanceof Error ? caught.message : "取错题失败，请稍后重试。");
+      } finally {
+        setBusy(false);
+      }
+    },
+    [],
+  );
 
   const answer = useCallback(
     async (value: string) => {

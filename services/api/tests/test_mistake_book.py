@@ -166,3 +166,58 @@ async def test_mistake_book_requires_auth(client: AsyncClient) -> None:
     assert (await client.get("/v1/mistakes")).status_code == 401
     assert (await client.post("/v1/mistakes/repractice", json={})).status_code == 401
     assert (await client.get("/v1/mistakes/export.pdf")).status_code == 401
+
+
+async def test_list_and_repractice_filter_by_subject_and_stage(
+    client: AsyncClient, sessionmaker: async_sessionmaker[AsyncSession]
+) -> None:
+    """高中复习不能混入其它科目/学段：列表与重练都按 subject+stage 收窄。"""
+    math_ids = await _seed_questions(sessionmaker, count=1)
+    payload = await register(client)
+    headers = headers_of(payload)
+    await _collect_mistakes(client, headers, math_ids)
+
+    async with sessionmaker() as session:
+        kp = KnowledgePoint(
+            code="chinese.test.mb", name="文言实词", subject="chinese", stage="senior"
+        )
+        session.add(kp)
+        await session.flush()
+        question = Question(
+            subject="chinese",
+            stage="senior",
+            qtype=QuestionType.FILL,
+            stem="[文言] 解释「走」的意思",
+            answer="跑",
+            analysis="古义为跑。",
+            status=QuestionStatus.PUBLISHED,
+        )
+        session.add(question)
+        await session.flush()
+        session.add(
+            QuestionKnowledgePoint(question_id=question.id, knowledge_point_id=kp.id)
+        )
+        await session.commit()
+        chinese_id = question.id
+
+    await _collect_mistakes(client, headers, [chinese_id])
+
+    scoped = await client.get(
+        "/v1/mistakes",
+        params={"subject": "chinese", "stage": "senior"},
+        headers=headers,
+    )
+    assert scoped.status_code == 200, scoped.text
+    entries = scoped.json()["entries"]
+    assert len(entries) == 1
+    assert entries[0]["question"]["stem"].startswith("[文言]")
+
+    repractice = await client.post(
+        "/v1/mistakes/repractice",
+        json={"count": 5, "subject": "chinese", "stage": "senior"},
+        headers=headers,
+    )
+    assert repractice.status_code == 200, repractice.text
+    assert [item["stem"] for item in repractice.json()["questions"]] == [
+        "[文言] 解释「走」的意思"
+    ]

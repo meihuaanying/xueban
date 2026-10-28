@@ -109,6 +109,9 @@ class MistakeRepracticeRequest(BaseModel):
 
     count: int = Field(default=5, ge=1, le=20)
     error_reason: str | None = Field(default=None, max_length=32)
+    # 收窄到当前选科/学段，避免高中复习混入其它科目或初小错题
+    subject: str | None = Field(default=None, max_length=32)
+    stage: str | None = Field(default=None, max_length=20)
 
 
 class MistakeRepracticeResponse(BaseModel):

@@ -11,7 +11,7 @@ import { RestBreakGate } from "@/components/rest-break";
 import { useExplainer } from "@/journey/use-explainer";
 import { useJourney } from "@/journey/journey-context";
 import { useKnowledgeMastery } from "@/journey/use-knowledge-mastery";
-import { STAGES, SUBJECT_OPTIONS, subjectLabel } from "@/journey/stages";
+import { GRADE_BANDS, STAGES, SUBJECT_OPTIONS, subjectLabel } from "@/journey/stages";
 import { ExplainerDock } from "@/routes/journey/explainer-launcher";
 import { SyncIndicator } from "@/lib/sync";
 
@@ -28,7 +28,7 @@ export function AppLayout() {
   // 场景 3：知识地图节点 → 已预生成的讲解直接秒开。
   // 必须按学段/学科去取：不带的话小学数学一二年级 38 个知识点会全糊在侧边栏。
   const subjectOptions = band ? SUBJECT_OPTIONS[band] : SUBJECT_OPTIONS.primary;
-  const mastery = useKnowledgeMastery(subject);
+  const mastery = useKnowledgeMastery(subject, band ? GRADE_BANDS[band].stage : undefined);
   const explainer = useExplainer();
 
   return (

@@ -56,7 +56,7 @@ export interface KnowledgeMasteryState {
   reload: () => Promise<void>;
 }
 
-export function useKnowledgeMastery(subject?: string): KnowledgeMasteryState {
+export function useKnowledgeMastery(subject?: string, stage?: string): KnowledgeMasteryState {
   const [nodes, setNodes] = useState<KnowledgeNode[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -67,7 +67,7 @@ export function useKnowledgeMastery(subject?: string): KnowledgeMasteryState {
     setLoading(true);
     setError(null);
     try {
-      const overview = await api.mastery(subject, { includeUnseen: true });
+      const overview = await api.mastery(subject, { includeUnseen: true, stage });
       setTotal(overview.points.length);
       setNodes(
         overview.points.slice(0, MAX_MAP_NODES).map((point) => ({
@@ -88,7 +88,7 @@ export function useKnowledgeMastery(subject?: string): KnowledgeMasteryState {
     } finally {
       setLoading(false);
     }
-  }, [subject]);
+  }, [stage, subject]);
 
   useEffect(() => {
     void reload();
