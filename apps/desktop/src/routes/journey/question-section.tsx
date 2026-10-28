@@ -55,7 +55,8 @@ export function QuestionSection({
         }}
         speakable={speakable}
         disabled={busy}
-        onSelect={onAnswer}
+        onSelect={usableKind === "multi" ? undefined : onAnswer}
+        onConfirm={usableKind === "multi" ? onAnswer : undefined}
       />
     </div>
   );

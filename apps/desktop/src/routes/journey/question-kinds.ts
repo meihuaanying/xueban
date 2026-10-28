@@ -19,6 +19,7 @@ import type { QuestionKind, QuestionOption } from "@xueban/ui";
 /** qtype（小写）→ 题型形态。取不到的一律按 choice 处理，最宽容。 */
 const KIND_BY_QTYPE: Record<string, QuestionKind> = {
   choice: "choice",
+  multi_choice: "multi",
   fill: "fill",
   judge: "judge",
   match: "link",

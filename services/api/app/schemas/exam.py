@@ -18,6 +18,12 @@ class ExamCreateRequest(BaseModel):
     title: str | None = Field(default=None, max_length=128)
 
 
+class ExamBlueprintCreateRequest(BaseModel):
+    """按地区考卷蓝图组卷（新高考数学 19 题结构）。"""
+
+    blueprint_id: str = Field(default="gaokao_2026_gd", max_length=64)
+
+
 class ExamQuestionOut(BaseModel):
     """试卷题目（不含答案）。"""
 
@@ -59,9 +65,11 @@ class ExamDiagnosisOut(BaseModel):
 
     question_id: uuid.UUID
     stem: str
-    is_correct: bool
+    # 主观题（解答题）未批改时为 None
+    is_correct: bool | None
     correct_answer: str
     analysis: str | None = None
+    subjective: bool = False
 
 
 class ExamReportResponse(BaseModel):

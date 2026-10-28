@@ -68,14 +68,29 @@ export default function DiagnosisStagePage() {
               <QuestionCard
                 stem={question.stem}
                 meta={`难度 ${question.difficulty}`}
-                kind={question.qtype === "fill" ? "fill" : "choice"}
+                kind={
+                  question.qtype === "fill"
+                    ? "fill"
+                    : question.qtype === "multi_choice"
+                      ? "multi"
+                      : "choice"
+                }
                 options={
                   options
                     ? Object.entries(options).map(([key, label]) => ({ key, label }))
                     : []
                 }
                 speakable={theme === "kids"}
-                onSelect={(value) => void diag.answer(question.id, value)}
+                onSelect={
+                  question.qtype === "multi_choice"
+                    ? undefined
+                    : (value) => void diag.answer(question.id, value)
+                }
+                onConfirm={
+                  question.qtype === "multi_choice"
+                    ? (answer) => void diag.answer(question.id, answer)
+                    : undefined
+                }
                 disabled={diag.busy}
               />
             </div>

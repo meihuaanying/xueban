@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.deps import get_session, require_not_locked
 from app.models import ExamKind, Question, User
 from app.schemas.exam import (
+    ExamBlueprintCreateRequest,
     ExamCreateRequest,
     ExamCreateResponse,
     ExamDiagnosisOut,
@@ -47,9 +48,12 @@ def _report_response(report: exam_service.ExamReport) -> ExamReportResponse:
             ExamDiagnosisOut(
                 question_id=uuid.UUID(str(item["question_id"])),
                 stem=str(item["stem"]),
-                is_correct=bool(item["is_correct"]),
+                is_correct=(
+                    None if item.get("is_correct") is None else bool(item["is_correct"])
+                ),
                 correct_answer=str(item["correct_answer"]),
                 analysis=item.get("analysis"),
+                subjective=bool(item.get("subjective")),
             )
             for item in report.diagnoses
             if isinstance(item, dict)
@@ -79,6 +83,35 @@ async def create_mock_exam(
         count=payload.count,
         time_limit_minutes=payload.time_limit_minutes,
         title=payload.title,
+    )
+    questions = [await _question_out(session, item) for item in bundle.questions]
+    deadline = exam_service._deadline_of(bundle.exam)
+    response = ExamCreateResponse(
+        exam_id=bundle.exam.id,
+        kind=bundle.exam.kind.value,
+        title=bundle.exam.title,
+        time_limit_minutes=bundle.exam.time_limit_minutes,
+        deadline=deadline,
+        questions=questions,
+    )
+    await session.commit()
+    return response
+
+
+@router.post(
+    "/v1/exams/blueprint",
+    response_model=ExamCreateResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="按地区考卷蓝图组卷（新高考数学 19 题结构）",
+)
+async def create_blueprint_exam(
+    payload: ExamBlueprintCreateRequest,
+    user: User = Depends(require_not_locked),
+    session: AsyncSession = Depends(get_session),
+) -> ExamCreateResponse:
+    """按蓝图份数抽题：8 单选 + 3 多选 + 3 填空 + 5 解答（解答题交卷后待主观批改）。"""
+    bundle = await exam_service.create_blueprint_exam(
+        session, user=user, blueprint_id=payload.blueprint_id
     )
     questions = [await _question_out(session, item) for item in bundle.questions]
     deadline = exam_service._deadline_of(bundle.exam)
