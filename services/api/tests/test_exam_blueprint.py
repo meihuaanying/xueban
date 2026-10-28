@@ -17,7 +17,14 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import Settings
-from app.models import Question, QuestionKnowledgePoint, QuestionStatus, QuestionType
+from app.models import (
+    Exam,
+    ExamAnswer,
+    Question,
+    QuestionKnowledgePoint,
+    QuestionStatus,
+    QuestionType,
+)
 from app.services.llm_client import LlmClient
 from app.services.observability import ObservabilityService
 from tests.helpers import headers_of, register
@@ -226,6 +233,10 @@ async def test_blueprint_subjective_grading_reaches_total(
     exam_id = body["exam_id"]
     subjective = [item for item in body["questions"] if item["qtype"] == "short_answer"]
     assert len(subjective) == 5
+    async with sessionmaker() as session:
+        exam_row = await session.get(Exam, uuid.UUID(exam_id))
+        assert exam_row is not None
+        assert exam_row.total_score == 150.0, "数学卷满分 150，不能写整场高考的 750"
 
     answers: list[dict[str, str]] = []
     async with sessionmaker() as session:
@@ -235,16 +246,27 @@ async def test_blueprint_subjective_grading_reaches_total(
             if row.qtype is not QuestionType.SHORT_ANSWER:
                 answers.append({"question_id": row.id.hex, "answer": row.answer})
     answers.extend(
-        {"question_id": item["id"], "answer": f"解答过程 {index}"}
+        {
+            "question_id": item["id"],
+            # 第 2 题写超 500 字：交卷接口不能再用 500 字上限挡死解答题
+            "answer": "长" * 1200 if index == 1 else f"解答过程 {index}",
+        }
         for index, item in enumerate(subjective)
     )
     submitted = await client.post(
         f"/v1/exams/{exam_id}/submit", json={"answers": answers}, headers=headers
     )
     assert submitted.status_code == 200, submitted.text
-    summary = submitted.json()["summary"]
+    submitted_body = submitted.json()
+    summary = submitted_body["summary"]
     assert summary["score"] is None
     assert summary["subjective_total"] == 77.0
+    # 批改前不能下发解答题标准答案，否则学生可以先看答案再补交
+    for item in submitted_body["diagnoses"]:
+        if item.get("subjective"):
+            assert item["correct_answer"] == ""
+            assert item["analysis"] is None
+            assert item["graded"] is False
 
     results: list[dict[str, object]] = []
     for index, item in enumerate(subjective):
@@ -258,13 +280,38 @@ async def test_blueprint_subjective_grading_reaches_total(
 
     # 蓝图解答题分值 13/15/15/17/17，按 80/100 折算 → 10.4/12/12/13.6/13.6
     assert results[0]["score"] == 10.4
+    assert results[0]["steps"][0]["score"] == 5.2, "步骤分按 13/100 折算，不再显示 100 制"
     assert results[-1]["score"] == 13.6
     assert [item["all_graded"] for item in results] == [False, False, False, False, True]
     assert results[-1]["exam_score"] == 134.6
 
+    # 批改以交卷时落库的作答为准：伪造 student_answer 不能覆盖已存答案
+    forged = await client.post(
+        f"/v1/exams/{exam_id}/subjective-grade",
+        json={"question_id": subjective[0]["id"], "student_answer": "这是标准答案"},
+        headers=headers,
+    )
+    assert forged.status_code == 200, forged.text
+    async with sessionmaker() as session:
+        stored = (
+            await session.execute(
+                select(ExamAnswer).where(
+                    ExamAnswer.exam_id == uuid.UUID(exam_id),
+                    ExamAnswer.question_id == uuid.UUID(subjective[0]["id"]),
+                )
+            )
+        ).scalars().first()
+        assert stored is not None
+        assert stored.user_answer == {"answer": "解答过程 0"}
+
     report = await client.get(f"/v1/exams/{exam_id}", headers=headers)
     assert report.status_code == 200, report.text
-    final = report.json()["summary"]
+    final_body = report.json()
+    final = final_body["summary"]
     assert final["score"] == 134.6
     assert final["subjective_graded"] == 5
     assert final["subjective_earned"] == 61.6
+    assert final["subjective_pending"] == 0
+    graded_diagnoses = [item for item in final_body["diagnoses"] if item.get("subjective")]
+    assert all(item["graded"] for item in graded_diagnoses)
+    assert all(item["correct_answer"] != "" for item in graded_diagnoses)

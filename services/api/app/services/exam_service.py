@@ -26,7 +26,7 @@ from app.models import (
     User,
 )
 from app.services import grading_service, mastery_service
-from app.services.diagnosis_service import check_answer
+from app.services.diagnosis_service import OBJECTIVE_QTYPES, check_answer
 from app.services.grading_service import SubjectiveGradingResult
 from app.services.llm_client import LlmClient
 
@@ -56,7 +56,9 @@ async def _load_questions(
     session: AsyncSession, *, subject: str, stage: str | None, count: int
 ) -> list[Question]:
     stmt = select(Question).where(
-        Question.subject == subject, Question.status == QuestionStatus.PUBLISHED
+        Question.subject == subject,
+        Question.status == QuestionStatus.PUBLISHED,
+        Question.qtype.in_(OBJECTIVE_QTYPES),
     )
     if stage:
         stmt = stmt.where(Question.stage == stage)
@@ -222,7 +224,7 @@ async def create_blueprint_exam(
         kind=ExamKind.MOCK,
         title=f"高考数学新结构模考（{blueprint.get('name', blueprint_id)}）",
         time_limit_minutes=minutes,
-        total_score=float(blueprint.get("total_score") or 150),
+        total_score=float(math.get("score") or blueprint.get("total_score") or 150),
         status=ExamStatus.IN_PROGRESS,
         started_at=utcnow(),
         meta={
@@ -309,10 +311,14 @@ async def _finalize(
                 {
                     "question_id": str(question.id),
                     "stem": question.stem,
+                    # 批改前不下发标准答案/解析：学生可以先看到答案再补交，
+                    # 等于把主观题变成开卷。批改完成后由 grade_subjective_answer 补上。
                     "is_correct": None,
-                    "correct_answer": question.answer,
-                    "analysis": question.analysis,
+                    "correct_answer": "",
+                    "analysis": None,
                     "subjective": True,
+                    "score": None,
+                    "graded": False,
                 }
             )
             continue
@@ -373,6 +379,9 @@ async def _finalize(
                     Exam.status == ExamStatus.SUBMITTED,
                     Exam.id != exam.id,
                     Exam.score.is_not(None),
+                    # 百分位只在同分制内比较：100 分制普通模考与 150 分制
+                    # 蓝图卷混在一起会把两边都算歪。
+                    Exam.total_score == exam.total_score,
                 )
             )
         ).scalars()
@@ -440,7 +449,9 @@ async def submit_exam(
         raise PermissionDeniedError("无权访问该测评")
     if exam.status != ExamStatus.SUBMITTED:
         mapping = {question_id: answer for question_id, answer in answers}
-        await _finalize(session, exam=exam, answers=mapping, auto_submitted=False)
+        deadline = _deadline_of(exam)
+        late = deadline is not None and utcnow() >= deadline
+        await _finalize(session, exam=exam, answers=mapping, auto_submitted=late)
     diagnoses = exam.meta.get("diagnoses") or []
     return ExamReport(
         exam=exam,
@@ -479,6 +490,8 @@ class ExamSubjectiveGrade:
     graded_count: int
     subjective_count: int
     all_graded: bool
+    # 卷面分值 / judge 满分，用于把步骤分从 100 制折算到该题分值
+    step_ratio: float
 
 
 def _subjective_part_total(exam: Exam, count: int) -> float:
@@ -497,11 +510,15 @@ async def grade_subjective_answer(
     user: User,
     exam_id: uuid.UUID,
     question_id: uuid.UUID,
-    student_answer: str,
+    student_answer: str | None,
     llm: LlmClient,
     trace_id: str | None = None,
 ) -> ExamSubjectiveGrade:
-    """批改蓝图模考的解答题并按题分值折算；全部批完才补整卷总分。"""
+    """批改蓝图模考的解答题并按题分值折算；全部批完才补整卷总分。
+
+    批改对象是**交卷时落库的作答**：客户端传答案只在未作答时兜底，
+    避免交卷后看到标准答案再改答案刷分。
+    """
     exam = await session.get(Exam, exam_id)
     if exam is None:
         raise NotFoundError("测评不存在", code="EXAM_NOT_FOUND")
@@ -521,17 +538,6 @@ async def grade_subjective_answer(
     if max_score <= 0:
         max_score = _subjective_part_total(exam, len(subjective))
 
-    grading = await grading_service.grade_subjective(
-        session,
-        user=user,
-        llm=llm,
-        question_id=question_id,
-        student_answer=student_answer,
-        trace_id=trace_id,
-    )
-    ratio = grading.total_score / grading.max_score if grading.max_score > 0 else 0.0
-    question_score = round(min(max(ratio, 0.0), 1.0) * max_score, 1)
-
     answer = (
         await session.execute(
             select(ExamAnswer).where(
@@ -539,17 +545,36 @@ async def grade_subjective_answer(
                 ExamAnswer.question_id == question_id,
             )
         )
-    ).scalar_one_or_none()
+    ).scalars().first()
+    stored = ""
+    if answer is not None and isinstance(answer.user_answer, dict):
+        raw = answer.user_answer.get("answer")
+        stored = raw.strip() if isinstance(raw, str) else ""
+    effective = stored or (student_answer or "").strip()
+    if not effective:
+        raise AppError("该题没有作答内容", code="EXAM_ANSWER_REQUIRED", status_code=422)
+
+    grading = await grading_service.grade_subjective(
+        session,
+        user=user,
+        llm=llm,
+        question_id=question_id,
+        student_answer=effective,
+        trace_id=trace_id,
+    )
+    ratio = grading.total_score / grading.max_score if grading.max_score > 0 else 0.0
+    ratio = min(max(ratio, 0.0), 1.0)
+    question_score = round(ratio * max_score, 1)
     if answer is None:
         answer = ExamAnswer(
             exam_id=exam.id,
             question_id=question_id,
-            user_answer={"answer": student_answer},
+            user_answer={"answer": effective},
             is_correct=None,
         )
         session.add(answer)
-    else:
-        answer.user_answer = {"answer": student_answer}
+    elif not stored:
+        answer.user_answer = {"answer": effective}
     answer.score = question_score
     await session.flush()
 
@@ -574,10 +599,20 @@ async def grade_subjective_answer(
         {
             "subjective_graded": graded_count,
             "subjective_earned": subjective_earned,
+            "subjective_pending": max(0, len(subjective_ids) - graded_count),
             "score": exam_score,
         }
     )
-    exam.meta = {**exam.meta, "report": report}
+    # 批改完成后才在该题诊断里放出标准答案；未批改前不下发，避免先看答案再作答
+    diagnoses = list(exam.meta.get("diagnoses") or [])
+    for item in diagnoses:
+        if isinstance(item, dict) and str(item.get("question_id")) == str(question_id):
+            item["score"] = question_score
+            item["graded"] = True
+            item["is_correct"] = question_score >= max_score * 0.6
+            item["correct_answer"] = question.answer
+            item["analysis"] = question.analysis
+    exam.meta = {**exam.meta, "report": report, "diagnoses": diagnoses}
     await session.flush()
     return ExamSubjectiveGrade(
         grading=grading,
@@ -587,6 +622,7 @@ async def grade_subjective_answer(
         graded_count=graded_count,
         subjective_count=len(subjective_ids),
         all_graded=all_graded,
+        step_ratio=(max_score / grading.max_score if grading.max_score > 0 else 0.0),
     )
 
 

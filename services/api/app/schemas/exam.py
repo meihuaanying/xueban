@@ -48,10 +48,14 @@ class ExamCreateResponse(BaseModel):
 
 
 class ExamAnswerItem(BaseModel):
-    """一道作答。"""
+    """一道作答。
+
+    上限按解答题批改接口（8000）对齐：解答题是步骤文字，500 字会在交卷时
+    整卷 422；客观题的实际输入远小于此，不做题型区分。
+    """
 
     question_id: uuid.UUID
-    answer: str = Field(min_length=1, max_length=500)
+    answer: str = Field(min_length=1, max_length=8000)
 
 
 class ExamSubmitRequest(BaseModel):
@@ -61,10 +65,14 @@ class ExamSubmitRequest(BaseModel):
 
 
 class ExamSubjectiveGradeRequest(BaseModel):
-    """解答题批改请求（蓝图模考）。"""
+    """解答题批改请求（蓝图模考）。
+
+    批改以交卷时落库的作答为准；`student_answer` 仅在未作答时兜底，
+    防止交卷后看到标准答案再改答案刷分。
+    """
 
     question_id: uuid.UUID
-    student_answer: str = Field(min_length=1, max_length=8000)
+    student_answer: str | None = Field(default=None, max_length=8000)
 
 
 class ExamSubjectiveStepOut(BaseModel):
@@ -103,6 +111,9 @@ class ExamDiagnosisOut(BaseModel):
     correct_answer: str
     analysis: str | None = None
     subjective: bool = False
+    # 解答题批改后才有：该题卷面得分与是否已批
+    score: float | None = None
+    graded: bool = False
 
 
 class ExamReportResponse(BaseModel):

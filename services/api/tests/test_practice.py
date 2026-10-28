@@ -290,3 +290,47 @@ async def test_practice_requires_auth(client: AsyncClient) -> None:
             "/v1/practice/answer", json={"question_id": str(uuid.uuid4()), "answer": "1"}
         )
     ).status_code == 401
+
+
+async def test_generate_excludes_subjective_questions(
+    client: AsyncClient, sessionmaker: async_sessionmaker[AsyncSession]
+) -> None:
+    """诊断/练习只出自判客观题：解答题按字符串比对会把正确解答判错。"""
+    async with sessionmaker() as session:
+        kp = KnowledgePoint(
+            code="math.test.subjective",
+            name="解答题点",
+            subject="math",
+            stage="junior",
+            sort_order=1,
+        )
+        session.add(kp)
+        await session.flush()
+        question = Question(
+            subject="math",
+            stage="junior",
+            qtype=QuestionType.SHORT_ANSWER,
+            stem="证明：1 + 1 = 2。",
+            answer="由皮亚诺公理可得。",
+            analysis="略。",
+            difficulty=2,
+            status=QuestionStatus.PUBLISHED,
+        )
+        session.add(question)
+        await session.flush()
+        session.add(
+            QuestionKnowledgePoint(question_id=question.id, knowledge_point_id=kp.id)
+        )
+        await session.commit()
+        kp_id = kp.id
+
+    payload = await register(client)
+    response = await client.post(
+        "/v1/practice/generate",
+        json={"subject": "math", "count": 3, "knowledge_point_ids": [str(kp_id)]},
+        headers=headers_of(payload),
+    )
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["count"] == 0, "题库里只有解答题时不能出练习"
+    assert body["questions"] == []

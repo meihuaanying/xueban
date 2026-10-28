@@ -57,6 +57,10 @@ def _report_response(report: exam_service.ExamReport) -> ExamReportResponse:
                 correct_answer=str(item["correct_answer"]),
                 analysis=item.get("analysis"),
                 subjective=bool(item.get("subjective")),
+                score=(
+                    None if item.get("score") is None else float(str(item["score"]))
+                ),
+                graded=bool(item.get("graded")),
             )
             for item in report.diagnoses
             if isinstance(item, dict)
@@ -163,7 +167,9 @@ async def grade_exam_subjective(
         steps=[
             ExamSubjectiveStepOut(
                 step=item.step,
-                score=item.score,
+                # 步骤分从 judge 的 100 制折算到该题卷面分值，避免 13 分题
+                # 上面同时出现「得 10.4/13」和「某步骤 40 分」两套分制
+                score=round(item.score * result.step_ratio, 1),
                 comment=item.comment,
                 lost_points=item.lost_points,
             )

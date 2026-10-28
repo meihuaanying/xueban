@@ -39,6 +39,17 @@ MIN_DIFFICULTY = 1
 MAX_DIFFICULTY = 5
 INITIAL_DIFFICULTY = 3
 
+# 诊断只出自判客观题：short_answer/essay/programming/oral 没有确定性判分，
+# 混进来会把正确解答按字符串比较判错，污染掌握度与错题本。
+OBJECTIVE_QTYPES = (
+    QuestionType.CHOICE,
+    QuestionType.MULTI_CHOICE,
+    QuestionType.FILL,
+    QuestionType.JUDGE,
+    QuestionType.MATCH,
+    QuestionType.PICK_HANZI,
+)
+
 
 @dataclass(slots=True)
 class QuestionCandidate:
@@ -216,6 +227,7 @@ async def _build_candidates(
                 Question.subject == subject,
                 Question.stage == stage,
                 Question.status == QuestionStatus.PUBLISHED,
+                Question.qtype.in_(OBJECTIVE_QTYPES),
             )
         )
     ).all()

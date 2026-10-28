@@ -28,7 +28,7 @@ from app.models import (
     User,
 )
 from app.services import fsrs_service, mastery_service
-from app.services.diagnosis_service import check_answer
+from app.services.diagnosis_service import OBJECTIVE_QTYPES, check_answer
 
 UP_THRESHOLD = 0.85
 DOWN_THRESHOLD = 0.5
@@ -154,6 +154,7 @@ async def _pick_questions(
             Question.subject == subject,
             Question.status == QuestionStatus.PUBLISHED,
             QuestionKnowledgePoint.knowledge_point_id.in_(kp_ids),
+            Question.qtype.in_(OBJECTIVE_QTYPES),
         )
         .order_by(distance, Question.created_at)
     )
