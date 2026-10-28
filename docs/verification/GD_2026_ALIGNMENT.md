@@ -198,7 +198,8 @@
 | 多选题题型（19 题结构的 3 道多选） | ✅ 端到端 | 枚举+迁移（op.f() 防约束名二次展开）、命题动态追加（senior+math）、验证规则（≥2 字母/字母序/在选项内）、判分按字母集合、桌面端多选卡（不足两项禁用确认）；队列含「高中数学多选补齐」段（target=33） |
 | 新高考数学 19 题专项模考 | ✅ 组卷、作答与批改闭环 | `POST /v1/exams/blueprint` 按蓝图抽样 8 单选 + 3 多选 + 3 填空 + 5 解答（`create_blueprint_exam`），客观题按结构分项累计（73/150），解答题标记 `subjective` 并转入待批改、整卷总分在主观题批改前保持未定；`POST /v1/exams/{id}/subjective-grade` 逐题批改按蓝图分值（13/15/15/17/17）折算，全部批完回写整卷总分；桌面端 `/journey/mock-exam` 提供开场说明、限时作答（倒计时/题号导航/多选）、交卷报告与解答题逐题批改；`tests/test_exam_blueprint.py` 与 `use-mock-exam.test.ts` 覆盖组卷、判分、批改与总分回写 |
 | AI 生成内容显式标识 | ✅ | `ExplainerFrame` 常驻「AI 生成讲解 · 仅供学习参考」标识（《生成合成内容标识办法》）。前端测试覆盖 |
-| 高中选考科目题库 | ⬜ 未生成 | 课程树就绪；需按配额窗口运行 `run_content_pipeline.py`（见 RB_P3 §3） |
+| 高中选考科目题库 | 🔄 进行中 | 课程树就绪；`run_content_queue.py` 已跑完高中数学/语文/英语，高中物理进行中（实测 PUBLISHED：语文 1513、英语 1645、物理 748）。配额窗口耗尽自动断点，`--resume` 续跑（见 DEPLOY §6.3） |
+| 19 题所需多选/解答题题库 | 🔄 专项补齐中 | 修复「数学非数值答案被 SymPy 误拒」与「short_answer 不在生成白名单」两个缺口后，`backfill_qtypes.py --qtype multi_choice --target 3` 与 `--qtype short_answer --target 2` 按题型补高中数学；幂等可续跑。补满前蓝图组卷会 409 |
 | 英语听说考试训练/模考 | ⬜ 未实现 | 现有口语评测（Azure）可复用；尚无广东听说 20 分考试形态 |
 | 生成式 AI 备案 / 教育 APP 备案 / 等保 | ⬜ 人工办理 | 属主体资质事项，见 `docs/COMPLIANCE.md` |
 

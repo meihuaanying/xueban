@@ -163,6 +163,19 @@ cd services/api && .venv/Scripts/python scripts/run_content_pipeline.py --subjec
   `--grades grade1,grade2`、`--target` 取 `CONTENT_MIN_PER_POINT`（默认 30）、
   `--interval` 默认 1.5 秒。Linux/macOS 把 `.venv/Scripts/python` 换成
   `.venv/bin/python`。
+- **全学段队列**（推荐）：`scripts/run_content_queue.py --resume`。按「高中语数英 →
+  选考六科 → 初中九科 → 小学」分段，每段完成写断点；配额窗口耗尽退出码 2，
+  窗口恢复后同一命令继续。
+- **按题型专项补题**（19 题模考必需）：普通队列按知识点总题量推进，
+  choice/fill 先达标后整点会被跳过，多选/解答题不会自然补出来。用专项脚本：
+
+  ```bash
+  cd services/api
+  .venv/Scripts/python scripts/backfill_qtypes.py --qtype multi_choice --target 3
+  .venv/Scripts/python scripts/backfill_qtypes.py --qtype short_answer --target 2
+  ```
+
+  只按目标题型计数、生成与入库；幂等，重跑自动跳过已达标知识点。
 - **断点续跑**：以知识点为粒度。只统计 `PUBLISHED` 且 `stage` 与目标年级一致的题，
   达到 `--target` 即跳过；已有题同时作为判重种子，重跑不会重复生成。
 - **限额提前中止**：连续 2 个知识点都因 `LLM_RATE_LIMITED` 失败时立即停止，
@@ -174,10 +187,13 @@ cd services/api && .venv/Scripts/python scripts/run_content_pipeline.py --subjec
 ### 6.4 判题批量化
 
 - `CONTENT_JUDGE_BATCH_SIZE`（默认 5）：非数学题先过规则通道，通过后按该批大小
-  送 LLM judge；数学题只走规则 + SymPy，不进 judge。
+  送 LLM judge；数学**客观题**只走规则 + SymPy，不进 judge。数学多选题（答案为
+  `AC`）与解答题（答案为步骤文字）不是数值表达式，规则不做 SymPy 对拍，改走
+  judge——否则这两类题会被 100% 误拒。
 - 批量返回的题号集合必须严格等于 `{1..N}`。缺项、多余或 0 基错位会**整批作废**，
-  该批每道题回退单题 judge，绝不默认放行。调小该值可降低整批作废概率，代价是
-  judge 调用数上升（配额窗口下更费额度）。
+  该批每道题回退单题 judge，绝不默认放行。解析器容忍 ```json 包裹、前后废话与
+  裸数组（`[{...}]`）；仍然失配时日志会带原始输出前 160 字便于定位。调小该值可
+  降低整批作废概率，代价是 judge 调用数上升（配额窗口下更费额度）。
 
 ### 6.5 部署栈同步（xuebanprod）
 
