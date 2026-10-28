@@ -590,10 +590,10 @@ class QuestionVerifier:
             messages,
             model=self._settings.content_judge_model,
             temperature=0.1,
-            max_tokens=min(
-                self._settings.content_max_tokens,
-                self._settings.content_tokens_per_question * len(questions) * 2,
-            ),
+            # judge 是推理模型，reasoning 会吃掉大量 token；按题量算的预算
+            # 经常在 JSON 收尾前截断，导致整批解析失败、5 倍单题回退。
+            # 直接用完整输出预算，实际消耗仍由回答长度决定。
+            max_tokens=self._settings.content_max_tokens,
             name=f"content.judge.batch.{point.subject}",
         )
         parsed = _parse_judge_batch(result.content)
