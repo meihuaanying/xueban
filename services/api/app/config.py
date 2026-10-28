@@ -150,6 +150,13 @@ class Settings(BaseSettings):
     micro_lesson_max_chars: int = 1000
     library_upload_max_bytes: int = 20 * 1024 * 1024
 
+    # ----- Manim 视频（P3 §5.3，离线预生成） -----
+    # 独立解释器（默认 .venv-manim），不要把 manim 装进 API venv
+    manim_python: str = ""
+    # 画质：l=480p / m=720p / h=1080p / k=4k
+    manim_quality: str = "l"
+    manim_timeout_seconds: float = 300.0
+
     # ----- Embedding / Rerank（RAG） -----
     # mock：本地词面哈希向量（离线开发）；siliconflow：真实 bge-m3 / bge-reranker-v2-m3
     embedding_provider: str = "mock"

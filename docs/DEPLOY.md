@@ -7,7 +7,7 @@
 
 | 项 | 最低 | 推荐 | 说明 |
 | --- | --- | --- | --- |
-| CPU | 4 vCPU | **16 vCPU 专用核** | API 为 CPU 密集（详见 §9 性能）；压测目标 p95≤300ms@200 并发需 ≥16 核（B-017） |
+| CPU | 4 vCPU | **16 vCPU 专用核** | API 为 CPU 密集（详见 §10 性能）；压测目标 p95≤300ms@200 并发需 ≥16 核（B-017） |
 | 内存 | 8 GB | 16 GB | postgres/litellm/clickhouse（若自建 Langfuse）合计 |
 | 磁盘 | 40 GB SSD | 100 GB SSD | 数据库 + MinIO 附件 + 日志轮转 |
 | 系统 | Ubuntu 22.04+/Debian 12+ | Ubuntu 24.04 LTS | 任何支持 Docker 的 Linux |
@@ -221,7 +221,38 @@ COMPOSE_PROJECT_NAME=xuebanprod docker compose --env-file .env -f infra/docker/d
 > COMPOSE_PROJECT_NAME=xuebanprod docker compose --env-file .env -f infra/docker/docker-compose.prod.yml run --rm -e LITELLM_BASE_URL=https://opencode.ai/zen/go/v1 api python scripts/run_content_pipeline.py --subjects math --grades grade10,grade11,grade12 --target 30 --interval 1.0
 > ```
 
-## 7. 架构速览
+## 7. Manim 视频渲染环境（P3 §5.3，离线预生成）
+
+Manim 只用于**离线预生成**讲解视频，不进 API/worker 生产镜像；在构建机或运维机上安装：
+
+```powershell
+# 1) Manim 专用 venv（不要装进 API venv，numpy/scipy 版本会打架）
+cd services/api
+.venv/Scripts/python -m venv .venv-manim
+./.venv-manim/Scripts/python -m pip install --no-cache-dir manim
+
+# 2) LaTeX（Windows 推荐 MiKTeX，含 dvisvgm）
+winget install --id MiKTeX.MiKTeX -e --silent
+miktex packages install preview standalone amsmath amsfonts dvisvgm
+
+# 3) ffmpeg（Manim 合成视频需要）
+winget install Gyan.FFmpeg
+
+# 4) 自检：检查 Manim/LaTeX/ffmpeg 并真实渲染 Text + MathTex
+.venv/Scripts/python scripts/check_manim.py
+```
+
+- 实测版本：Manim Community 0.22.1、MiKTeX 25.12、ffmpeg 9.0.2、Python 3.12。
+- `MANIM_PYTHON` 可覆盖解释器路径；留空时自检脚本依次找
+  `.venv-manim/Scripts/python.exe`、`.venv/Scripts/python.exe`。
+- MiKTeX 默认安装目录不在当前 shell 的 PATH 时，自检脚本会自动拼接
+  `%LOCALAPPDATA%\Programs\MiKTeX\miktex\bin\x64`；生产/CI 建议把该目录加进 PATH。
+- 缺少 LaTeX 宏包时：`miktex packages install <包名>`；报错日志在渲染目录的
+  `media/Tex/*.log`。
+- 中文 `Text` 使用系统字体（自检用 Microsoft YaHei）；Linux 构建机需安装
+  `fonts-noto-cjk`，否则中文会变成方框。
+
+## 8. 架构速览
 
 ```
 Internet ──▶ Caddy :80/:443 ──┬── /v1/* /healthz /docs  ──▶ api:8000（2 副本 × API_WORKERS，轮询）
@@ -231,7 +262,7 @@ worker ──▶ arq app.worker.WorkerSettings（03:00 规划重排 / 周日 22:
 数据卷：postgres-data / redis-data / minio-data / caddy-data / caddy-config
 ```
 
-## 8. 常见故障排查
+## 9. 常见故障排查
 
 | 现象 | 排查 | 处理 |
 | --- | --- | --- |
@@ -239,18 +270,18 @@ worker ──▶ arq app.worker.WorkerSettings（03:00 规划重排 / 周日 22:
 | 页面 503 `no upstreams available` | `docker compose ps` 看 api 是否 healthy；`logs api` | 冷启动约 15s 内属正常；持续则查 api 日志（多为 DATABASE_URL/JWT_SECRET 缺失） |
 | api 反复重启 | `logs api` 中 `pydantic_settings` 报错 | 对照 §3.1 必填项补齐 `.env` |
 | 迁移失败 | `logs postgres`；`alembic current` | 检查 `POSTGRES_PASSWORD` 是否与卷中初始化密码一致（改密需重建数据卷或改库内密码） |
-| 讲解请求报模型错误 | `logs litellm`；确认 `DEEPSEEK_API_KEY` 与 `LITELLM_MASTER_KEY` | Key 无效时先在 `.env` 设 `LLM_PROVIDER=mock` 维持可用，再更换 Key |
+| 讲解请求报模型错误 | `logs litellm`；确认 `DEEPSEEK_API_KEY` 与 `LITELLM_MASTER_KEY` | 更换有效 Key；**生产环境不能设 `LLM_PROVIDER=mock`**（启动校验会拒绝），只能在开发/验收环境使用 |
 | 附件上传 403/超时 | 确认 `MINIO_HOST` 已备案解析且 Caddy 有对应站点块；MinIO 桶由 `minio-init` 创建 | 修 DNS/证书后重试；桶缺失可重跑 `docker compose up minio-init` |
 | 磁盘占用增长 | `docker system df`；日志已按 20MB×5 轮转 | 清理旧镜像 `docker image prune -f`；备份文件保留策略见 OPS.md |
 | 压测 p95 不达标 | 对照 B-017；`docker stats` 观察 api CPU | 提升 `API_WORKERS`/服务器规格；用 `infra/k6/core_api.js` 复测 |
 
-## 9. 性能与容量（实测基线）
+## 10. 性能与容量（实测基线）
 
 - 单进程 uvicorn（Linux 容器）约 250 rps；8~16 进程约 620~905 rps（本机 16 逻辑核共享环境实测，错误率 0.00%）。
 - 生产建议：≥16 专用 vCPU 时按 `API_WORKERS=4`、`DB_MAX_CONNECTIONS=200` 起步，用 k6 复测后再调。
 - 完整压测方法：`infra/k6/core_api.js`（200 VU × 5 分钟）；LLM 流式首 token：`infra/k6/llm_stream.js`。
 
-## 10. 安全基线
+## 11. 安全基线
 
 - 仅 80/443 暴露；数据库/Redis/MinIO API 不映射宿主端口。
 - Caddy 统一注入安全头；ZAP baseline 0 High（见 `docs/verification/M10_2026-09-16_zap-baseline.md`）。
