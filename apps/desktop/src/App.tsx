@@ -10,6 +10,7 @@ import { AuthProvider, useAuth } from "@/lib/auth";
 import DiagnosisStagePage from "@/routes/journey/diagnosis";
 import LoginPage from "@/routes/login";
 import MistakesStagePage from "@/routes/journey/mistakes";
+import MockExamPage from "@/routes/journey/mock-exam";
 import OnboardingPage from "@/routes/onboarding";
 import PlanStagePage from "@/routes/journey/plan";
 import ReviewStagePage from "@/routes/journey/review";
@@ -85,6 +86,7 @@ export default function App() {
               }
             />
           ))}
+          <Route path="mock-exam" element={<MockExamPage />} />
           <Route index element={<Navigate to={stagePath("today")} replace />} />
         </Route>
         <Route

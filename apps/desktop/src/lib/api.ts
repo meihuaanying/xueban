@@ -557,14 +557,46 @@ export interface ExamCreate {
   questions: ExamQuestion[];
 }
 
+export interface ExamDiagnosis {
+  question_id: string;
+  stem: string;
+  /** 主观题未批改时为 null */
+  is_correct: boolean | null;
+  correct_answer: string;
+  analysis: string | null;
+  subjective?: boolean;
+}
+
 export interface ExamReport {
   exam_id: string;
   kind: string;
   status: string;
   auto_submitted: boolean;
   summary: Record<string, unknown>;
-  diagnoses: Record<string, unknown>[];
+  diagnoses: ExamDiagnosis[];
   submitted_at: string | null;
+}
+
+export interface ExamSubjectiveStep {
+  step: string;
+  score: number;
+  comment: string;
+  lost_points: string;
+}
+
+export interface ExamSubjectiveGrade {
+  question_id: string;
+  score: number;
+  max_score: number;
+  /** 全部解答题批完前为 null */
+  exam_score: number | null;
+  graded_count: number;
+  subjective_count: number;
+  all_graded: boolean;
+  steps: ExamSubjectiveStep[];
+  rewrite: string;
+  summary: string;
+  machine_check: Record<string, unknown> | null;
 }
 
 export interface SyncState {
@@ -690,9 +722,14 @@ export const api = {
     time_limit_minutes?: number;
     title?: string;
   }) => post<ExamCreate>("/v1/exams", payload),
+  /** 新高考数学 19 题结构模考：8 单选 + 3 多选 + 3 填空 + 5 解答 */
+  createBlueprintExam: (blueprintId = "gaokao_2026_gd") =>
+    post<ExamCreate>("/v1/exams/blueprint", { blueprint_id: blueprintId }),
   getExam: (examId: string) => get<ExamReport>(`/v1/exams/${examId}`),
   submitExam: (examId: string, answers: { question_id: string; answer: string }[]) =>
     post<ExamReport>(`/v1/exams/${examId}/submit`, { answers }),
+  gradeExamSubjective: (examId: string, payload: { question_id: string; student_answer: string }) =>
+    post<ExamSubjectiveGrade>(`/v1/exams/${examId}/subjective-grade`, payload),
 
   // 复盘
   weeklyReport: () => get<WeeklyReport>("/v1/reports/weekly"),

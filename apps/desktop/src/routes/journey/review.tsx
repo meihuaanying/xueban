@@ -3,6 +3,7 @@
 /** 旅程第 6 站 · 复盘：本周学习报告 + 旅程收尾。 */
 import { Button, Card, CardContent, CardHeader, CardTitle, StatCard } from "@xueban/ui";
 import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { AsyncFeedback, JourneyStepper } from "@/components/journey-blocks";
 import { StageShell } from "@/components/stage-shell";
@@ -46,7 +47,8 @@ function Metric({
 }
 
 export default function ReviewStagePage() {
-  const { mark, advance } = useJourney();
+  const { band, mark, advance } = useJourney();
+  const navigate = useNavigate();
   const weekly = useWeeklyReport();
 
   const finish = useCallback(() => {
@@ -107,6 +109,27 @@ export default function ReviewStagePage() {
             </Card>
           </section>
         </AsyncFeedback>
+
+        {band === "senior" ? (
+          <Card data-testid="review-mock-exam-card">
+            <CardHeader>
+              <CardTitle className="text-app">新高考数学 19 题模考</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-xs">
+              <p className="text-app-sm text-muted-foreground">
+                按广东 2026 数学卷结构组卷：8 单选 + 3 多选 + 3 填空 + 5 解答。客观题交卷秒出分，
+                解答题逐题批改后补整卷总分。
+              </p>
+              <Button
+                variant="outline"
+                data-testid="review-mock-exam"
+                onClick={() => navigate("/journey/mock-exam")}
+              >
+                去模考
+              </Button>
+            </CardContent>
+          </Card>
+        ) : null}
 
         <Button onClick={finish} data-testid="review-finish">
           完成今天的学习
