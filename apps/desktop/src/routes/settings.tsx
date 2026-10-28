@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@xueban/ui";
 
 import {
   AboutSection,
@@ -19,6 +21,7 @@ import { useSoundPreference } from "@/journey/use-sound";
 export default function SettingsPage() {
   const { user, refreshUser } = useAuth();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [reviewNotify, setReviewNotify] = useState(true);
   const [taskNotify, setTaskNotify] = useState(true);
@@ -83,6 +86,18 @@ export default function SettingsPage() {
       />
 
       <SoundSection enabled={sound.enabled} onChange={sound.setEnabled} />
+
+      <section className="flex flex-wrap items-center justify-between gap-sm">
+        <div className="flex flex-col gap-hair">
+          <h2 className="text-app-lg font-semibold">学习阶段</h2>
+          <p className="text-app-sm text-muted-foreground">
+            切换学段/年级后会按新口径重建学习路径与今日任务。
+          </p>
+        </div>
+        <Button variant="outline" data-testid="settings-change-band" onClick={() => navigate("/onboarding")}>
+          重新选择学段/年级
+        </Button>
+      </section>
 
       <AboutSection />
     </div>

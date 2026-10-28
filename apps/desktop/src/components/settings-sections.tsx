@@ -222,7 +222,6 @@ export function AboutSection({ children }: { children?: ReactNode }) {
       <CardContent className="space-y-2 text-sm text-muted-foreground">
         <p>学伴桌面端 v0.1.0（Tauri 2）</p>
         <p>守护型 AI 讲解：不直接给答案，分层提示陪你独立做得对。</p>
-        <p>自动更新为占位配置，正式发布渠道在 M11 接入。</p>
         {children}
       </CardContent>
     </Card>
