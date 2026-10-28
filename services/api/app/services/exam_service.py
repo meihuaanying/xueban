@@ -25,8 +25,10 @@ from app.models import (
     QuestionType,
     User,
 )
-from app.services import mastery_service
+from app.services import grading_service, mastery_service
 from app.services.diagnosis_service import check_answer
+from app.services.grading_service import SubjectiveGradingResult
+from app.services.llm_client import LlmClient
 
 DEFAULT_MOCK_MINUTES = 60
 DEFAULT_SOLO_MINUTES = 30
@@ -178,6 +180,7 @@ async def create_blueprint_exam(
     questions: list[Question] = []
     used: set[uuid.UUID] = set()
     structure_meta: list[dict[str, Any]] = []
+    subjective_scores: dict[str, float] = {}
     for part in structure:
         if not isinstance(part, dict):
             continue
@@ -192,14 +195,19 @@ async def create_blueprint_exam(
                 code="EXAM_NO_QUESTIONS",
                 status_code=409,
             )
+        part_scores = _part_scores(part, count)
         used.update(question.id for question in picked)
         questions.extend(picked)
+        if qtype is QuestionType.SHORT_ANSWER:
+            for question, score in zip(picked, part_scores, strict=False):
+                subjective_scores[question.id.hex] = score
         structure_meta.append(
             {
                 "part": part.get("part"),
                 "qtype": qtype.value,
                 "count": count,
                 "per_score": part.get("per_score"),
+                "scores": part.get("scores"),
                 "score": part.get("score"),
             }
         )
@@ -226,11 +234,26 @@ async def create_blueprint_exam(
             "blueprint_id": blueprint_id,
             "structure": structure_meta,
             "subjective_ids": subjective_ids,
+            "subjective_scores": subjective_scores,
         },
     )
     session.add(exam)
     await session.flush()
     return ExamBundle(exam=exam, questions=questions)
+
+
+def _part_scores(part: dict[str, Any], count: int) -> list[float]:
+    """题型分项分值：优先 scores 数组，其次 per_score，最后按总分均分。"""
+    raw = part.get("scores")
+    if isinstance(raw, list) and len(raw) >= count:
+        return [round(float(item), 2) for item in raw[:count]]
+    per_score = part.get("per_score")
+    if per_score:
+        return [round(float(per_score), 2)] * count
+    total = part.get("score")
+    if total:
+        return [round(float(total) / count, 2)] * count
+    return [0.0] * count
 
 
 async def _finalize(
@@ -374,6 +397,13 @@ async def _finalize(
             "objective_earned": round(objective_earned, 1),
             "objective_total": round(objective_total, 1),
             "subjective_pending": subjective_pending,
+            "subjective_total": round(
+                sum(
+                    float(value)
+                    for value in (exam.meta.get("subjective_scores") or {}).values()
+                ),
+                1,
+            ),
         },
     }
 
@@ -435,6 +465,128 @@ async def get_exam_report(
     diagnoses = exam.meta.get("diagnoses") or []
     return ExamReport(
         exam=exam, summary=dict(exam.meta.get("report") or {}), diagnoses=list(diagnoses)
+    )
+
+
+@dataclass(slots=True)
+class ExamSubjectiveGrade:
+    """解答题批改结果 + 整卷总分状态。"""
+
+    grading: SubjectiveGradingResult
+    question_score: float
+    max_score: float
+    exam_score: float | None
+    graded_count: int
+    subjective_count: int
+    all_graded: bool
+
+
+def _subjective_part_total(exam: Exam, count: int) -> float:
+    """蓝图里解答题分项总分兜底：structure 中 short_answer 的 score / count。"""
+    for part in exam.meta.get("structure", []) or []:
+        if isinstance(part, dict) and part.get("qtype") == QuestionType.SHORT_ANSWER.value:
+            total = part.get("score")
+            if total and count:
+                return round(float(total) / count, 2)
+    return 0.0
+
+
+async def grade_subjective_answer(
+    session: AsyncSession,
+    *,
+    user: User,
+    exam_id: uuid.UUID,
+    question_id: uuid.UUID,
+    student_answer: str,
+    llm: LlmClient,
+    trace_id: str | None = None,
+) -> ExamSubjectiveGrade:
+    """批改蓝图模考的解答题并按题分值折算；全部批完才补整卷总分。"""
+    exam = await session.get(Exam, exam_id)
+    if exam is None:
+        raise NotFoundError("测评不存在", code="EXAM_NOT_FOUND")
+    if exam.user_id != user.id:
+        raise PermissionDeniedError("无权访问该测评")
+    if exam.status != ExamStatus.SUBMITTED:
+        raise AppError("交卷后才能批改解答题", code="EXAM_NOT_SUBMITTED", status_code=409)
+    subjective = {str(item) for item in (exam.meta.get("subjective_ids") or [])}
+    if question_id.hex not in subjective:
+        raise AppError("该题不是本卷的解答题", code="EXAM_NOT_SUBJECTIVE", status_code=422)
+    question = await session.get(Question, question_id)
+    if question is None:
+        raise NotFoundError("题目不存在", code="QUESTION_NOT_FOUND")
+    max_score = float(
+        (exam.meta.get("subjective_scores") or {}).get(question_id.hex) or 0.0
+    )
+    if max_score <= 0:
+        max_score = _subjective_part_total(exam, len(subjective))
+
+    grading = await grading_service.grade_subjective(
+        session,
+        user=user,
+        llm=llm,
+        question_id=question_id,
+        student_answer=student_answer,
+        trace_id=trace_id,
+    )
+    ratio = grading.total_score / grading.max_score if grading.max_score > 0 else 0.0
+    question_score = round(min(max(ratio, 0.0), 1.0) * max_score, 1)
+
+    answer = (
+        await session.execute(
+            select(ExamAnswer).where(
+                ExamAnswer.exam_id == exam.id,
+                ExamAnswer.question_id == question_id,
+            )
+        )
+    ).scalar_one_or_none()
+    if answer is None:
+        answer = ExamAnswer(
+            exam_id=exam.id,
+            question_id=question_id,
+            user_answer={"answer": student_answer},
+            is_correct=None,
+        )
+        session.add(answer)
+    else:
+        answer.user_answer = {"answer": student_answer}
+    answer.score = question_score
+    await session.flush()
+
+    subjective_ids = [uuid.UUID(hex=item) for item in subjective]
+    rows = (
+        await session.execute(
+            select(ExamAnswer.question_id, ExamAnswer.score).where(
+                ExamAnswer.exam_id == exam.id,
+                ExamAnswer.question_id.in_(subjective_ids),
+            )
+        )
+    ).all()
+    graded_scores = [float(score) for _, score in rows if score is not None]
+    graded_count = len(graded_scores)
+    all_graded = bool(subjective_ids) and graded_count >= len(subjective_ids)
+    report = dict(exam.meta.get("report") or {})
+    objective_earned = float(report.get("objective_earned") or 0.0)
+    subjective_earned = round(sum(graded_scores), 1)
+    exam_score = round(objective_earned + subjective_earned, 1) if all_graded else None
+    exam.score = exam_score
+    report.update(
+        {
+            "subjective_graded": graded_count,
+            "subjective_earned": subjective_earned,
+            "score": exam_score,
+        }
+    )
+    exam.meta = {**exam.meta, "report": report}
+    await session.flush()
+    return ExamSubjectiveGrade(
+        grading=grading,
+        question_score=question_score,
+        max_score=max_score,
+        exam_score=exam_score,
+        graded_count=graded_count,
+        subjective_count=len(subjective_ids),
+        all_graded=all_graded,
     )
 
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import uuid
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_session, require_not_locked
@@ -16,6 +16,9 @@ from app.schemas.exam import (
     ExamDiagnosisOut,
     ExamQuestionOut,
     ExamReportResponse,
+    ExamSubjectiveGradeRequest,
+    ExamSubjectiveGradeResponse,
+    ExamSubjectiveStepOut,
     ExamSubmitRequest,
 )
 from app.services import diagnosis_service, exam_service
@@ -122,6 +125,53 @@ async def create_blueprint_exam(
         time_limit_minutes=bundle.exam.time_limit_minutes,
         deadline=deadline,
         questions=questions,
+    )
+    await session.commit()
+    return response
+
+
+@router.post(
+    "/v1/exams/{exam_id}/subjective-grade",
+    response_model=ExamSubjectiveGradeResponse,
+    summary="批改蓝图模考的解答题（按题分值折算，全批完补整卷总分）",
+)
+async def grade_exam_subjective(
+    exam_id: uuid.UUID,
+    payload: ExamSubjectiveGradeRequest,
+    request: Request,
+    user: User = Depends(require_not_locked),
+    session: AsyncSession = Depends(get_session),
+) -> ExamSubjectiveGradeResponse:
+    """解答题交卷后逐题批改；未全部批完时 exam_score 保持 None。"""
+    result = await exam_service.grade_subjective_answer(
+        session,
+        user=user,
+        exam_id=exam_id,
+        question_id=payload.question_id,
+        student_answer=payload.student_answer,
+        llm=request.app.state.llm,
+        trace_id=getattr(request.state, "trace_id", None),
+    )
+    response = ExamSubjectiveGradeResponse(
+        question_id=payload.question_id,
+        score=result.question_score,
+        max_score=result.max_score,
+        exam_score=result.exam_score,
+        graded_count=result.graded_count,
+        subjective_count=result.subjective_count,
+        all_graded=result.all_graded,
+        steps=[
+            ExamSubjectiveStepOut(
+                step=item.step,
+                score=item.score,
+                comment=item.comment,
+                lost_points=item.lost_points,
+            )
+            for item in result.grading.steps
+        ],
+        rewrite=result.grading.rewrite,
+        summary=result.grading.summary,
+        machine_check=result.grading.machine_check,
     )
     await session.commit()
     return response

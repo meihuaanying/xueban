@@ -60,6 +60,39 @@ class ExamSubmitRequest(BaseModel):
     answers: list[ExamAnswerItem] = Field(default_factory=list)
 
 
+class ExamSubjectiveGradeRequest(BaseModel):
+    """解答题批改请求（蓝图模考）。"""
+
+    question_id: uuid.UUID
+    student_answer: str = Field(min_length=1, max_length=8000)
+
+
+class ExamSubjectiveStepOut(BaseModel):
+    """解答题逐步得分。"""
+
+    step: str
+    score: float
+    comment: str = ""
+    lost_points: str = ""
+
+
+class ExamSubjectiveGradeResponse(BaseModel):
+    """解答题批改结果 + 整卷总分状态。"""
+
+    question_id: uuid.UUID
+    score: float
+    max_score: float
+    # 全部解答题批完前保持 None（客观分不冒充整卷分）
+    exam_score: float | None
+    graded_count: int
+    subjective_count: int
+    all_graded: bool
+    steps: list[ExamSubjectiveStepOut] = Field(default_factory=list)
+    rewrite: str = ""
+    summary: str = ""
+    machine_check: dict[str, object] | None = None
+
+
 class ExamDiagnosisOut(BaseModel):
     """逐题诊断。"""
 

@@ -7,14 +7,19 @@
 
 from __future__ import annotations
 
+import json
 import uuid
 from collections import Counter
 
+import httpx
 from httpx import AsyncClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from app.config import Settings
 from app.models import Question, QuestionKnowledgePoint, QuestionStatus, QuestionType
+from app.services.llm_client import LlmClient
+from app.services.observability import ObservabilityService
 from tests.helpers import headers_of, register
 
 
@@ -152,3 +157,114 @@ async def test_blueprint_exam_unknown_blueprint_404(
     )
     assert response.status_code == 404
     assert response.json()["code"] == "EXAM_BLUEPRINT_NOT_FOUND"
+
+
+_GRADE_JSON = json.dumps(
+    {
+        "total_score": 80,
+        "max_score": 100,
+        "steps": [
+            {"step": "建立坐标系", "score": 40, "comment": "思路正确", "lost_points": ""},
+            {"step": "计算结论", "score": 40, "comment": "结果正确", "lost_points": "书写"},
+        ],
+        "rewrite": "规范写法略。",
+        "summary": "整体掌握良好。",
+    },
+    ensure_ascii=False,
+)
+
+
+def _install_llm(app: object, content: str) -> None:
+    settings = Settings(
+        litellm_base_url="http://llm.test",
+        litellm_master_key="sk-test",
+        llm_max_retries=0,
+        llm_retry_backoff_seconds=0.0,
+    )
+    observability = ObservabilityService(settings)
+    app.state.llm = LlmClient(  # type: ignore[attr-defined]
+        settings, observability, transport=httpx.MockTransport(_handler(content))
+    )
+
+
+def _handler(content: str):  # type: ignore[no-untyped-def]
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "model": "test-model",
+                "choices": [{"message": {"role": "assistant", "content": content}}],
+                "usage": {"total_tokens": 88},
+            },
+        )
+
+    return handler
+
+
+async def test_blueprint_subjective_grading_reaches_total(
+    client: AsyncClient,
+    app: object,
+    sessionmaker: async_sessionmaker[AsyncSession],
+) -> None:
+    """五道解答题逐题批改：每题按蓝图分值折算，全部批完才补整卷总分。"""
+    await _seed_senior_bank(
+        sessionmaker,
+        counts={
+            QuestionType.CHOICE: 9,
+            QuestionType.MULTI_CHOICE: 4,
+            QuestionType.FILL: 4,
+            QuestionType.SHORT_ANSWER: 6,
+        },
+    )
+    _install_llm(app, _GRADE_JSON)
+    payload = await register(client)
+    headers = headers_of(payload)
+
+    created = await client.post("/v1/exams/blueprint", json={}, headers=headers)
+    assert created.status_code == 201, created.text
+    body = created.json()
+    exam_id = body["exam_id"]
+    subjective = [item for item in body["questions"] if item["qtype"] == "short_answer"]
+    assert len(subjective) == 5
+
+    answers: list[dict[str, str]] = []
+    async with sessionmaker() as session:
+        for item in body["questions"]:
+            row = await session.get(Question, uuid.UUID(item["id"]))
+            assert row is not None
+            if row.qtype is not QuestionType.SHORT_ANSWER:
+                answers.append({"question_id": row.id.hex, "answer": row.answer})
+    answers.extend(
+        {"question_id": item["id"], "answer": f"解答过程 {index}"}
+        for index, item in enumerate(subjective)
+    )
+    submitted = await client.post(
+        f"/v1/exams/{exam_id}/submit", json={"answers": answers}, headers=headers
+    )
+    assert submitted.status_code == 200, submitted.text
+    summary = submitted.json()["summary"]
+    assert summary["score"] is None
+    assert summary["subjective_total"] == 77.0
+
+    results: list[dict[str, object]] = []
+    for index, item in enumerate(subjective):
+        graded = await client.post(
+            f"/v1/exams/{exam_id}/subjective-grade",
+            json={"question_id": item["id"], "student_answer": f"解答过程 {index}"},
+            headers=headers,
+        )
+        assert graded.status_code == 200, graded.text
+        results.append(graded.json())
+
+    # 蓝图解答题分值 13/15/15/17/17，按 80/100 折算 → 10.4/12/12/13.6/13.6
+    assert results[0]["score"] == 10.4
+    assert results[-1]["score"] == 13.6
+    assert [item["all_graded"] for item in results] == [False, False, False, False, True]
+    assert results[-1]["exam_score"] == 134.6
+
+    report = await client.get(f"/v1/exams/{exam_id}", headers=headers)
+    assert report.status_code == 200, report.text
+    final = report.json()["summary"]
+    assert final["score"] == 134.6
+    assert final["subjective_graded"] == 5
+    assert final["subjective_earned"] == 61.6
