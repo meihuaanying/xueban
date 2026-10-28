@@ -127,7 +127,7 @@ export async function signInWithProgress(
 export async function answerQuestionCard(
   page: Page,
   options: { fillText?: string; required?: boolean } = {},
-): Promise<"option" | "fill" | "none"> {
+): Promise<"option" | "multi" | "fill" | "none"> {
   const { fillText = "17", required = true } = options;
   const option = page.locator('[data-testid^="option-"]').first();
   const fillInput = page.getByTestId("fill-input");
@@ -136,17 +136,23 @@ export async function answerQuestionCard(
   // 而不是等外层容器（unit-question / diagnosis-progress 只是外壳）。
   // 这里用 evaluate 做原子判定：locator 的 count()/isEnabled() 都带自动等待，
   // 题目切换时旧控件已卸载、新控件尚未挂载，会一直挂到测试级超时（flaky 根因）。
-  const detect = async (): Promise<"option" | "fill" | "none"> =>
+  const detect = async (): Promise<"option" | "multi" | "fill" | "none"> =>
     page.evaluate(() => {
-      const option = document.querySelector<HTMLButtonElement>('[data-testid^="option-"]');
-      if (option && !option.disabled) return "option";
+      const multi = document.querySelector<HTMLButtonElement>('[data-testid="multi-submit"]');
+      const firstOption = document.querySelector<HTMLButtonElement>(
+        '[data-testid^="option-"]',
+      );
+      // 多选题的确认按钮在不足两项时禁用，不能拿 enabled 当判据；
+      // 只要卡片是多选形态且选项可点，就交给多选作答分支。
+      if (multi && firstOption && !firstOption.disabled) return "multi";
+      if (firstOption && !firstOption.disabled) return "option";
       const fill = document.querySelector<HTMLInputElement>('[data-testid="fill-input"]');
       if (fill && !fill.disabled) return "fill";
       return "none";
     });
 
   const deadline = Date.now() + 20_000;
-  let ready: "option" | "fill" | "none" = "none";
+  let ready: "option" | "multi" | "fill" | "none" = "none";
   while (ready === "none" && Date.now() < deadline) {
     ready = await detect();
     if (ready === "none") await page.waitForTimeout(100);
@@ -157,6 +163,17 @@ export async function answerQuestionCard(
       throw new Error("题卡应提供选项或填空输入（20 秒内未出现可作答控件）");
     }
     return "none";
+  }
+
+  if (ready === "multi") {
+    // 多选卡：至少勾两项才允许确认（与 QuestionCard 的红线一致）
+    const choices = page.locator('[data-testid^="option-"]');
+    await choices.nth(0).click();
+    await choices.nth(1).click();
+    const submitMulti = page.getByTestId("multi-submit");
+    await expect(submitMulti).toBeEnabled({ timeout: 20_000 });
+    await submitMulti.click();
+    return "multi";
   }
 
   if (ready === "option") {

@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 import {
   answerQuestionCard,
   apiGet,
+  SEEDED_BAND,
   seedJourneyData,
   signInAsLearner,
   signInWithProgress,
@@ -128,6 +129,9 @@ test.describe("妹妹旅程 · 一年级全流程（儿童模式）", () => {
       page,
       request,
       { stage: "mistakes", hasProfile: true, diagnosisDone: true },
+      // 题库实况：primary 段暂无 PUBLISHED 题，错题播种走 junior；
+      // 错题/复习已按学段收窄，登录态必须与播种学段一致才能看到数据
+      SEEDED_BAND,
     );
     const seeded = await seedJourneyData(request, account);
     expect(seeded.mistakesCollected).toBeGreaterThan(0);
@@ -148,6 +152,9 @@ test.describe("妹妹旅程 · 一年级全流程（儿童模式）", () => {
       page,
       request,
       { stage: "mistakes", hasProfile: true, diagnosisDone: true },
+      // 题库实况：primary 段暂无 PUBLISHED 题，错题播种走 junior；
+      // 错题/复习已按学段收窄，登录态必须与播种学段一致才能看到数据
+      SEEDED_BAND,
     );
     const seeded = await seedJourneyData(request, account);
     expect(seeded.mistakesCollected).toBeGreaterThan(0);
