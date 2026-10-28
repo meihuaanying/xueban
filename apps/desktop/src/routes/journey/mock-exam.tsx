@@ -51,14 +51,18 @@ export default function MockExamPage() {
           report={exam.report}
           answers={exam.answers}
           grades={exam.grades}
-          gradedCount={exam.gradedCount}
           subjectiveCount={exam.subjectiveCount}
           busy={exam.busy}
+          error={exam.error}
           onGrade={(questionId, answer) => void exam.gradeSubjective(questionId, answer)}
         />
       ) : null}
 
-      <Link to="/journey/review" className="text-app-sm text-info underline">
+      <Link
+        to="/journey/review"
+        className="text-app-sm text-info underline"
+        onClick={() => exam.discard()}
+      >
         返回复盘
       </Link>
     </section>

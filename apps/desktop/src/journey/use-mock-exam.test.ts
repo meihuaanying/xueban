@@ -1,9 +1,9 @@
-import { act, renderHook } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ApiError, api, type ExamCreate, type ExamReport, type ExamSubjectiveGrade } from "@/lib/api";
 
-import { useMockExam } from "./use-mock-exam";
+import { MOCK_EXAM_STORAGE_KEY, useMockExam } from "./use-mock-exam";
 
 vi.mock("@/lib/api", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/api")>();
@@ -102,6 +102,7 @@ function grade(examScore: number | null): ExamSubjectiveGrade {
 }
 
 beforeEach(() => {
+  window.sessionStorage.clear();
   createBlueprintExam.mockReset();
   submitExam.mockReset();
   gradeExamSubjective.mockReset();
@@ -148,7 +149,7 @@ describe("useMockExam（19 题蓝图模考）", () => {
       student_answer: "解答过程",
     });
     expect(result.current.gradedCount).toBe(1);
-    expect(result.current.grades.q2.score).toBe(10.4);
+    expect(result.current.grades.q2?.score).toBe(10.4);
   });
 
   it("组卷失败时给出可执行文案且不进入作答", async () => {
@@ -163,5 +164,62 @@ describe("useMockExam（19 题蓝图模考）", () => {
     });
     expect(result.current.phase).toBe("intro");
     expect(result.current.error).toContain("题库还在补充中");
+  });
+
+  it("刷新后恢复作答进度并按原 deadline 继续倒计时", async () => {
+    createBlueprintExam.mockResolvedValue(exam());
+    const first = renderHook(() => useMockExam());
+
+    await act(async () => {
+      await first.result.current.start();
+    });
+    act(() => {
+      first.result.current.answer("q1", "A");
+    });
+    first.unmount();
+
+    const second = renderHook(() => useMockExam());
+    expect(second.result.current.phase).toBe("running");
+    expect(second.result.current.exam?.exam_id).toBe("exam-1");
+    expect(second.result.current.answers.q1).toBe("A");
+    expect(second.result.current.remaining).toBeGreaterThan(7_000);
+  });
+
+  it("恢复 running 时 deadline 已过会自动交卷", async () => {
+    window.sessionStorage.setItem(
+      MOCK_EXAM_STORAGE_KEY,
+      JSON.stringify({
+        phase: "running",
+        exam: { ...exam(), deadline: new Date(Date.now() - 60_000).toISOString() },
+        answers: { q1: "A" },
+        report: null,
+        grades: {},
+      }),
+    );
+    submitExam.mockResolvedValue(report());
+
+    const { result } = renderHook(() => useMockExam());
+
+    await waitFor(() =>
+      expect(submitExam).toHaveBeenCalledWith("exam-1", [{ question_id: "q1", answer: "A" }]),
+    );
+    await waitFor(() => expect(result.current.phase).toBe("report"));
+    expect(result.current.report?.summary.objective_earned).toBe(5);
+  });
+
+  it("discard 清空快照，刷新不再回到旧卷", async () => {
+    createBlueprintExam.mockResolvedValue(exam());
+    const first = renderHook(() => useMockExam());
+
+    await act(async () => {
+      await first.result.current.start();
+    });
+    expect(window.sessionStorage.getItem(MOCK_EXAM_STORAGE_KEY)).not.toBeNull();
+
+    act(() => {
+      first.result.current.discard();
+    });
+    expect(window.sessionStorage.getItem(MOCK_EXAM_STORAGE_KEY)).toBeNull();
+    expect(first.result.current.phase).toBe("intro");
   });
 });

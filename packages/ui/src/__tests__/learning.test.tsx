@@ -361,6 +361,47 @@ describe("ExplainerFrame（沙箱安全）", () => {
     expect(onConfirm).toHaveBeenCalledWith("AB");
   });
 
+  it("多选题：受控 value 回显选中项（切题回来不丢答案）", () => {
+    render(
+      <QuestionCard
+        stem="下列哪些是正确的？"
+        kind="multi"
+        value="AC"
+        options={[
+          { key: "A", label: "甲" },
+          { key: "B", label: "乙" },
+          { key: "C", label: "丙" },
+        ]}
+      />,
+    );
+    expect(screen.getByTestId("option-A")).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByTestId("option-B")).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByTestId("option-C")).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("多选题：确认清空后，父组件写入的新 value 会重新同步", () => {
+    const onConfirm = vi.fn();
+    const options = [
+      { key: "A", label: "甲" },
+      { key: "B", label: "乙" },
+      { key: "C", label: "丙" },
+    ];
+    const { rerender } = render(
+      <QuestionCard stem="题" kind="multi" value="AC" options={options} onConfirm={onConfirm} />,
+    );
+    fireEvent.click(screen.getByTestId("multi-submit"));
+    expect(onConfirm).toHaveBeenCalledWith("AC");
+    expect(screen.getByTestId("option-A")).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByTestId("option-C")).toHaveAttribute("aria-pressed", "false");
+
+    rerender(
+      <QuestionCard stem="题" kind="multi" value="AB" options={options} onConfirm={onConfirm} />,
+    );
+    expect(screen.getByTestId("option-A")).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByTestId("option-B")).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByTestId("option-C")).toHaveAttribute("aria-pressed", "false");
+  });
+
   // 注意：超时路径不能在组件测试里断言。jsdom 会自动给 iframe 派发 load 事件，
   // 而 iframe onLoad 是「渲染完成」的解除武装信号，一旦挂上超时分支永远走不到。
   // 所以超时逻辑单独测 useExplainerWatchdog（见下方 describe），这里只测接线。

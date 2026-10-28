@@ -37,6 +37,19 @@ VITE_API_BASE_URL=https://<SITE> pnpm --filter @xueban/desktop build
 pnpm --filter @xueban/desktop exec tauri build --bundles nsis
 ```
 
+### 2.0 后端地址（发布必配）
+
+Vite 在 **build 期**把 `VITE_API_BASE_URL` 内联进前端产物，`tauri build` 会重新触发
+Vite 构建，因此两步都必须带同一个值；缺省值 `http://localhost:8000` 安装到用户机器
+后必然连不上。发布流水线从仓库变量读取：
+
+- 配置位置：GitHub 仓库 **Settings → Secrets and variables → Actions → Variables →
+  New repository variable**。
+- 变量名：`XUEBAN_API_BASE_URL`，值为生产 API 基址（与官网同域，如
+  `https://learn.example.com`，不要带结尾 `/`）。
+- `release.yml` 的「构建前端产物」「构建安装包」两步都会在构建前执行
+  `test -n "$VITE_API_BASE_URL"`；变量为空时直接失败，禁止产出指向 localhost 的安装包。
+
 ### 2.1 官网下载页联动
 
 下载页（`/download`）以 `NEXT_PUBLIC_RELEASE_BASE_URL` 为基地址拼接稳定文件名。使用 GitHub Release 时：

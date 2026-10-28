@@ -14,6 +14,51 @@ import {
 
 export type MockExamPhase = "intro" | "running" | "report";
 
+/** 刷新恢复用的 sessionStorage 键：只保存当前标签页的未完成考试。 */
+export const MOCK_EXAM_STORAGE_KEY = "xueban.mockExam";
+
+interface StoredMockExam {
+  phase: MockExamPhase;
+  exam: ExamCreate | null;
+  answers: Record<string, string>;
+  report: ExamReport | null;
+  grades: Record<string, ExamSubjectiveGrade>;
+}
+
+function readStored(): StoredMockExam | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.sessionStorage.getItem(MOCK_EXAM_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<StoredMockExam>;
+    if (parsed.phase !== "running" && parsed.phase !== "report") return null;
+    if (!parsed.exam || !Array.isArray(parsed.exam.questions)) return null;
+    if (parsed.phase === "report" && !parsed.report) return null;
+    return {
+      phase: parsed.phase,
+      exam: parsed.exam,
+      answers: parsed.answers ?? {},
+      report: parsed.report ?? null,
+      grades: parsed.grades ?? {},
+    };
+  } catch {
+    return null;
+  }
+}
+
+function writeStored(value: StoredMockExam | null): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (!value || value.phase === "intro") {
+      window.sessionStorage.removeItem(MOCK_EXAM_STORAGE_KEY);
+      return;
+    }
+    window.sessionStorage.setItem(MOCK_EXAM_STORAGE_KEY, JSON.stringify(value));
+  } catch {
+    // 隐私模式 / 配额不足：退回纯内存态，不阻断作答
+  }
+}
+
 function toFriendlyError(caught: unknown): string {
   if (caught instanceof ApiError && caught.code === "EXAM_NO_QUESTIONS") {
     return "题库还在补充中，这一卷暂时组不出来；先去做今日任务，稍后再试。";
@@ -29,27 +74,47 @@ function secondsLeft(deadline: string | null): number | null {
 }
 
 export function useMockExam() {
-  const [phase, setPhase] = useState<MockExamPhase>("intro");
-  const [exam, setExam] = useState<ExamCreate | null>(null);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [restored] = useState(readStored);
+  const [phase, setPhase] = useState<MockExamPhase>(restored?.phase ?? "intro");
+  const [exam, setExam] = useState<ExamCreate | null>(restored?.exam ?? null);
+  const [answers, setAnswers] = useState<Record<string, string>>(restored?.answers ?? {});
   const [index, setIndex] = useState(0);
-  const [report, setReport] = useState<ExamReport | null>(null);
-  const [grades, setGrades] = useState<Record<string, ExamSubjectiveGrade>>({});
-  const [remaining, setRemaining] = useState<number | null>(null);
+  const [report, setReport] = useState<ExamReport | null>(restored?.report ?? null);
+  const [grades, setGrades] = useState<Record<string, ExamSubjectiveGrade>>(
+    restored?.grades ?? {},
+  );
+  // 恢复 running 时按原 deadline 续算，过期直接归零并触发自动交卷
+  const [remaining, setRemaining] = useState<number | null>(() =>
+    secondsLeft(restored?.exam?.deadline ?? null),
+  );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const submittingRef = useRef(false);
 
-  const start = useCallback(async () => {
-    setBusy(true);
+  // 答卷快照随状态落盘：交卷/批改成功后的新 report/grades 也会被写入
+  useEffect(() => {
+    writeStored({ phase, exam, answers, report, grades });
+  }, [answers, exam, grades, phase, report]);
+
+  const discard = useCallback(() => {
+    writeStored(null);
+    setPhase("intro");
+    setExam(null);
+    setAnswers({});
+    setReport(null);
+    setGrades({});
+    setIndex(0);
+    setRemaining(null);
     setError(null);
+  }, []);
+
+  const start = useCallback(async () => {
+    // 开始新卷即作废旧卷快照，组卷失败也不回到上一份报告
+    discard();
+    setBusy(true);
     try {
       const created = await api.createBlueprintExam();
       setExam(created);
-      setAnswers({});
-      setGrades({});
-      setReport(null);
-      setIndex(0);
       setRemaining(secondsLeft(created.deadline));
       setPhase("running");
     } catch (caught) {
@@ -57,7 +122,7 @@ export function useMockExam() {
     } finally {
       setBusy(false);
     }
-  }, []);
+  }, [discard]);
 
   const answer = useCallback((questionId: string, value: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
@@ -147,6 +212,7 @@ export function useMockExam() {
     answer,
     submit,
     gradeSubjective,
+    discard,
     setIndex: (next: number) => {
       if (!exam) return;
       setIndex(Math.min(Math.max(next, 0), exam.questions.length - 1));

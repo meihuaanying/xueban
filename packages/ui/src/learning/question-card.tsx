@@ -24,6 +24,11 @@ export interface QuestionOption {
   label: ReactNode;
 }
 
+/** 多选题受控值（如 "AC"）拆成选项 key；空白与重复字符忽略。 */
+function splitMultiValue(value?: string): string[] {
+  return value ? Array.from(new Set(value.replace(/\s/g, "").split(""))) : [];
+}
+
 export interface QuestionCardProps extends Omit<HTMLAttributes<HTMLDivElement>, "onSelect"> {
   /** 题干（支持 KaTeX 时用 formula 字段） */
   stem: string;
@@ -89,8 +94,9 @@ export function QuestionCard({
   const [draft, setDraft] = useState("");
   useEffect(() => setDraft(""), [stem]);
   // 多选题草稿自持：逐项勾选不提交，确认时按字母序整串提交。
-  const [multiSelected, setMultiSelected] = useState<string[]>([]);
-  useEffect(() => setMultiSelected([]), [stem]);
+  // 受控 value 用于回显（切题/确认后由父组件写回），变化时覆盖本地草稿。
+  const [multiSelected, setMultiSelected] = useState<string[]>(() => splitMultiValue(value));
+  useEffect(() => setMultiSelected(splitMultiValue(value)), [stem, value]);
   // 判断题与口算题在题库里没有 options（answer 直接是「对」/「73」），
   // 所以兜底按钮由前端补，否则这两类题会掉进文本框，孩子不知道怎么答。
   const resolvedOptions =

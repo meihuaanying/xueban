@@ -35,6 +35,7 @@ test.describe("高中专项 · 19 题结构模考", () => {
     // 解答题未批改前不冒充 150 制总分
     await expect(page.getByTestId("mock-exam-pending")).toBeVisible();
     await expect(page.getByTestId("mock-exam-objective-diagnoses")).toBeVisible();
-    await expect(page.getByTestId("subjective-1")).toBeVisible();
+    // 解答题保持卷面全局题号（15~19），与作答页题号一致
+    await expect(page.getByTestId("subjective-15")).toBeVisible();
   });
 });

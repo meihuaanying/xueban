@@ -18,6 +18,7 @@ import {
 
 import { ApiError } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { postAuthPath } from "@/lib/auth-redirect";
 
 const PHONE_PATTERN = /^1[3-9]\d{9}$/;
 
@@ -60,7 +61,7 @@ export default function LoginPage() {
       } else {
         await login(phone, password);
       }
-      navigate("/diagnosis", { replace: true });
+      navigate(postAuthPath(), { replace: true });
     } catch (caught) {
       setError(caught instanceof ApiError ? caught.message : "无法连接服务器，请稍后重试。");
     } finally {
@@ -87,16 +88,8 @@ export default function LoginPage() {
           <CardContent>
             <Tabs
               tabs={[
-                {
-                  key: "login",
-                  label: "登录",
-                  content: null,
-                },
-                {
-                  key: "register",
-                  label: "注册",
-                  content: null,
-                },
+                { key: "login", label: "登录", content: null },
+                { key: "register", label: "注册", content: null },
               ]}
               defaultKey="login"
               onChange={(key) => {

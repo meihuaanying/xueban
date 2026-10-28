@@ -161,9 +161,14 @@ export function ExamRunner({
               data-testid="mock-exam-textarea"
               value={recorded ?? ""}
               rows={current.qtype === "short_answer" ? 6 : 2}
+              maxLength={8000}
+              disabled={busy}
               onChange={(event) => onAnswer(current.id, event.target.value)}
               className="w-full rounded-control border border-border-strong bg-card px-sm py-xs text-app text-foreground"
             />
+            <p className="text-app-xs text-muted-foreground" data-testid="mock-exam-char-count">
+              {(recorded ?? "").length} / 8000
+            </p>
           </CardContent>
         </Card>
       ) : (
@@ -172,7 +177,7 @@ export function ExamRunner({
           stem={current.stem}
           meta={`难度 ${current.difficulty}`}
           kind={kind}
-          value={kind === "multi" ? undefined : recorded}
+          value={recorded}
           options={
             current.options
               ? Object.entries(current.options).map(([key, label]) => ({ key, label }))
@@ -266,9 +271,14 @@ function SubjectiveGrader({
               data-testid={`subjective-input-${order}`}
               value={draft}
               rows={5}
+              maxLength={8000}
+              disabled={busy}
               onChange={(event) => setDraft(event.target.value)}
               className="w-full rounded-control border border-border-strong bg-card px-sm py-xs text-app"
             />
+            <p className="text-app-xs text-muted-foreground" data-testid={`subjective-count-${order}`}>
+              {draft.length} / 8000
+            </p>
             <Button
               data-testid={`subjective-grade-${order}`}
               disabled={busy || draft.trim().length === 0}
@@ -288,25 +298,27 @@ export function ExamReportView({
   report,
   answers,
   grades,
-  gradedCount,
   subjectiveCount,
   busy,
+  error,
   onGrade,
 }: {
   exam: ExamCreate;
   report: ExamReport;
   answers: Record<string, string>;
   grades: Record<string, ExamSubjectiveGrade>;
-  gradedCount: number;
   subjectiveCount: number;
   busy: boolean;
+  error: string | null;
   onGrade: (questionId: string, answer: string) => void;
 }) {
   const summary = report.summary;
   const objectiveEarned = asNumber(summary.objective_earned);
   const objectiveTotal = asNumber(summary.objective_total);
-  const subjectiveEarned = asNumber(summary.subjective_earned);
+  // 服务端的 subjective_earned 只在全部批完后回写，这里以逐题 grades 为准
+  const subjectiveEarned = Object.values(grades).reduce((sum, item) => sum + item.score, 0);
   const subjectiveTotal = asNumber(summary.subjective_total);
+  const gradedCount = Object.keys(grades).length;
   const finalScore =
     Object.values(grades)
       .map((item) => item.exam_score)
@@ -318,6 +330,11 @@ export function ExamReportView({
 
   return (
     <div className="flex flex-col gap-sm" data-testid="mock-exam-report">
+      {error ? (
+        <p role="alert" data-testid="mock-exam-report-error" className="text-app-sm text-danger">
+          {error}
+        </p>
+      ) : null}
       <Card>
         <CardHeader>
           <CardTitle>
@@ -348,10 +365,10 @@ export function ExamReportView({
         </CardContent>
       </Card>
 
-      {subjective.map((question, order) => (
+      {subjective.map((question) => (
         <SubjectiveGrader
           key={question.id}
-          order={order + 1}
+          order={exam.questions.indexOf(question) + 1}
           question={question}
           initial={answers[question.id] ?? ""}
           grade={grades[question.id]}
