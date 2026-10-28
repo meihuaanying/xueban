@@ -212,3 +212,29 @@ def get_settings() -> Settings:
 
 
 settings = get_settings()
+
+
+def validate_runtime(settings: Settings) -> None:
+    """生产启动校验：学生可见的生成/评测服务不允许静默走 mock。
+
+    开发与测试环境保持宽松（E2E/CI 需要确定性输出）；生产环境如果把
+    mock 当成默认值带上去，学生看到的是假讲解、假口语评分、假向量检索，
+    而且不会报错——必须在启动时终止，而不是运行时才发现。
+    """
+    if settings.environment != "production":
+        return
+    mock_fields = {
+        "LLM_PROVIDER": settings.llm_provider,
+        "SAFETY_PROVIDER": settings.safety_provider,
+        "EMBEDDING_PROVIDER": settings.embedding_provider,
+        "RERANK_PROVIDER": settings.rerank_provider,
+        "TTS_PROVIDER": settings.tts_provider,
+        "SPEAKING_PROVIDER": settings.speaking_provider,
+    }
+    mocked = [name for name, value in mock_fields.items() if value.strip().lower() == "mock"]
+    if mocked:
+        raise RuntimeError(
+            "生产环境禁止 mock 服务：" + "、".join(mocked) + "；请在 .env 配置真实供应商"
+        )
+    if settings.jwt_secret.startswith("dev-only-"):
+        raise RuntimeError("生产环境禁止使用默认 JWT 密钥，请配置 JWT_SECRET")

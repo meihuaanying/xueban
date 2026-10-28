@@ -40,7 +40,7 @@ from app.api.routes import (
     tools,
     tutor,
 )
-from app.config import settings
+from app.config import settings, validate_runtime
 from app.db import create_engine, create_sessionmaker
 from app.errors import AppError
 from app.logging_setup import setup_logging
@@ -159,6 +159,7 @@ async def lifespan(application: FastAPI) -> AsyncIterator[None]:
 
 def create_app() -> FastAPI:
     """应用工厂。"""
+    validate_runtime(settings)
     setup_logging()
     application = FastAPI(
         title="学伴 API",
