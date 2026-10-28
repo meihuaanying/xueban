@@ -7,6 +7,13 @@
 
 以「学情闭环」（诊断 → 规划 → 讲解 → 练习 → 复盘）为核心、以守护型 AI 讲解为差异化的全端学习软件：**不直接给答案，而是把学生教到「独立做得对」**。
 
+## 当前状态（2026-10-28）
+
+- **高中阶段可交付自学闭环**：语数英物四科题库均达到「每知识点 ≥30 题 PUBLISHED」；新高考数学 19 题模考支持组卷、限时作答、客观题判分与解答题逐题批改。
+- **题库持续生成中**：高中化学进行中，之后为其余选考科目 → 初中九科 → 小学；`run_content_queue.py --resume` 断点续跑。
+- **Manim 渲染环境已就绪**（`scripts/check_manim.py` 自检通过），六阶段视频生成管线待实现。
+- 完整进度快照见 [`docs/verification/PROGRESS_2026-10-28.md`](docs/verification/PROGRESS_2026-10-28.md)；广东 2026 对齐见 [`docs/verification/GD_2026_ALIGNMENT.md`](docs/verification/GD_2026_ALIGNMENT.md)；剩余阻塞见 [`docs/BLOCKERS.md`](docs/BLOCKERS.md)。
+
 ## 仓库结构
 
 ```
