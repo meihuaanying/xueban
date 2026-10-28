@@ -334,3 +334,32 @@ async def test_generate_excludes_subjective_questions(
     body = response.json()
     assert body["count"] == 0, "题库里只有解答题时不能出练习"
     assert body["questions"] == []
+
+
+async def test_answer_rejects_subjective_question(
+    client: AsyncClient, sessionmaker: async_sessionmaker[AsyncSession]
+) -> None:
+    """直接拿解答题 id 调作答接口也不能走客观判分（避免正确解答被判错）。"""
+    async with sessionmaker() as session:
+        question = Question(
+            subject="math",
+            stage="junior",
+            qtype=QuestionType.SHORT_ANSWER,
+            stem="证明：1 + 1 = 2。",
+            answer="由皮亚诺公理可得。",
+            analysis="略。",
+            difficulty=2,
+            status=QuestionStatus.PUBLISHED,
+        )
+        session.add(question)
+        await session.commit()
+        question_id = question.id
+
+    payload = await register(client)
+    response = await client.post(
+        "/v1/practice/answer",
+        json={"question_id": str(question_id), "answer": "由皮亚诺公理可得。"},
+        headers=headers_of(payload),
+    )
+    assert response.status_code == 422, response.text
+    assert response.json()["code"] == "QUESTION_NOT_OBJECTIVE"

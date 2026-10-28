@@ -15,7 +15,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import utcnow
-from app.errors import NotFoundError
+from app.errors import AppError, NotFoundError
 from app.models import (
     KnowledgePoint,
     MistakeBookEntry,
@@ -198,9 +198,11 @@ async def generate_practice(
         scope = {kp_id: name for kp_id, name in scope.items() if kp_id in grade_kp_ids}
 
     weak_ids = [point.knowledge_point_id for point in overview if point.mastery < WEAK_THRESHOLD]
+    requested_ids: list[uuid.UUID] = []
     if knowledge_point_ids:
         requested = [item for item in knowledge_point_ids if item in scope]
         weak_ids = [item for item in weak_ids if item in requested] or requested
+        requested_ids = requested
     if not weak_ids:
         weakest = [
             point.knowledge_point_id
@@ -209,7 +211,9 @@ async def generate_practice(
         ]
         weak_ids = weakest or list(scope)[: min(len(scope), 5)]
     weak_ids = [item for item in weak_ids if item in scope]
-    explore_ids = [item for item in scope if item not in set(weak_ids)]
+    # 指定知识点时（今日任务「去学习」），拓展题也必须留在该知识点内：
+    # 否则学生点进「学习：函数单调性」，5 道题里只有 3 道来自它，另外 2 道静默换点。
+    explore_ids = requested_ids or [item for item in scope if item not in set(weak_ids)]
 
     weak_target = min(count, max(1, -(-count * 3 // 5)))  # ceil(count * 0.6)
     chosen: list[PracticeQuestionItem] = []
@@ -277,6 +281,13 @@ async def answer_question(
     question = await session.get(Question, question_id)
     if question is None or question.status != QuestionStatus.PUBLISHED:
         raise NotFoundError("题目不存在", code="QUESTION_NOT_FOUND")
+    if question.qtype not in OBJECTIVE_QTYPES:
+        # 解答题/作文/口语没有确定性判分，误走这条路径会把正确解答判错并写进错题本
+        raise AppError(
+            "该题不属于客观题，请使用主观题批改",
+            code="QUESTION_NOT_OBJECTIVE",
+            status_code=422,
+        )
 
     if client_event_id:
         existing = (

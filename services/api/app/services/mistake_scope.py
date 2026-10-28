@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import utcnow
 from app.models import MistakeBookEntry, Question, ReviewCard, User
+from app.services.diagnosis_service import OBJECTIVE_QTYPES
 from app.services.mistake_book_service import MistakeEntryView
 
 
@@ -103,6 +104,7 @@ async def repractice_questions_scoped(
         .where(
             MistakeBookEntry.user_id == user.id,
             MistakeBookEntry.removed_at.is_(None),
+            Question.qtype.in_(OBJECTIVE_QTYPES),
         )
     )
     if subject:
@@ -125,6 +127,8 @@ def _due_conditions(
         ReviewCard.suspended.is_(False),
         ReviewCard.due_at.is_not(None),
         ReviewCard.due_at <= now,
+        # 主观题不进 FSRS 自动复习：没有确定性复习判分
+        Question.qtype.in_(OBJECTIVE_QTYPES),
     ]
     params: dict[str, object] = {"scope_subject": subject, "scope_stage": stage}
     if subject:

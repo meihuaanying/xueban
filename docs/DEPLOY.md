@@ -43,7 +43,13 @@ vi .env
 | `MINIO_ROOT_PASSWORD` | 随机 32 位 | 对象存储管理密码 |
 | `LITELLM_MASTER_KEY` | `sk-` 开头随机串 | LLM 网关密钥（API 与 LiteLLM 共享） |
 | `JWT_SECRET` | `openssl rand -hex 32` | 访问令牌签名密钥 |
-| `DEEPSEEK_API_KEY` | `sk-...` | 主模型（未填则 `LLM_PROVIDER=litellm` 下讲解功能不可用；可先用 `LLM_PROVIDER=mock` 离线验收） |
+| `DEEPSEEK_API_KEY` | `sk-...` | 主模型（未填则 `LLM_PROVIDER=litellm` 下讲解功能不可用） |
+
+> 生产编排固定 `ENVIRONMENT=production`，API 与 worker 启动时会校验
+> `LLM_PROVIDER` / `SAFETY_PROVIDER` / `EMBEDDING_PROVIDER` / `RERANK_PROVIDER` /
+> `TTS_PROVIDER` / `SPEAKING_PROVIDER` 必须是白名单真实供应商（分别是
+> litellm / yidun / siliconflow 或 lexical / siliconflow / azure 或 vendor / azure），
+> 任一为 mock 或未知值都会直接退出。上线前请按“内容安全与语音”章节配齐密钥。
 
 ### 3.2 常用可选项
 

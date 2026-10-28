@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user, get_session
+from app.data.curriculum import stage_for_grade
 from app.models import Plan, PlanTask, User
 from app.schemas.plan import (
     BacktrackRequest,
@@ -130,13 +131,21 @@ async def get_today(
 ) -> TodayResponse:
     """获取/生成今日任务卡与打卡状态；grade 只影响首次生成，subject 决定选科口径。"""
     grade_kp_ids = None
+    stage = None
     if grade is not None:
         grade_kp_ids = await knowledge_point_ids_for_grade(session, grade=grade)
+        stage = stage_for_grade(grade)
     plan, tasks = await planner_service.get_or_create_today(
-        session, user_id=user.id, grade_kp_ids=grade_kp_ids, subject=subject
+        session,
+        user_id=user.id,
+        grade_kp_ids=grade_kp_ids,
+        subject=subject,
+        stage=stage,
     )
     assert plan.starts_on is not None
-    status = await planner_service.daily_status(session, user_id=user.id, day=plan.starts_on)
+    status = await planner_service.daily_status(
+        session, user_id=user.id, day=plan.starts_on, plan_id=plan.id
+    )
     response = _today_response(plan, tasks, status)
     await session.commit()
     return response

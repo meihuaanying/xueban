@@ -223,18 +223,24 @@ def validate_runtime(settings: Settings) -> None:
     """
     if settings.environment != "production":
         return
-    mock_fields = {
-        "LLM_PROVIDER": settings.llm_provider,
-        "SAFETY_PROVIDER": settings.safety_provider,
-        "EMBEDDING_PROVIDER": settings.embedding_provider,
-        "RERANK_PROVIDER": settings.rerank_provider,
-        "TTS_PROVIDER": settings.tts_provider,
-        "SPEAKING_PROVIDER": settings.speaking_provider,
+    # 白名单而不是只拦字面 mock：工厂对未知值会静默回退 mock/本地词表，
+    # 拼写错误（如 SiliconFlow、空串）同样必须在这里被拦住。
+    allowed = {
+        "LLM_PROVIDER": (settings.llm_provider, {"litellm"}),
+        "SAFETY_PROVIDER": (settings.safety_provider, {"yidun"}),
+        "EMBEDDING_PROVIDER": (settings.embedding_provider, {"siliconflow", "lexical"}),
+        "RERANK_PROVIDER": (settings.rerank_provider, {"siliconflow"}),
+        "TTS_PROVIDER": (settings.tts_provider, {"azure", "vendor"}),
+        "SPEAKING_PROVIDER": (settings.speaking_provider, {"azure"}),
     }
-    mocked = [name for name, value in mock_fields.items() if value.strip().lower() == "mock"]
-    if mocked:
+    invalid = [
+        f"{name}={value!r}"
+        for name, (value, choices) in allowed.items()
+        if value.strip() not in choices
+    ]
+    if invalid:
         raise RuntimeError(
-            "生产环境禁止 mock 服务：" + "、".join(mocked) + "；请在 .env 配置真实供应商"
+            "生产环境供应商配置不合法：" + "、".join(invalid) + "；请在 .env 配置白名单值"
         )
     if settings.jwt_secret.startswith("dev-only-"):
         raise RuntimeError("生产环境禁止使用默认 JWT 密钥，请配置 JWT_SECRET")

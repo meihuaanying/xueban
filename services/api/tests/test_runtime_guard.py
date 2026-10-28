@@ -37,6 +37,14 @@ def test_production_rejects_default_jwt_secret() -> None:
         validate_runtime(settings)
 
 
+def test_production_rejects_unknown_provider_values() -> None:
+    """拼写错误/未知值在工厂里会静默回退 mock，启动校验必须拦截。"""
+    settings = _production(embedding_provider="SiliconFlow")
+    with pytest.raises(RuntimeError) as caught:
+        validate_runtime(settings)
+    assert "EMBEDDING_PROVIDER" in str(caught.value)
+
+
 def test_production_with_real_providers_passes() -> None:
     validate_runtime(_production())
 

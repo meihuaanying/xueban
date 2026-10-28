@@ -21,7 +21,7 @@ from app.models import (
     User,
 )
 from app.services import mastery_service, math_verify
-from app.services.diagnosis_service import check_answer
+from app.services.diagnosis_service import OBJECTIVE_QTYPES, check_answer
 from app.services.llm_client import LlmClient
 from app.services.llm_json import extract_json_object
 from app.services.prompts import (
@@ -130,6 +130,12 @@ async def grade_objective(
     question = await session.get(Question, question_id)
     if question is None or question.status != QuestionStatus.PUBLISHED:
         raise NotFoundError("题目不存在", code="QUESTION_NOT_FOUND")
+    if question.qtype not in OBJECTIVE_QTYPES:
+        raise LlmError(
+            "该题不属于客观题，请使用主观题批改",
+            code="QUESTION_NOT_OBJECTIVE",
+            status_code=422,
+        )
 
     is_correct = check_answer(question, user_answer)
     session.add(

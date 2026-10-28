@@ -290,6 +290,39 @@ async def test_path_api_generates_fallback_without_data(
     assert body["phases"]
 
 
+async def test_today_plan_and_status_are_per_subject(
+    client: AsyncClient, sessionmaker: async_sessionmaker[AsyncSession]
+) -> None:
+    """选科各自有今日计划；进度只统计本计划，不能跨学科聚合。"""
+    from app.services import auth_service
+
+    await _seed_basic_knowledge_points(sessionmaker)
+    payload = await register(client)
+    base = datetime(2026, 4, 1, 8, 0, tzinfo=UTC)
+    async with sessionmaker() as session:
+        user = await auth_service.get_user_by_phone(session, payload["phone"])
+        assert user is not None
+        math_plan, math_tasks = await planner_service.get_or_create_today(
+            session, user_id=user.id, subject="math", now=base
+        )
+        physics_plan, physics_tasks = await planner_service.get_or_create_today(
+            session, user_id=user.id, subject="physics", now=base
+        )
+        assert math_plan.id != physics_plan.id
+        assert math_tasks, "数学有兜底知识点，今日任务不应为空"
+        assert physics_tasks == [], "physics 无题库/无掌握度时不应串到其它学科"
+
+        math_status = await planner_service.daily_status(
+            session, user_id=user.id, day=base.date(), plan_id=math_plan.id
+        )
+        physics_status = await planner_service.daily_status(
+            session, user_id=user.id, day=base.date(), plan_id=physics_plan.id
+        )
+        assert math_status.total == len(math_tasks)
+        assert physics_status.total == len(physics_tasks) == 0
+        await session.commit()
+
+
 async def test_path_api_with_weak_point(
     client: AsyncClient, sessionmaker: async_sessionmaker[AsyncSession]
 ) -> None:

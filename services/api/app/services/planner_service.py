@@ -29,7 +29,6 @@ from app.models import (
     TaskType,
     User,
 )
-from app.services.fsrs_service import due_count
 from app.services.mastery_service import BktParams, MasteryPoint
 
 MASTERY_THRESHOLD = 0.6
@@ -315,6 +314,10 @@ async def generate_path(
         if grade_kp_ids is not None:
             # 年级模式：按 id 精确取（排序稳定），不依赖跨批次的 sort_order 窗口。
             rows = await load_points_by_ids(session, kp_ids=grade_kp_ids, limit=limit)
+            # 选科路径必须留在本学科：年级 id 集合是跨学科的，不筛会把
+            # 语文/数学知识点塞进物理路径与今日任务。
+            if subject is not None:
+                rows = [row for row in rows if row.subject == subject]
             prior = BktParams().p_init
             weak_points = [
                 PathPoint(id=row.id, name=row.name, mastery=prior) for row in rows
@@ -341,8 +344,12 @@ async def generate_path(
         )
     ).scalars()
     for plan in previous:
-        # 选科各自独立成路径：只归档同一学科（含无学科标记的历史路径）
-        if subject is None or plan.meta.get("subject") == subject:
+        # 选科各自独立成路径：只归档同学科旧路径，历史无学科标记的路径
+        # 在选科重排时一并替换，全科重排时保持不动。
+        plan_subject = plan.meta.get("subject")
+        if (subject is None and plan_subject is None) or (
+            subject is not None and plan_subject in (None, subject)
+        ):
             plan.status = "archived"
 
     plan = Plan(
@@ -393,6 +400,10 @@ async def get_or_create_path(
         )
     ).scalars().all()
     if subject is None:
+        # 未指定学科（移动端/旧调用）优先复用全科路径，避免抓到某个选科路径
+        for plan in rows:
+            if plan.meta.get("subject") is None:
+                return plan
         if rows:
             return rows[0]
     else:
@@ -456,6 +467,7 @@ async def get_or_create_today(
     now: datetime | None = None,
     grade_kp_ids: set[uuid.UUID] | None = None,
     subject: str | None = None,
+    stage: str | None = None,
 ) -> tuple[Plan, list[PlanTask]]:
     """获取/生成今日任务卡（3~5 个：学/练/复习搭配）。
 
@@ -477,15 +489,20 @@ async def get_or_create_today(
             )
         )
     ).scalars().all()
-    existing = next(
-        (
-            plan
-            for plan in rows
-            if subject is None or plan.meta.get("subject") == subject
-        ),
-        None,
+    if subject is None:
+        # 旧调用（移动端）优先复用全科计划，避免抓到某个选科的任务
+        existing = next((plan for plan in rows if plan.meta.get("subject") is None), None)
+        if existing is None and rows:
+            existing = rows[0]
+    else:
+        existing = next(
+            (plan for plan in rows if plan.meta.get("subject") == subject), None
+        )
+    from app.services import mistake_scope
+
+    review_due = await mistake_scope.due_count_scoped(
+        session, user_id=user_id, subject=subject, stage=stage, now=current
     )
-    review_due = await due_count(session, user_id=user_id, now=current)
     if existing is not None:
         tasks = await tasks_of_plan(session, existing.id)
         return existing, await _sync_review_task(
@@ -578,12 +595,24 @@ async def complete_task(
         task.status = TaskStatus.DONE
         task.completed_at = utcnow()
     await session.flush()
-    status = await daily_status(session, user_id=user.id, day=task.task_date)
+    status = await daily_status(
+        session, user_id=user.id, day=task.task_date, plan_id=task.plan_id
+    )
     return task, status
 
 
-async def daily_status(session: AsyncSession, *, user_id: uuid.UUID, day: date) -> DailyStatus:
-    """指定日期的任务完成情况与连续天数。"""
+async def daily_status(
+    session: AsyncSession,
+    *,
+    user_id: uuid.UUID,
+    day: date,
+    plan_id: uuid.UUID | None = None,
+) -> DailyStatus:
+    """指定日期的任务完成情况与连续天数。
+
+    `plan_id` 非空时只统计该计划：选科各自有每日计划，跨选科聚合会让
+    「今日进度」出现 2/8 但页面只显示 4 个任务的错位，且永远无法全部完成。
+    """
     rows = (
         await session.execute(
             select(
@@ -599,7 +628,12 @@ async def daily_status(session: AsyncSession, *, user_id: uuid.UUID, day: date) 
         row[0]: (int(row[1]), int(row[2])) for row in rows
     }
     completed_dates = {key for key, (total, done) in totals.items() if total > 0 and total == done}
-    total, done = totals.get(day, (0, 0))
+    if plan_id is not None:
+        tasks = await tasks_of_plan(session, plan_id)
+        total = len(tasks)
+        done = sum(1 for task in tasks if task.status == TaskStatus.DONE)
+    else:
+        total, done = totals.get(day, (0, 0))
     return DailyStatus(
         day=day,
         total=total,
@@ -734,15 +768,23 @@ async def check_backtrack(
 
 
 async def regenerate_all_paths(sessionmaker: async_sessionmaker[AsyncSession]) -> int:
-    """为所有有学情数据的用户重排路径（arq 定时任务调用）。"""
+    """为所有有学情数据的用户按学科重排路径（arq 定时任务调用）。
+
+    不能一次 `subject=None` 全量重排：那会把各选科路径全部归档成一条全科路径，
+    选科页面随后又各自重建，plan 行每天翻倍。
+    """
     async with sessionmaker() as session:
-        user_ids = list(
-            (await session.execute(select(MasteryRecord.user_id).distinct())).scalars()
-        )
+        pairs = (
+            await session.execute(
+                select(MasteryRecord.user_id, KnowledgePoint.subject)
+                .join(KnowledgePoint, KnowledgePoint.id == MasteryRecord.knowledge_point_id)
+                .distinct()
+            )
+        ).all()
     count = 0
-    for user_id in user_ids:
+    for user_id, subject in pairs:
         async with sessionmaker() as session:
-            await generate_path(session, user_id=user_id)
+            await generate_path(session, user_id=user_id, subject=subject)
             await session.commit()
         count += 1
     return count
