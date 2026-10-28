@@ -19,11 +19,11 @@ const TASK_LABEL: Record<string, string> = {
 };
 
 export default function TodayStagePage() {
-  const { band, grade, theme, mark, goTo } = useJourney();
+  const { band, grade, subject, theme, mark, goTo } = useJourney();
   const navigate = useNavigate();
   // 今日路径只在该用户当天首次生成时用到年级；后续复用既有路径。
   const preset = band ? GRADE_BANDS[band] : GRADE_BANDS.primary;
-  const today = useToday(grade ?? preset.grade);
+  const today = useToday(grade ?? preset.grade, subject);
   const tasks = today.data?.tasks ?? [];
   const done = today.data?.completed_count ?? 0;
   const total = today.data?.total ?? 0;

@@ -124,15 +124,16 @@ async def regenerate_path(
 @router.get("/today", response_model=TodayResponse, summary="每日任务卡（F-07）")
 async def get_today(
     grade: str | None = Query(default=None, max_length=8),
+    subject: str | None = Query(default=None, max_length=32),
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> TodayResponse:
-    """获取/生成今日任务卡与打卡状态；grade 只影响首次生成的今日路径范围。"""
+    """获取/生成今日任务卡与打卡状态；grade 只影响首次生成，subject 决定选科口径。"""
     grade_kp_ids = None
     if grade is not None:
         grade_kp_ids = await knowledge_point_ids_for_grade(session, grade=grade)
     plan, tasks = await planner_service.get_or_create_today(
-        session, user_id=user.id, grade_kp_ids=grade_kp_ids
+        session, user_id=user.id, grade_kp_ids=grade_kp_ids, subject=subject
     )
     assert plan.starts_on is not None
     status = await planner_service.daily_status(session, user_id=user.id, day=plan.starts_on)

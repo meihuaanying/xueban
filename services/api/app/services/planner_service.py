@@ -341,7 +341,9 @@ async def generate_path(
         )
     ).scalars()
     for plan in previous:
-        plan.status = "archived"
+        # 选科各自独立成路径：只归档同一学科（含无学科标记的历史路径）
+        if subject is None or plan.meta.get("subject") == subject:
+            plan.status = "archived"
 
     plan = Plan(
         user_id=user_id,
@@ -375,8 +377,11 @@ async def get_or_create_path(
     subject: str | None = None,
     grade_kp_ids: set[uuid.UUID] | None = None,
 ) -> Plan:
-    """获取活跃路径，不存在则生成（首次生成时应用年级收窄）。"""
-    existing = (
+    """获取活跃路径，不存在则生成（首次生成时应用年级收窄）。
+
+    subject 非空时按学科取路径：选科各自独立，切到物理不应复用数学路径。
+    """
+    rows = (
         await session.execute(
             select(Plan)
             .where(
@@ -386,9 +391,14 @@ async def get_or_create_path(
             )
             .order_by(Plan.created_at.desc())
         )
-    ).scalars().first()
-    if existing is not None:
-        return existing
+    ).scalars().all()
+    if subject is None:
+        if rows:
+            return rows[0]
+    else:
+        for plan in rows:
+            if plan.meta.get("subject") == subject:
+                return plan
     return await generate_path(
         session, user_id=user_id, subject=subject, grade_kp_ids=grade_kp_ids
     )
@@ -445,6 +455,7 @@ async def get_or_create_today(
     user_id: uuid.UUID,
     now: datetime | None = None,
     grade_kp_ids: set[uuid.UUID] | None = None,
+    subject: str | None = None,
 ) -> tuple[Plan, list[PlanTask]]:
     """获取/生成今日任务卡（3~5 个：学/练/复习搭配）。
 
@@ -456,7 +467,7 @@ async def get_or_create_today(
     """
     current = now or utcnow()
     today = current.date()
-    existing = (
+    rows = (
         await session.execute(
             select(Plan).where(
                 Plan.user_id == user_id,
@@ -465,7 +476,15 @@ async def get_or_create_today(
                 Plan.starts_on == today,
             )
         )
-    ).scalars().first()
+    ).scalars().all()
+    existing = next(
+        (
+            plan
+            for plan in rows
+            if subject is None or plan.meta.get("subject") == subject
+        ),
+        None,
+    )
     review_due = await due_count(session, user_id=user_id, now=current)
     if existing is not None:
         tasks = await tasks_of_plan(session, existing.id)
@@ -478,7 +497,9 @@ async def get_or_create_today(
             review_due=review_due,
         )
 
-    path = await get_or_create_path(session, user_id=user_id, grade_kp_ids=grade_kp_ids)
+    path = await get_or_create_path(
+        session, user_id=user_id, subject=subject, grade_kp_ids=grade_kp_ids
+    )
     points: list[PathPoint] = []
     for phase in path.meta.get("phases", []):
         for item in phase.get("knowledge_points", []):
@@ -493,7 +514,7 @@ async def get_or_create_today(
         title=f"{today.isoformat()} 每日任务",
         starts_on=today,
         ends_on=today,
-        meta={"date": today.isoformat()},
+        meta={"date": today.isoformat(), "subject": subject},
     )
     session.add(plan)
     await session.flush()

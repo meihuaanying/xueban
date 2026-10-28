@@ -58,13 +58,17 @@ export function useAsync<T>(load: () => Promise<T>, deps: unknown[] = []) {
 }
 
 /* ---------- 今日任务 ---------- */
-export function useToday(grade?: string) {
+export function useToday(grade?: string, subject?: string) {
   const [state, setState] = useState<AsyncState<TodayResponse>>(idle<TodayResponse>());
 
   const reload = useCallback(async () => {
     setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
-      setState({ data: await api.today({ grade }), loading: false, error: null });
+      setState({
+        data: await api.today({ grade, subject }),
+        loading: false,
+        error: null,
+      });
     } catch (caught) {
       setState({
         data: null,
@@ -72,7 +76,7 @@ export function useToday(grade?: string) {
         error: caught instanceof Error ? caught.message : "今日任务加载失败。",
       });
     }
-  }, [grade]);
+  }, [grade, subject]);
 
   useEffect(() => {
     void reload();
