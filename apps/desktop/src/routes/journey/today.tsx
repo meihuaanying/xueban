@@ -2,6 +2,7 @@
 
 /** 阶段页：今日任务（第 1 站） */
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, Progress, StreakFlame } from "@xueban/ui";
+import { useNavigate } from "react-router-dom";
 
 import { AsyncFeedback, JourneyStepper } from "../../components/journey-blocks";
 import { StageShell } from "../../components/stage-shell";
@@ -19,6 +20,7 @@ const TASK_LABEL: Record<string, string> = {
 
 export default function TodayStagePage() {
   const { band, grade, theme, mark, goTo } = useJourney();
+  const navigate = useNavigate();
   // 今日路径只在该用户当天首次生成时用到年级；后续复用既有路径。
   const preset = band ? GRADE_BANDS[band] : GRADE_BANDS.primary;
   const today = useToday(grade ?? preset.grade);
@@ -78,6 +80,17 @@ export default function TodayStagePage() {
                   </CardHeader>
                   {task.status !== "done" ? (
                     <CardContent className="flex flex-wrap gap-sm">
+                      {task.ref_id && task.task_type !== "review" ? (
+                        <Button
+                          type="button"
+                          data-testid={`today-open-${task.id}`}
+                          onClick={() =>
+                            navigate(`/journey/unit?kp=${encodeURIComponent(task.ref_id ?? "")}`)
+                          }
+                        >
+                          去学习
+                        </Button>
+                      ) : null}
                       {task.task_type === "review" ? (
                         <Button
                           type="button"

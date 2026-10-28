@@ -3,6 +3,7 @@
 /** 阶段页：学习单元（第 4 站）——讲解 ⇄ 练习循环 + 三层提示 + 交互讲解（§5.1） */
 
 import { Button } from "@xueban/ui";
+import { useSearchParams } from "react-router-dom";
 
 import { JourneyStepper } from "../../components/journey-blocks";
 import { StageShell } from "../../components/stage-shell";
@@ -25,8 +26,12 @@ const SUGGEST_AFTER_WRONG = 2;
 
 export default function UnitStagePage() {
   const { band, grade, subject, theme, mark, goTo } = useJourney();
+  const [search] = useSearchParams();
+  // 今日任务卡带 ?kp=<知识点 UUID> 进来：学习单元按该知识点出题，
+  // 而不是又随机抽一组题，任务与练习才真正对得上。
+  const kp = search.get("kp");
   const preset = band ? GRADE_BANDS[band] : GRADE_BANDS.primary;
-  const practice = usePractice(subject, grade ?? preset.grade);
+  const practice = usePractice(subject, grade ?? preset.grade, kp ? [kp] : undefined);
   const tutor = useTutorHints();
   const explainer = useExplainer();
   const sound = useSoundPreference();

@@ -150,7 +150,11 @@ export function useMastery(subject: string) {
 }
 
 /* ---------- 练习 ---------- */
-export function usePractice(subject: string, grade?: string) {
+export function usePractice(
+  subject: string,
+  grade?: string,
+  knowledgePointIds?: string[],
+) {
   const [set, setSet] = useState<PracticeGenerate | null>(null);
   const [index, setIndex] = useState(0);
   const [last, setLast] = useState<PracticeAnswer | null>(null);
@@ -158,6 +162,7 @@ export function usePractice(subject: string, grade?: string) {
   const [error, setError] = useState<string | null>(null);
   // 连续答错次数。§5.1 触发场景 1：连续 2 次答错即自动建议动画讲解。
   const [wrongStreak, setWrongStreak] = useState(0);
+  const kpKey = knowledgePointIds?.join(",") ?? "";
 
   const generate = useCallback(async () => {
     setBusy(true);
@@ -165,14 +170,23 @@ export function usePractice(subject: string, grade?: string) {
     setLast(null);
     setWrongStreak(0);
     try {
-      setSet(await api.generatePractice({ subject, count: 5, grade }));
+      setSet(
+        await api.generatePractice({
+          subject,
+          count: 5,
+          grade,
+          knowledge_point_ids: knowledgePointIds,
+        }),
+      );
       setIndex(0);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "出题失败，请稍后重试。");
     } finally {
       setBusy(false);
     }
-  }, [grade, subject]);
+    // kpKey 让数组参数按内容比较，避免调用方每次渲染都新建数组导致重复请求
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [grade, kpKey, subject]);
 
   const answer = useCallback(
     async (questionId: string, value: string) => {
