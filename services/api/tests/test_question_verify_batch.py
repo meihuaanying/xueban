@@ -92,6 +92,19 @@ def test_parse_batch_tolerates_fence_and_noise() -> None:
     assert parsed[3][0] == "reject"
 
 
+def test_parse_batch_tolerates_bare_array() -> None:
+    """推理模型直接输出数组（无 results 包装）时也要能按 index 收结果。"""
+    raw = json.dumps(
+        [
+            {"index": 1, "verdict": "pass", "score": 88, "reason": "合格"},
+            {"index": 2, "verdict": "reject", "score": 30, "reason": "答案错误"},
+        ]
+    )
+    parsed = _parse_judge_batch(raw)
+    assert parsed[1][0] == "pass"
+    assert parsed[2][0] == "reject"
+
+
 async def test_judge_many_rejects_partial_batch_and_falls_back_all() -> None:
     # 批量只回第 1、3 题（第 2 题缺项）→ 题号集合不匹配，整批作废，
     # 三题全部回退单题判。绝不把某题结论套到另一题上。

@@ -414,7 +414,7 @@ def _parse_judge_payload(raw: str) -> tuple[str, int, str] | None:
 
 
 def _parse_judge_batch(raw: str) -> dict[int, tuple[str, int, str]]:
-    """解析批量 judge 的 {"results": [...]}；容忍 ```json 包裹与多余文字。
+    """解析批量 judge 结果；容忍 ```json 包裹、多余文字与裸数组输出。
 
     只按 index 收结果；index 非法或重复一律丢弃（该题位由调用方回退单题判）。
     """
@@ -422,14 +422,21 @@ def _parse_judge_batch(raw: str) -> dict[int, tuple[str, int, str]]:
     if text.startswith("```"):
         text = re.sub(r"^```(?:json)?\s*", "", text)
         text = re.sub(r"\s*```$", "", text)
-    start, end = text.find("{"), text.rfind("}")
-    if start < 0 or end <= start:
+    brace, bracket = text.find("{"), text.find("[")
+    if brace < 0 and bracket < 0:
+        return {}
+    if brace >= 0 and (bracket < 0 or brace < bracket):
+        start, end = brace, text.rfind("}")
+    else:
+        start, end = bracket, text.rfind("]")
+    if end <= start:
         return {}
     try:
         payload = json.loads(text[start : end + 1])
     except json.JSONDecodeError:
         return {}
-    results = payload.get("results") if isinstance(payload, dict) else None
+    # 推理模型常把结果直接输出成 JSON 数组而不是 {"results": [...]}
+    results = payload.get("results") if isinstance(payload, dict) else payload
     if not isinstance(results, list):
         return {}
     parsed: dict[int, tuple[str, int, str]] = {}
@@ -589,9 +596,10 @@ class QuestionVerifier:
             # 题号集合不严格匹配（缺项/多余/0 基错位）时整批作废，全部回退单题判。
             # 接受「部分匹配」会把某题的结论静默套到另一题上，宁可多花调用。
             logger.warning(
-                "批量 judge 题号不匹配（期望 %s，收到 %s），整批回退单题判",
+                "批量 judge 题号不匹配（期望 %s，收到 %s；原始输出前 160 字：%r），整批回退单题判",
                 sorted(expected),
                 sorted(parsed),
+                result.content[:160],
             )
             outcomes = []
             for question in questions:
