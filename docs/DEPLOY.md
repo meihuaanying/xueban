@@ -142,6 +142,9 @@ CONTENT_JUDGE_MODEL=deepseek-v4.1-flash
 
 - 网关按 **5 小时用量窗口** 计费；窗口耗尽返回 HTTP 429（网关错误体为
   `GoUsageLimitError`，应用侧统一映射为 `LLM_RATE_LIMITED`）。
+- **生产启动校验**：`ENVIRONMENT=production` 时，API 与 worker 启动会拒绝
+  LLM/内容安全/embedding/rerank/TTS/口语任一仍为 `mock`，也拒绝默认 JWT 密钥。
+  部署前必须把 `.env` 里这些 provider 换成真实供应商，否则容器直接退出。
 - 429 先按 `LLM_RATE_LIMIT_RETRIES`（默认 5）与
   `LLM_RATE_LIMIT_BACKOFF_SECONDS`（默认 8.0）退避重试；配置了
   `LLM_FALLBACK_BASE_URL` / `LLM_FALLBACK_MASTER_KEY` / `LLM_FALLBACK_MODEL`

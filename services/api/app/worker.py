@@ -8,7 +8,10 @@ from typing import Any, ClassVar
 from arq import cron
 from arq.connections import RedisSettings
 
-from app.config import settings
+from app.config import settings, validate_runtime
+
+# worker 也生成学生可见内容（微课/讲解），生产环境与 API 同一红线。
+validate_runtime(settings)
 
 
 async def regenerate_paths(ctx: dict[str, object]) -> str:
