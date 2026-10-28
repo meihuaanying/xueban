@@ -252,6 +252,25 @@ async def test_generator_handles_fenced_json() -> None:
     assert len(questions) == 1
 
 
+async def test_generator_qtype_override_keeps_only_target_type() -> None:
+    """专项补题模式：prompt 只要求目标题型，混进来的其他题型一律丢弃。"""
+    multi = question_payload()
+    multi.update(
+        {
+            "qtype": "multi_choice",
+            "stem": "下列哪些是声母？",
+            "answer": "AC",
+            "options": {"A": "b", "B": "ɑ", "C": "p", "D": "o"},
+        }
+    )
+    client = make_client(json_handler({"questions": [question_payload(), multi]}))
+    questions, report = await QuestionGenerator(client, make_settings()).generate(
+        CHINESE_POINT, count=1, qtype="multi_choice"
+    )
+    assert [item.qtype for item in questions] == ["multi_choice"]
+    assert report.rejected_structure >= 1
+
+
 async def test_generator_accepts_bare_list() -> None:
     client = make_client(json_handler([question_payload()]))
     questions, _ = await QuestionGenerator(client, make_settings()).generate(
@@ -461,6 +480,31 @@ def test_rule_verify_multi_choice_answer_rules() -> None:
 
     unordered = make_question(qtype="multi_choice", answer="CA", options=options)
     assert "字母顺序" in (rule_verify(unordered, CHINESE_POINT) or "")
+
+
+def test_rule_verify_math_multi_choice_skips_sympy_numeric_check() -> None:
+    """多选答案（AC）不是数值表达式，不能被 SymPy 对拍误拒。
+
+    回归用例：此前数学多选题都在 `_check_math_answer` 被拒
+    （「标准答案 AC 不是可计算的数学表达式」），题库里 0 道多选，
+    19 题模考因此组不出来。
+    """
+    options = {"A": "2", "B": "3", "C": "5", "D": "8"}
+    question = make_question(
+        qtype="multi_choice", stem="下列结论正确的是", answer="AC", options=options
+    )
+    assert rule_verify(question, MATH_POINT) is None
+
+
+def test_rule_verify_math_short_answer_skips_sympy_numeric_check() -> None:
+    """解答题答案是步骤文字，规则通道放行给 judge，不做数值对拍。"""
+    question = make_question(
+        qtype="short_answer",
+        stem="证明：函数 $f(x)=x^2$ 在 $[0,+\\infty)$ 上单调递增。",
+        answer="任取 0≤x1<x2，则 f(x2)-f(x1)=x2²-x1²>0，故单调递增。",
+        options=None,
+    )
+    assert rule_verify(question, MATH_POINT) is None
 
 
 def test_rule_verify_accepts_chinese_judge_answers() -> None:

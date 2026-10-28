@@ -33,8 +33,10 @@ from app.services.prompts import (
 logger = logging.getLogger("xueban.content.gen")
 
 # 允许的题型：与 Question.qtype 的取值对齐
+# short_answer 进白名单是新高考 19 题结构的必需品：5 道解答题没有它，
+# 蓝图组卷永远 409（此前题库 0 道解答题，测试用手工种子掩盖了这个缺口）。
 ALLOWED_QTYPES = frozenset(
-    {"choice", "multi_choice", "judge", "fill", "match", "oral", "pick_hanzi"}
+    {"choice", "multi_choice", "judge", "fill", "match", "oral", "pick_hanzi", "short_answer"}
 )
 
 
@@ -171,7 +173,10 @@ class QuestionGenerator:
         self._client = client
         self._settings = settings
 
-    def _build_messages(self, point: KnowledgePoint, count: int) -> list[dict[str, str]]:
+    def _build_messages(
+        self, point: KnowledgePoint, count: int, qtype: str | None = None
+    ) -> list[dict[str, str]]:
+        question_types = qtype or "、".join(_prompt_question_types(point))
         return [
             {
                 "role": "system",
@@ -186,7 +191,7 @@ class QuestionGenerator:
                     unit_name=point.unit_name,
                     point_name=point.name,
                     objective=point.objective,
-                    question_types="、".join(_prompt_question_types(point)),
+                    question_types=question_types,
                     count=count,
                 ),
             },
@@ -206,9 +211,17 @@ class QuestionGenerator:
         )
 
     async def generate(
-        self, point: KnowledgePoint, *, count: int, max_rounds: int = 3
+        self,
+        point: KnowledgePoint,
+        *,
+        count: int,
+        max_rounds: int = 3,
+        qtype: str | None = None,
     ) -> tuple[list[GeneratedQuestion], GenerationReport]:
-        """为单个知识点出题；JSON 不合法时重问，最多 max_rounds 轮。"""
+        """为单个知识点出题；JSON 不合法时重问，最多 max_rounds 轮。
+
+        `qtype` 非空时只收该题型（补多选/解答题专项用），prompt 也只要求该题型。
+        """
         report = GenerationReport(requested=count)
         collected: list[GeneratedQuestion] = []
         remaining = count
@@ -218,7 +231,7 @@ class QuestionGenerator:
                 break
             # 绑定会话：同一知识点的多轮请求共享会话，命中网关提示缓存
             self._client.bind_session(f"{self._settings.llm_session_prefix}-gen-{point.id}")
-            messages = self._build_messages(point, remaining)
+            messages = self._build_messages(point, remaining, qtype)
             report.requests += 1
             try:
                 result = await self._client.complete(
@@ -245,6 +258,9 @@ class QuestionGenerator:
             for item in items:
                 question = _coerce_question(item, point)
                 if question is None:
+                    report.rejected_structure += 1
+                    continue
+                if qtype is not None and question.qtype != qtype:
                     report.rejected_structure += 1
                     continue
                 collected.append(question)

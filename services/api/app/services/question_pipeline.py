@@ -220,6 +220,7 @@ class QuestionPipeline:
         knowledge_point_id: uuid.UUID,
         *,
         expected_stage: str,
+        qtype: str | None = None,
     ) -> int:
         """这个知识点**真正能被抽到**的题量：只算 PUBLISHED 且学段一致的题。
 
@@ -232,16 +233,22 @@ class QuestionPipeline:
         另外必须校验 `Question.stage == expected_stage`：学段模型统一后，挂在同一
         知识点下但 stage 已过时的题（如历史 `grade1_2`）学生端查不到，不能算数，
         否则管线会永远跳过这些点、旧内容隐形丢失。
+
+        `qtype` 非空时只数该题型：多选/解答题专项补题需要独立达标线，
+        否则被 choice/fill 抬到 30 题的点会被整体跳过（19 题模考就永远组不出来）。
         """
+        conditions = [
+            QuestionKnowledgePoint.knowledge_point_id == knowledge_point_id,
+            QuestionModel.status == QuestionStatus.PUBLISHED,
+            QuestionModel.stage == expected_stage,
+        ]
+        if qtype is not None:
+            conditions.append(QuestionModel.qtype == QuestionType(qtype))
         result = await session.execute(
             select(func.count())
             .select_from(QuestionKnowledgePoint)
             .join(QuestionModel, QuestionModel.id == QuestionKnowledgePoint.question_id)
-            .where(
-                QuestionKnowledgePoint.knowledge_point_id == knowledge_point_id,
-                QuestionModel.status == QuestionStatus.PUBLISHED,
-                QuestionModel.stage == expected_stage,
-            )
+            .where(*conditions)
         )
         return int(result.scalar_one())
 
@@ -267,8 +274,13 @@ class QuestionPipeline:
         *,
         sort_order: int = 0,
         target: int | None = None,
+        qtype: str | None = None,
     ) -> PointOutcome:
-        """处理单个知识点；已达标则跳过（断点续跑的关键）。"""
+        """处理单个知识点；已达标则跳过（断点续跑的关键）。
+
+        `qtype` 非空时进入专项补题模式：只按该题型的题量判断达标，
+        生成时也只收该题型。
+        """
         outcome = PointOutcome(point_id=point.id)
         target = target or self._settings.content_min_per_point
 
@@ -277,7 +289,7 @@ class QuestionPipeline:
 
         expected_stage = stage_for_grade(point.grade)
         existed = await self._count_for_point(
-            session, knowledge_point_id, expected_stage=expected_stage
+            session, knowledge_point_id, expected_stage=expected_stage, qtype=qtype
         )
         outcome.existed_before = existed
         if existed >= target:
@@ -311,6 +323,7 @@ class QuestionPipeline:
                 count=min(
                     self._settings.content_batch_size, ask_total - len(generated)
                 ),
+                qtype=qtype,
             )
             outcome.generated += len(batch)
             outcome.errors.extend(report.errors)

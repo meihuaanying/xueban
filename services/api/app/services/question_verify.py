@@ -306,6 +306,12 @@ def numbers_agree(expected: sympy.Expr, answer: sympy.Expr) -> bool:
     )
 
 
+# 数学题里哪些题型走「规则 + SymPy 硬对拍」：这些题型的标准答案是可计算数值/单个字母。
+# 多选（AC）与解答题（含步骤文字）的答案不是数值表达式，硬对拍会 100% 误拒，
+# 必须交给 judge 通道；此前多选全部被 SymPy 规则误杀，题库 0 道多选。
+_MATH_NUMERIC_QTYPES = frozenset({"choice", "fill", "judge", "match", "oral", "pick_hanzi"})
+
+
 def _check_math_answer(question: GeneratedQuestion) -> str | None:
     """数学题：用 SymPy 求值题干算式，与标准答案对拍。
 
@@ -382,7 +388,7 @@ def rule_verify(question: GeneratedQuestion, point: KnowledgePoint) -> str | Non
         if reason:
             return reason
 
-    if point.subject == _MATH_SUBJECT:
+    if point.subject == _MATH_SUBJECT and question.qtype in _MATH_NUMERIC_QTYPES:
         return _check_math_answer(question)
     return None
 
@@ -632,7 +638,7 @@ class QuestionVerifier:
                 reason=f"规则不通过：{reason}",
             )
 
-        if point.subject == _MATH_SUBJECT:
+        if point.subject == _MATH_SUBJECT and question.qtype in _MATH_NUMERIC_QTYPES:
             return VerificationResult(
                 verdict=Verdict.PASS,
                 rule_passed=True,
@@ -680,8 +686,8 @@ class QuestionVerifier:
         """批量验证；返回 (通过, [(未通过题, 结果)], 统计)。
 
         流程：规则通道逐题先跑（纯本地、零成本）；规则通过的题再按
-        ``content_judge_batch_size`` 分批做 LLM judge——数学题按既有口径
-        只走规则+SymPy，不进 judge。
+        ``content_judge_batch_size`` 分批做 LLM judge——数学客观题按既有口径
+        只走规则+SymPy；多选/解答题答案不是数值表达式，同样进 judge。
         """
         report = VerificationReport(total=len(questions))
         passed: list[GeneratedQuestion] = []
@@ -702,10 +708,10 @@ class QuestionVerifier:
                 )
                 continue
             report.rule_passed += 1
-            if point.subject != _MATH_SUBJECT:
+            if point.subject != _MATH_SUBJECT or question.qtype not in _MATH_NUMERIC_QTYPES:
                 judge_targets.append(index)
             else:
-                # 数学题按既有口径只走规则 + SymPy；judge 跳过如实计数
+                # 数学客观题按既有口径只走规则 + SymPy；judge 跳过如实计数
                 report.judge_skipped += 1
                 passed.append(question)
 

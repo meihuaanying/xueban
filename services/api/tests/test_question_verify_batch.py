@@ -173,3 +173,42 @@ async def test_judge_many_short_circuits_when_disabled() -> None:
 
     assert [o[0] for o in outcomes] == [True, True]
     assert client.calls == 0
+
+
+async def test_math_short_answer_goes_through_judge() -> None:
+    """数学解答题不是数值答案，不能走 SymPy 快捷通道，必须交给 judge。"""
+    point = KnowledgePoint(
+        id="g10m-proof",
+        name="不等式证明",
+        subject="math",
+        grade="grade10",
+        unit_code="g10m-u1",
+        unit_name="不等式",
+        objective="会用综合法证明简单不等式",
+        question_types=("short_answer",),
+        difficulty_band=2,
+        prerequisites=(),
+    )
+    question = GeneratedQuestion(
+        qtype="short_answer",
+        stem="证明：对任意实数 x，都有 x² ≥ 0。",
+        options=None,
+        answer="因为 x² 是实数平方，非负，故 x² ≥ 0。",
+        analysis="实数平方非负。",
+        hint1="想想平方的定义。",
+        hint2="正数和负数的平方都非负。",
+        hint3="见标准答案。",
+        difficulty=3,
+        knowledge_point_id=point.id,
+    )
+    batch = json.dumps(
+        {"results": [{"index": 1, "verdict": "pass", "score": 92, "reason": "证明完整"}]}
+    )
+    client = _StubClient([batch])
+    verifier = QuestionVerifier(client, Settings())  # type: ignore[arg-type]
+
+    passed, rejected, _ = await verifier.verify_all([question], point)
+
+    assert client.calls == 1, "解答题必须进 judge 批"
+    assert [item.qtype for item in passed] == ["short_answer"]
+    assert rejected == []
