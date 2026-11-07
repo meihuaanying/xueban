@@ -83,6 +83,11 @@ class ExplainerContent(Base, TimestampMixin):
     #: True 表示这是 §5.4 的降级产物：交互页渲染失败/超时时的「图文分步讲解」。
     degraded: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     byte_size: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    #: §5.3 视频版：对象键（MinIO）。交互讲解行恒为 None；读取时换预签名 URL。
+    video_key: Mapped[str | None] = mapped_column(String(300))
+    video_mime: Mapped[str | None] = mapped_column(String(50))
+    #: 视频时长（秒，四舍五入），供前端展示与播放器兜底。
+    duration_seconds: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     status: Mapped[ExplainerStatus] = mapped_column(
         SAEnum(
             ExplainerStatus,

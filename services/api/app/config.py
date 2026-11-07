@@ -146,6 +146,9 @@ class Settings(BaseSettings):
     tts_endpoint: str = ""
     tts_voice: str = "zh-CN-XiaoxiaoNeural"
     tts_timeout_seconds: float = 15.0
+    # 本地离线配音（仅开发/测试）：Windows SAPI 声音，视频预生成时替代 Azure，
+    # 让没有云 Key 的机器也能产出可听的中文讲解（生产环境启动校验会拒绝）。
+    tts_sapi_voice: str = "Microsoft Huihui Desktop"
     micro_lesson_min_chars: int = 600
     micro_lesson_max_chars: int = 1000
     library_upload_max_bytes: int = 20 * 1024 * 1024
@@ -156,6 +159,13 @@ class Settings(BaseSettings):
     # 画质：l=480p / m=720p / h=1080p / k=4k
     manim_quality: str = "l"
     manim_timeout_seconds: float = 300.0
+    # §5.3 自愈循环：渲染失败最多重试 3 次（把错误摘要回喂导演阶段再编译）
+    manim_max_attempts: int = 3
+    # 中文字体（Windows 自带；Linux 部署需换 Noto Sans CJK SC 等可用字体）
+    manim_font: str = "Microsoft YaHei"
+    # 单条视频的教学序列上限（幕数）与目标总时长（秒）
+    explainer_video_max_segments: int = 4
+    explainer_video_max_seconds: int = 150
 
     # ----- Embedding / Rerank（RAG） -----
     # mock：本地词面哈希向量（离线开发）；siliconflow：真实 bge-m3 / bge-reranker-v2-m3

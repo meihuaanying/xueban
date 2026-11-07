@@ -66,3 +66,13 @@ def test_is_pure_math() -> None:
 def test_parse_math_invalid() -> None:
     assert math_verify.parse_math("") is None
     assert math_verify.parse_math("不是数学") is None
+
+
+def test_parse_math_unbalanced_parentheses_do_not_raise() -> None:
+    """模型输出的括号不配对要退化为「不可解析」，不能让整点处理崩掉。"""
+    # 多余右括号：SymPy 抛 IndexError
+    assert math_verify.parse_math("(1/2))") is None
+    assert math_verify.parse_math("2*(3+4))") is None
+    # 缺少右括号：tokenize 抛 TokenError
+    assert math_verify.parse_math("((1+2)") is None
+    assert math_verify.are_equivalent("(1/2))", "1/2") is False

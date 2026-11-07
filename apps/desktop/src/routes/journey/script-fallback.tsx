@@ -22,7 +22,11 @@ export interface ExplainerAct {
 
 function readActs(script: Record<string, unknown>): ExplainerAct[] {
   const acts = script.acts;
-  return Array.isArray(acts) ? (acts as ExplainerAct[]) : [];
+  if (Array.isArray(acts)) return acts as ExplainerAct[];
+  // §5.3 视频讲解的脚本结构是 sequence.segments；降级时同样按幕展示台词。
+  const sequence = script.sequence;
+  if (Array.isArray(sequence)) return sequence as ExplainerAct[];
+  return [];
 }
 
 /**

@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+import asyncio
 import io
 import math
 import struct
+import subprocess
+import tempfile
 import wave
+from pathlib import Path
 from typing import Protocol
 from xml.sax.saxutils import escape
 
@@ -52,6 +56,76 @@ class MockTtsProvider:
             )
             handle.writeframes(frames)
         return buffer.getvalue(), "audio/wav"
+
+
+class WindowsSapiTtsProvider:
+    """Windows 本地离线配音（仅开发/测试）。
+
+    没有云 TTS Key 时，§5.3 视频预生成仍然需要**真实人声**才能验收成片；
+    Windows 自带的 SAPI 中文声音（Microsoft Huihui Desktop）足够完成本地演示。
+    文本与输出路径都用 base64 传入 PowerShell，避免中文/引号/反斜杠的转义坑。
+    """
+
+    name = "windows"
+
+    def __init__(self, voice: str = "Microsoft Huihui Desktop", *, rate: int = -1) -> None:
+        self.voice = voice
+        self.rate = rate
+
+    async def synthesize(self, text: str) -> tuple[bytes, str]:
+        if not text.strip():
+            raise TtsError("待合成文本为空")
+        return await asyncio.to_thread(self._speak_sync, text)
+
+    def _speak_sync(self, text: str) -> tuple[bytes, str]:
+        # 文本、语音名、路径全部走参数传入：直接内插进 -Command 会踩 Windows
+        # 命令行长度/转义坑（实测 WinError 786），也避免引号注入。
+        script = (
+            "param([string]$TextPath, [string]$OutPath, [string]$Voice, [int]$Rate)\n"
+            "$text = Get-Content -Raw -Encoding UTF8 $TextPath\n"
+            "Add-Type -AssemblyName System.Speech\n"
+            "$s = New-Object System.Speech.Synthesis.SpeechSynthesizer\n"
+            "try { $s.SelectVoice($Voice) } catch { }\n"
+            "$s.Rate = $Rate\n"
+            "$s.SetOutputToWaveFile($OutPath)\n"
+            "$s.Speak($text)\n"
+            "$s.Dispose()\n"
+        )
+        with tempfile.TemporaryDirectory(prefix="xueban-sapi-") as tmp:
+            workdir = Path(tmp)
+            text_path = workdir / "narration.txt"
+            output = workdir / "narration.wav"
+            script_path = workdir / "sapi.ps1"
+            text_path.write_text(text, encoding="utf-8")
+            script_path.write_text(script, encoding="utf-8-sig")
+            try:
+                result = subprocess.run(
+                    [
+                        "powershell",
+                        "-NoProfile",
+                        "-NonInteractive",
+                        "-ExecutionPolicy",
+                        "Bypass",
+                        "-File",
+                        str(script_path),
+                        "-TextPath",
+                        str(text_path),
+                        "-OutPath",
+                        str(output),
+                        "-Voice",
+                        self.voice,
+                        "-Rate",
+                        str(self.rate),
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=120,
+                )
+            except (OSError, subprocess.TimeoutExpired) as exc:
+                raise TtsError(f"Windows 本地配音失败：{exc}") from exc
+            if result.returncode != 0 or not output.exists():
+                raise TtsError("Windows 本地配音失败：" + (result.stderr or "")[-500:])
+            return output.read_bytes(), "audio/wav"
 
 
 class AzureTtsProvider:
@@ -140,6 +214,11 @@ def get_tts_provider(settings: Settings) -> TtsProvider:
         if not settings.is_development:
             raise TtsError("生产环境禁止使用 mock TTS 供应商")
         return MockTtsProvider()
+    if name == "windows":
+        # 本地离线配音只是开发/演示通道；生产必须走云端供应商（启动校验也拦）。
+        if not settings.is_development:
+            raise TtsError("生产环境禁止使用 Windows 本地 TTS 供应商")
+        return WindowsSapiTtsProvider(settings.tts_sapi_voice)
     if name in ("azure", "vendor", "auto"):
         if not settings.tts_api_key.strip():
             if name == "auto" and settings.is_development:
@@ -166,5 +245,6 @@ __all__ = [
     "TtsError",
     "TtsProvider",
     "VendorTtsProvider",
+    "WindowsSapiTtsProvider",
     "get_tts_provider",
 ]

@@ -20,18 +20,23 @@ class ExplainerGenerateRequest(BaseModel):
 
 
 class ExplainerContentOut(BaseModel):
-    """已生成内容（含消毒后的 HTML）。"""
+    """已生成内容（含消毒后的 HTML 或视频预签名 URL）。"""
 
     id: uuid.UUID
     knowledge_id: str
     stage: str
     title: str
     status: str
+    #: interactive | video（P3 §5.3 起两种形态共用一套缓存表与接口）。
+    mode: str = "interactive"
     #: 消毒后的单文件 HTML；未就绪时为空串。
     html: str = ""
     #: True 表示这是 §5.4 的图文分步降级产物（交互页没生成出来）。
     degraded: bool = False
     byte_size: int = 0
+    #: §5.3 视频预签名播放地址与时长；交互讲解为 None/0。
+    video_url: str | None = None
+    duration_seconds: int = 0
     #: 教学脚本（≤4 幕），供前端做无脚本兜底与朗读。
     script: dict[str, Any] = Field(default_factory=dict)
     #: §5.4 的渲染超时（秒），前端超时要切降级视图。

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from tokenize import TokenError
 from typing import Any
 
 import sympy
@@ -50,7 +51,18 @@ def parse_math(text: str) -> Any | None:
         return None
     try:
         return parse_expr(cleaned, transformations=TRANSFORMATIONS, evaluate=True)
-    except (sympy.SympifyError, SyntaxError, TypeError, ValueError, ZeroDivisionError):
+    except (
+        sympy.SympifyError,
+        SyntaxError,
+        TypeError,
+        ValueError,
+        ZeroDivisionError,
+        IndexError,
+        TokenError,
+    ):
+        # 模型偶尔输出括号不配对（``1))`` / ``((1``）：SymPy 会抛 IndexError 或
+        # tokenize.TokenError 而不是 SympifyError。题库队列实测因此整点失败，
+        # 这里统一视为「不可解析」交给文本兜底。
         return None
 
 

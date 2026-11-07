@@ -191,4 +191,90 @@ describe("ExplainerCard 四态", () => {
     fireEvent.click(screen.getByTestId("explainer-close"));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
+  it("空闲态在高中生场景给出「看视频讲解」入口（§5.3）", () => {
+    const onOpenVideo = vi.fn();
+    render(
+      <ExplainerCard
+        status="idle"
+        content={null}
+        error={null}
+        speakable={false}
+        busy={false}
+        onOpen={noop}
+        onOpenVideo={onOpenVideo}
+        onRetry={noop}
+        onClose={noop}
+        onFeedback={noop}
+      />,
+    );
+    fireEvent.click(screen.getByTestId("explainer-open-video"));
+    expect(onOpenVideo).toHaveBeenCalledTimes(1);
+  });
+
+  it("视频讲解用 <video> 播放预签名地址，不走 iframe", () => {
+    const { container } = render(
+      <ExplainerCard
+        status="ready"
+        content={content({
+          mode: "video",
+          video_url: "http://minio.test/explainer/demo.mp4?sig=1",
+          html: "",
+          duration_seconds: 61,
+        })}
+        error={null}
+        speakable={false}
+        busy={false}
+        onOpen={noop}
+        onRetry={noop}
+        onClose={noop}
+        onFeedback={noop}
+      />,
+    );
+    const video = container.querySelector("video");
+    expect(video).not.toBeNull();
+    expect(video?.getAttribute("src")).toBe("http://minio.test/explainer/demo.mp4?sig=1");
+    expect(container.querySelector("iframe")).toBeNull();
+  });
+
+  it("视频地址缺失（预签名失败）时回落图文分步，不白屏", () => {
+    render(
+      <ExplainerCard
+        status="ready"
+        content={content({
+          mode: "video",
+          video_url: null,
+          html: "",
+          script: { sequence: [{ name: "引入", narration: "先看集合" }] },
+        })}
+        error={null}
+        speakable={false}
+        busy={false}
+        onOpen={noop}
+        onRetry={noop}
+        onClose={noop}
+        onFeedback={noop}
+      />,
+    );
+    expect(screen.getByTestId("explainer-steps")).toBeInTheDocument();
+    expect(screen.getByText(/先看集合/)).toBeInTheDocument();
+  });
+  it("互动讲解就绪后可切到视频讲解（§5.3）", () => {
+    const onOpenVideo = vi.fn();
+    render(
+      <ExplainerCard
+        status="ready"
+        content={content()}
+        error={null}
+        speakable={false}
+        busy={false}
+        onOpen={noop}
+        onOpenVideo={onOpenVideo}
+        onRetry={noop}
+        onClose={noop}
+        onFeedback={noop}
+      />,
+    );
+    fireEvent.click(screen.getByTestId("explainer-switch-video"));
+    expect(onOpenVideo).toHaveBeenCalledTimes(1);
+  });
 });

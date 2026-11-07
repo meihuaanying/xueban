@@ -334,7 +334,9 @@ def _check_math_answer(question: GeneratedQuestion) -> str | None:
     left = _math_left_side(stem)
     if left is not None:
         expr = parse_math(left)
-        if expr is not None:
+        # 含逗号的表达式会被 SymPy 解析成 tuple（如「1,2」），没有 evalf；
+        # 这类题交给 judge，不能让规则通道直接抛异常把整个知识点判失败。
+        if isinstance(expr, sympy.Expr):
             try:
                 expected = normalize_math_number(expr.evalf())
                 # 含变量的等式（方程/恒等式/函数）不是数值对拍能判的：
@@ -343,7 +345,7 @@ def _check_math_answer(question: GeneratedQuestion) -> str | None:
                 if not getattr(expected, "is_number", False):
                     return None
                 answer_expr = parse_math(question.answer)
-                if answer_expr is None:
+                if not isinstance(answer_expr, sympy.Expr):
                     return f"标准答案 {question.answer} 不是可计算的数学表达式"
                 if not numbers_agree(expected, normalize_math_number(answer_expr)):
                     # 消息里必须带上标准答案本身：只说"不一致"而看不出答案是多少，
@@ -354,8 +356,9 @@ def _check_math_answer(question: GeneratedQuestion) -> str | None:
                     )
             except (TypeError, ValueError, ZeroDivisionError):
                 return "题干算式无法求值"
-        else:
+        elif expr is None:
             return f"题干算式 {left} 无法解析"
+        # expr 是 tuple 等非 Expr（如「1,2」）：规则通道不做硬对拍，交给 judge。
 
     if (
         question.qtype == "oral"
@@ -371,7 +374,11 @@ def rule_verify(question: GeneratedQuestion, point: KnowledgePoint) -> str | Non
     if not question.stem.strip():
         return "题干为空"
     # 题干长度上限按学段放宽：小学 300 字（要能朗读），初高中允许情境题/阅读材料。
-    max_stem = 300 if stage_for_grade(point.grade) == "primary" else 900
+    stage = stage_for_grade(point.grade)
+    max_stem = 300 if stage == "primary" else 900
+    if stage == "primary" and ("reading" in point.id or "阅读" in point.unit_name):
+        # 阅读理解题干本身就含短文（实测 350~400 字），按普通题 300 字会全量误拒。
+        max_stem = 600
     if len(question.stem) > max_stem:
         return f"题干过长（{len(question.stem)} > {max_stem}）"
     for name in ("analysis", "hint1", "hint2", "hint3"):

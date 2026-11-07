@@ -23,9 +23,15 @@ export interface KnowledgeMapCardProps {
   subject: string;
   /** kids 主题下朗读节点名（7 岁可用性：一切文本可朗读） */
   speakable?: boolean;
+  /** §5.3：高中生可看预生成的视频讲解（未生成时自动回落互动）。 */
+  allowVideo?: boolean;
 }
 
-export function KnowledgeMapCard({ subject, speakable = false }: KnowledgeMapCardProps) {
+export function KnowledgeMapCard({
+  subject,
+  speakable = false,
+  allowVideo = false,
+}: KnowledgeMapCardProps) {
   const mastery = useKnowledgeMastery(subject);
   const explainer = useExplainer();
 
@@ -67,6 +73,11 @@ export function KnowledgeMapCard({ subject, speakable = false }: KnowledgeMapCar
             knowledgeId={mastery.selected}
             speakable={speakable}
             testId="kmap-card-explainer"
+            onOpenVideo={
+              allowVideo
+                ? () => void explainer.open(mastery.selected, "video")
+                : undefined
+            }
           />
         </AsyncFeedback>
       </CardContent>

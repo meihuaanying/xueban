@@ -59,17 +59,22 @@ async def generate_micro_lesson(ctx: dict[str, object], lesson_id: str) -> str:
 
 
 async def generate_explainer_content(ctx: dict[str, object], content_id: str) -> str:
-    """异步生成交互网页讲解（P1 / §5.2 五步管线）。
+    """异步生成讲解（P1 §5.2 交互网页 / P3 §5.3 Manim 视频）。
 
-    无论成功还是降级，都会把 content 置为 ready：§5.4 要求前端永不白屏，
-    拿不到交互页时也要有「图文分步讲解」可看，所以「失败」在这里表现为降级，
-    而不是把任务标成 failed 让前端空转。
+    交互页无论成功还是降级都会置 ready（§5.4 前端永不白屏）；视频是离线产物，
+    失败如实标记 failed，学生端请求时回落互动讲解，避免空转等待。
     """
+    from sqlalchemy import select as sa_select
+
     from app.db import create_engine, create_sessionmaker
-    from app.services.explainer_service import generate_content as run_generation
+    from app.models import ExplainerContent, ExplainerMode
+    from app.services.explainer_service import generate_content as run_interactive
+    from app.services.explainer_video import build_toolchain, generate_video
     from app.services.llm_client import LlmClient
     from app.services.observability import ObservabilityService
     from app.services.safety_service import SafetyService
+    from app.services.storage_service import StorageService
+    from app.services.tts import get_tts_provider
 
     engine = create_engine(settings.database_url)
     sessionmaker = create_sessionmaker(engine)
@@ -78,15 +83,36 @@ async def generate_explainer_content(ctx: dict[str, object], content_id: str) ->
     safety = SafetyService(settings)
     try:
         async with sessionmaker() as session:
-            content = await run_generation(
-                session,
-                content_id=uuid.UUID(content_id),
-                llm=llm,
-                settings=settings,
-                safety=safety,
+            mode = await session.scalar(
+                sa_select(ExplainerContent.mode).where(ExplainerContent.id == uuid.UUID(content_id))
             )
+            if mode is ExplainerMode.VIDEO:
+                content = await generate_video(
+                    session,
+                    content_id=uuid.UUID(content_id),
+                    llm=llm,
+                    settings=settings,
+                    tts=get_tts_provider(settings),
+                    storage=StorageService(settings),
+                    toolchain=build_toolchain(settings),
+                    safety=safety,
+                )
+            else:
+                content = await run_interactive(
+                    session,
+                    content_id=uuid.UUID(content_id),
+                    llm=llm,
+                    settings=settings,
+                    safety=safety,
+                )
             await session.commit()
-            return f"{content.status.value}/{'degraded' if content.degraded else 'interactive'}"
+            if content.mode is ExplainerMode.VIDEO:
+                kind = "video"
+            elif content.degraded:
+                kind = "degraded"
+            else:
+                kind = "interactive"
+            return f"{content.status.value}/{kind}"
     finally:
         await llm.aclose()
         observability.flush()

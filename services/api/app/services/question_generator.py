@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import json
 import logging
-import re
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -25,6 +24,7 @@ from app.data.curriculum import grade_name as _grade_name
 from app.data.curriculum import subject_name as _subject_name
 from app.errors import LlmError
 from app.services.llm_client import LlmClient
+from app.services.llm_json import parse_json_value
 from app.services.prompts import (
     QUESTION_GEN_USER_TEMPLATE,
     question_gen_system_prompt,
@@ -55,8 +55,6 @@ def _prompt_question_types(point: KnowledgePoint) -> tuple[str, ...]:
     ):
         return (*types, "multi_choice")
     return types
-
-_FENCE_RE = re.compile(r"```(?:json)?\s*(.*?)\s*```", re.DOTALL)
 
 
 class QuestionGenerationError(Exception):
@@ -105,15 +103,11 @@ class GenerationReport:
     errors: list[str] = field(default_factory=list)
 
 
-def _strip_fence(raw: str) -> str:
-    """LLM 常把 JSON 包在 ```json 代码块里，去掉外壳。"""
-    match = _FENCE_RE.search(raw)
-    return match.group(1) if match else raw
-
-
 def _extract_questions(raw: str) -> list[dict[str, Any]]:
-    """从模型输出里取出题目数组，容忍前后废话但不容忍非法 JSON。"""
-    payload = json.loads(_strip_fence(raw))
+    """从模型输出里取出题目数组，容忍前后废话/未转义 LaTeX 但不容忍结构缺失。"""
+    payload = parse_json_value(raw)
+    if payload is None:
+        raise ValueError("模型输出不是合法 JSON")
     items: object = payload
     if isinstance(payload, dict):
         items = payload.get("questions")

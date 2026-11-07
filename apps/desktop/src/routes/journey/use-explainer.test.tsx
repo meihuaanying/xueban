@@ -314,4 +314,73 @@ describe("useExplainer 轮询间隔", () => {
     expect(poll).toHaveBeenCalledTimes(2);
     expect(result.current.status).toBe("ready");
   });
+  it("视频未预生成（409）时自动回落互动讲解并给出提示", async () => {
+    vi.spyOn(api, "generateExplainer")
+      .mockRejectedValueOnce(
+        new ApiError(409, {
+          code: "EXPLAINER_VIDEO_NOT_READY",
+          message: "这个知识点的视频讲解还没生成好",
+          trace_id: null,
+        }),
+      )
+      .mockResolvedValueOnce({
+        job_id: "j2",
+        status: "ready",
+        cache_hit: true,
+        content: {
+          id: "c2",
+          knowledge_id: "g10m-set-concept",
+          stage: "senior",
+          title: "集合的概念",
+          status: "ready",
+          mode: "interactive",
+          html: "<p>互动讲解</p>",
+          degraded: false,
+          byte_size: 100,
+          script: {},
+          render_timeout_seconds: 60,
+        },
+      });
+
+    const { result } = renderHook(() => useExplainer());
+    await act(async () => {
+      await result.current.open("g10m-set-concept", "video");
+    });
+
+    expect(result.current.status).toBe("ready");
+    expect(result.current.content?.mode).toBe("interactive");
+    expect(result.current.notice).toContain("先看互动讲解");
+  });
+
+  it("视频命中预生成时直接播放视频内容", async () => {
+    vi.spyOn(api, "generateExplainer").mockResolvedValueOnce({
+      job_id: "j3",
+      status: "ready",
+      cache_hit: true,
+      content: {
+        id: "c3",
+        knowledge_id: "g10m-set-concept",
+        stage: "senior",
+        title: "集合的概念",
+        status: "ready",
+        mode: "video",
+        html: "",
+        degraded: false,
+        byte_size: 900_000,
+        video_url: "http://minio.test/v.mp4?sig=1",
+        duration_seconds: 61,
+        script: {},
+        render_timeout_seconds: 60,
+      },
+    });
+
+    const { result } = renderHook(() => useExplainer());
+    await act(async () => {
+      await result.current.open("g10m-set-concept", "video");
+    });
+
+    expect(result.current.status).toBe("ready");
+    expect(result.current.content?.video_url).toContain("sig=1");
+    expect(result.current.notice).toBeNull();
+  });
 });

@@ -249,8 +249,32 @@ winget install Gyan.FFmpeg
   `%LOCALAPPDATA%\Programs\MiKTeX\miktex\bin\x64`；生产/CI 建议把该目录加进 PATH。
 - 缺少 LaTeX 宏包时：`miktex packages install <包名>`；报错日志在渲染目录的
   `media/Tex/*.log`。
-- 中文 `Text` 使用系统字体（自检用 Microsoft YaHei）；Linux 构建机需安装
-  `fonts-noto-cjk`，否则中文会变成方框。
+- 中文 `Text` 使用系统字体（`MANIM_FONT`，默认 Microsoft YaHei）；Linux 构建机需安装
+  `fonts-noto-cjk` 并设 `MANIM_FONT=Noto Sans CJK SC`，否则中文会变成方框。
+
+### 7.1 视频讲解预生成（§5.3）
+
+视频是**离线产物**，学生端只读缓存：命中返回 200 + 预签名 URL，未命中返回
+409 `EXPLAINER_VIDEO_NOT_READY`，桌面端自动回落互动讲解（不让前端等分钟级渲染）。
+
+```bash
+cd services/api
+# 1) 真实渲染冒烟（不碰 DB/LLM/TTS，验证 Manim 链路）
+.venv/Scripts/python scripts/render_video_preview.py
+
+# 2) 选点预览（按 PUBLISHED 题量降序）
+.venv/Scripts/python scripts/pregenerate_videos.py --limit 100 --dry-run
+
+# 3) 正式预生成（幂等续跑；与题库队列共用 LLM 配额，建议错峰）
+.venv/Scripts/python scripts/pregenerate_videos.py --limit 100
+```
+
+- 产物键：`explainer/video/<cache_key>.mp4`；元数据 `explainer_contents.video_key/duration_seconds`。
+- 配音：生产用 `TTS_PROVIDER=azure`；无云 Key 的开发机可设 `TTS_PROVIDER=windows`
+  （Windows SAPI，生产启动校验会拒绝）。
+- 渲染失败会自动把 stderr 摘要回喂「数学导演」阶段重生成场景，最多 `MANIM_MAX_ATTEMPTS=3` 次。
+- 场景 DSL 只支持 text/bullet/formula/axes（点列画曲线），模型不能写代码；扩展元素需先改
+  `manim_toolchain.py` 的编译器与单测。
 
 ## 8. 架构速览
 

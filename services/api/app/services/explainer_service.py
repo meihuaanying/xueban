@@ -35,6 +35,7 @@ from app.data.curriculum import (
 from app.data.curriculum import (
     find_point,
     grade_name,
+    grades_for_stage,
     stage_for_grade,
     subject_name,
 )
@@ -79,13 +80,16 @@ class ExplainerError(AppError):
 # ---------------------------------------------------------------- 缓存键
 
 
-def cache_key(point_code: str, stage: str, style_version: str) -> str:
-    """§5.2 ④：缓存键 = hash(知识点, 学段, 风格版本)。
+def cache_key(
+    point_code: str, stage: str, style_version: str, *, mode: str = "interactive"
+) -> str:
+    """§5.2 ④：缓存键 = hash(知识点, 学段, 风格版本, 形态)。
 
     风格版本进键是刻意的：改教学风格就换版本号，历史讲解自然作废，
-    不会出现「新风格的孩子看到旧讲解」。
+    不会出现「新风格的孩子看到旧讲解」。形态（互动页/视频）也必须进键：
+    两者产物不同，共用键会让视频请求命中互动页缓存（P3 §5.3）。
     """
-    raw = f"{point_code}|{stage}|{style_version}".encode()
+    raw = f"{point_code}|{stage}|{style_version}|{mode}".encode()
     return hashlib.sha256(raw).hexdigest()
 
 
@@ -119,6 +123,28 @@ async def ensure_knowledge_point(
     return record.id
 
 
+def point_from_record(record: KnowledgePointModel) -> CurriculumPoint:
+    """用 DB 知识点行合成最小 CurriculumPoint（课程树里没有的编码）。
+
+    知识地图来自 knowledge_points 种子（教材知识图谱），与 curriculum/*.json
+    的出题树编码并不完全重合。合成点只保留讲解必需字段：名称/学科/年级，
+    学习目标用通用描述，前置知识留空——比 404 更符合「点开就能听一段讲解」。
+    """
+    grade = record.grade or grades_for_stage(record.stage)[0]
+    return CurriculumPoint(
+        id=record.code,
+        name=record.name,
+        subject=record.subject,
+        grade=grade,
+        unit_code="",
+        unit_name="知识地图",
+        objective=f"掌握「{record.name}」的核心概念与基本应用",
+        question_types=(),
+        difficulty_band=2,
+        prerequisites=(),
+    )
+
+
 async def resolve_point(
     session: AsyncSession, knowledge_id: str, *, settings: Settings
 ) -> tuple[KnowledgePointModel, CurriculumPoint]:
@@ -126,6 +152,11 @@ async def resolve_point(
 
     同时接受课程编码（如 ``math.add-sub-10``）与库内 UUID——前端旅程页拿到的
     是课程编码，运维/家长端可能拿的是 UUID，两种都得能用。
+
+    兼容「只在 DB、不在课程树 JSON」的知识点：知识地图来自 knowledge_points
+    （教材知识图谱种子），其中一部分编码并不在 curriculum/*.json 里。若直接
+    raise，地图上点这些节点会得到 404 的讲解（2026-10-29 E2E 实测）。这里改为
+    用 DB 行合成一个最小 CurriculumPoint，让讲解对**所有**地图节点可用。
     """
     code = knowledge_id
     try:
@@ -145,9 +176,17 @@ async def resolve_point(
 
     point = find_point(code)
     if point is None:
-        raise NotFoundError(
-            f"课程树里没有知识点 {code}", code="CURRICULUM_POINT_NOT_FOUND"
-        )
+        if record is None:
+            # 编码形式：课程树没有时再查一次库（知识地图节点走的就是这条）
+            found_by_code = await session.execute(
+                select(KnowledgePointModel).where(KnowledgePointModel.code == code)
+            )
+            record = found_by_code.scalar_one_or_none()
+        if record is None:
+            raise NotFoundError(
+                f"课程树里没有知识点 {code}", code="CURRICULUM_POINT_NOT_FOUND"
+            )
+        point = point_from_record(record)
     if record is None:
         record_id = await ensure_knowledge_point(
             session, point, stage=stage_for_grade(point.grade), sort_order=point.difficulty_band
@@ -463,6 +502,12 @@ async def generate_content(
         select(ExplainerContent).where(ExplainerContent.id == content_id)
     )
     content = found.scalar_one()
+    if content.mode is ExplainerMode.VIDEO:
+        # 视频行必须走 §5.3 管线；这里拒绝是为了让调度错误立刻暴露，
+        # 而不是把 HTML 写进视频缓存行、让学生点到一支「假视频」。
+        raise ExplainerError(
+            "视频讲解不能走交互网页管线", code="EXPLAINER_MODE_MISMATCH", status_code=500
+        )
     if content.status is ExplainerStatus.READY:
         return content  # 幂等：重复入队不重复生成
 
@@ -528,20 +573,26 @@ async def generate_content(
 
 
 async def get_cached_content(
-    session: AsyncSession, *, point_code: str, stage: str, settings: Settings
+    session: AsyncSession,
+    *,
+    point_code: str,
+    stage: str,
+    settings: Settings,
+    mode: ExplainerMode = ExplainerMode.INTERACTIVE,
 ) -> ExplainerContent | None:
     """按缓存键取一份**已就绪**的讲解（§5.2 ④ + §5.1「已预生成的讲解直接秒开」）。"""
-    key = cache_key(point_code, stage, settings.explainer_style_version)
+    key = cache_key(point_code, stage, settings.explainer_style_version, mode=mode.value)
     found = await session.execute(
         select(ExplainerContent).where(
             ExplainerContent.cache_key == key,
+            ExplainerContent.mode == mode,
             ExplainerContent.status == ExplainerStatus.READY,
         )
     )
     return found.scalar_one_or_none()
 
 
-async def _reserve_content(
+async def reserve_content(
     session: AsyncSession,
     *,
     point_code: str,
@@ -556,7 +607,7 @@ async def _reserve_content(
     并发场景下多个学生会同时触发同一知识点，用 upsert 而不是「查了没有再插」，
     否则会撞 ``uq_explainer_contents_cache_key`` 让其中一个请求 500。
     """
-    key = cache_key(point_code, stage, settings.explainer_style_version)
+    key = cache_key(point_code, stage, settings.explainer_style_version, mode=mode.value)
     stmt = (
         pg_insert(ExplainerContent)
         .values(
@@ -615,7 +666,7 @@ async def request_explainer(
     kp, point = await resolve_point(session, knowledge_id, settings=settings)
 
     cached = await get_cached_content(
-        session, point_code=point.id, stage=kp.stage, settings=settings
+        session, point_code=point.id, stage=kp.stage, settings=settings, mode=mode
     )
     if cached is not None and cached.mode is mode:
         job = ExplainerJob(
@@ -630,6 +681,16 @@ async def request_explainer(
         await session.flush()
         return job, cached
 
+    # §5.3：视频是离线预生成产物（渲染分钟级）。学生端请求未预生成的视频时
+    # 不能挂 202 让前端空转——§5.4 的 60s 降级红线要求立刻给出可执行去向，
+    # 由前端据此回落互动讲解。
+    if mode is ExplainerMode.VIDEO:
+        raise AppError(
+            "这个知识点的视频讲解还没生成好，先看互动讲解吧",
+            code="EXPLAINER_VIDEO_NOT_READY",
+            status_code=409,
+        )
+
     used = await daily_usage(session, user.id)
     if used >= settings.explainer_daily_quota:
         raise RateLimitedError(
@@ -637,7 +698,7 @@ async def request_explainer(
             code="EXPLAINER_QUOTA_EXCEEDED",
         )
 
-    content = await _reserve_content(
+    content = await reserve_content(
         session,
         point_code=point.id,
         kp_id=kp.id,
@@ -726,10 +787,12 @@ __all__ = [
     "extract_html_document",
     "generate_content",
     "get_cached_content",
+    "point_from_record",
     "record_feedback",
     "render_degraded_html",
     "render_html",
     "request_explainer",
+    "reserve_content",
     "resolve_point",
     "strip_html_text",
 ]

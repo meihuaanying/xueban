@@ -519,11 +519,16 @@ export interface ExplainerContent {
   stage: string;
   title: string;
   status: ExplainerStatus;
-  /** 消毒后的单文件 HTML（内联 CSS/JS，无外链）；未就绪时为空串。 */
+  /** interactive | video（P3 §5.3 起共用一套缓存与接口）。 */
+  mode?: "interactive" | "video";
+  /** 消毒后的单文件 HTML（内联 CSS/JS，无外链）；未就绪或视频讲解时为空串。 */
   html: string;
   /** true 表示这是 §5.4 的图文分步降级产物，交互页没生成出来。 */
   degraded: boolean;
   byte_size: number;
+  /** 视频讲解的预签名播放地址（15 分钟有效）；交互讲解为 null。 */
+  video_url?: string | null;
+  duration_seconds?: number;
   /** 教学脚本（≤4 幕），供无脚本兜底与朗读。 */
   script: Record<string, unknown>;
   render_timeout_seconds: number;

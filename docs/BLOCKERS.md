@@ -4,15 +4,52 @@
 
 ## 当前阻塞项
 
+### 2026-11-07 快照
+
+- ~~**题库覆盖**~~ ✅ **全量完成**：`run_content_queue.py` 26 段全部跑完，
+  907/907 课程点 ≥30 题 PUBLISHED（0 空点），PUBLISHED 35935 / REVIEW 1817。
+  REVIEW 区 1817 题待人工抽审清偿（不阻塞学生端，抽 5% 人审口径）。
+- **云 TTS Key 未开通**：视频配音当前用 Windows SAPI 本地通道（仅开发）；生产需
+  `TTS_PROVIDER=azure` + `TTS_API_KEY/TTS_REGION`，否则生产启动校验拒绝。
+- **CI 视频 E2E 夹具**：CI 无 Manim 环境，视频用例依赖本地预生成视频
+  （`math.senior.c01` 等）；合入后需在 CI 预置夹具或 skip 保护。
+- **英语听说 / 备案 / <14 岁监护人同意**：外部人工事项，见 `GD_2026_ALIGNMENT.md`。
+
+### 2026-11-02 LLM 配额恢复快照
+
+- ~~**LLM 真实模型不可用**~~ ✅ 主网关已恢复（周窗口重置）：2026-11-02 09:36 带
+  `x-opencode-session` 探测 HTTP 200；真实模型四段生成出片 134s（`g10m-set-concept`），
+  Top 100（数学 66 + 物理 34）预生成完成，首轮 95/100、补跑后 100/100 READY。
+  备用网关仍 `MODEL_NOT_AVAILABLE`，本轮未启用。证据见 `PROGRESS_2026-11-02.md`。
+- ~~**题库队列已续跑**~~ ✅ 已完成：2026-11-02 从 `next_index=10`（初中数学）续跑，
+  2026-11-05 12:25 最后一段完成，26 段全部达标（见 `PROGRESS_2026-11-07.md`）。
+- **云 TTS Key 未开通**：视频配音当前用 Windows SAPI 本地通道（仅开发）；生产需
+  `TTS_PROVIDER=azure` + `TTS_API_KEY/TTS_REGION`，否则生产启动校验拒绝。
+- ~~**视频版 Playwright E2E 未加**~~ ✅ 已闭环：`apps/desktop/e2e/explainer-video.spec.ts`
+  走真实后端/MinIO，从知识地图节点切视频并断言 `<video>` 解码，1 passed（2026-10-29）。
+  CI 侧仍需预置视频夹具（无 Manim 渲染环境），见 PROGRESS §4.6。
+
+### 2026-10-29 视频管线阻塞快照（已解除）
+
+- **LLM 真实模型不可用（外部阻塞，11:07 实测）**：主网关返回 429
+  `GoUsageLimitError / limitName=weekly`（周配额用尽）；备用网关 `deepseek-v4.1-flash`
+  不可用（`MODEL_NOT_AVAILABLE`），`glm-5.1` 返回 402 `INSUFFICIENT_BALANCE`。
+  影响：真实模型四段生成未验证、Top 100 预生成未跑、题库队列停在「初中数学」
+  （`next_index=10`）。恢复后分别执行 `pregenerate_videos.py --limit 100` 与
+  `run_content_queue.py --resume`；证据口径见 `PROGRESS_2026-10-29.md` §4。
+- **云 TTS Key 未开通**：视频配音当前用 Windows SAPI 本地通道（仅开发）；生产需
+  `TTS_PROVIDER=azure` + `TTS_API_KEY/TTS_REGION`，否则生产启动校验拒绝。
+- ~~**视频版 Playwright E2E 未加**~~ ✅ 已闭环：`apps/desktop/e2e/explainer-video.spec.ts`
+  走真实后端/MinIO，从知识地图节点切视频并断言 `<video>` 解码，1 passed（2026-10-29）。
+  CI 侧仍需预置视频夹具（无 Manim 渲染环境），见 PROGRESS §4.6。
+
 ### 2026-10-28 交付阻塞快照
 
 - **英语听说考试形态（外部 Key）**：`SPEAKING_PROVIDER` 无真实供应商密钥，
   生产启动校验会拒绝 mock；广东高考听说 20 分形态尚未实现。
 - **生成式 AI 备案 / 教育 APP 备案 / 等保**：主体资质事项，见 `docs/COMPLIANCE.md`。
 - **<14 岁监护人独立同意**：注册流程尚未单独收集/核验监护人同意，需法务确认形态。
-- **Manim 视频管线**：渲染环境已装并自检通过，但 §5.3 六阶段生成链与批量预生成
-  未实现（不是外部阻塞，属待开发）。
-- **题库覆盖**：高中化学及生物/历史/地理/政治、初中九科、小学仍在后台队列生成中；
+- **题库覆盖**：高中地理/政治、初中九科、小学仍在后台队列生成中；
   高中语数英物已达标，19 题模考可组卷。
 
 ### B-001 GitHub Actions 未实跑（M0）

@@ -390,6 +390,30 @@ def test_rule_verify_allows_longer_stem_for_senior() -> None:
     assert rule_verify(make_question(stem="字" * 901), senior_point) is not None
 
 
+def test_rule_verify_allows_passage_stem_for_primary_reading() -> None:
+    """小学阅读理解题干含短文，300 字不够，应放宽到 600。"""
+    reading_point = KnowledgePoint(
+        id="g5e-reading-passage",
+        name="阅读理解",
+        subject="english",
+        grade="grade5",
+        unit_code="g5e-u6",
+        unit_name="阅读",
+        objective="能读懂短文并回答问题",
+        question_types=("choice", "judge"),
+        difficulty_band=2,
+        prerequisites=(),
+    )
+    assert rule_verify(make_question(stem="字" * 401), reading_point) is None
+    assert rule_verify(make_question(stem="字" * 601), reading_point) is not None
+
+
+def test_rule_verify_defers_tuple_math_to_judge() -> None:
+    """含逗号的表达式会被 SymPy 解析成 tuple；规则通道应交给 judge 而不是崩溃。"""
+    question = make_question(stem="1,2 = ?", qtype="fill", options=None, answer="2")
+    assert rule_verify(question, MATH_POINT) is None
+
+
 def test_math_rule_defers_symbolic_equations_to_judge() -> None:
     """含变量的等式（方程/恒等式）不是数值对拍能判的，规则通道必须放行给 judge。
 

@@ -76,6 +76,8 @@ export interface ExplainerDockProps {
   knowledgeId: string;
   speakable?: boolean;
   testId?: string;
+  /** 传了才在面板里给「看视频讲解」（§5.3 仅高中生入口）。 */
+  onOpenVideo?: () => void;
 }
 
 /**
@@ -87,6 +89,7 @@ export function ExplainerDock({
   knowledgeId,
   speakable = false,
   testId = "explainer-dock",
+  onOpenVideo,
 }: ExplainerDockProps) {
   if (!knowledgeId || explainer.status === "idle") return null;
   return (
@@ -95,9 +98,11 @@ export function ExplainerDock({
         status={explainer.status}
         content={explainer.content}
         error={explainer.error}
+        notice={explainer.notice}
         speakable={speakable}
         busy={explainer.status === "pending"}
         onOpen={() => void explainer.open(knowledgeId)}
+        onOpenVideo={onOpenVideo}
         onRetry={() => void explainer.open(knowledgeId)}
         onClose={explainer.close}
         onFeedback={explainer.feedback}

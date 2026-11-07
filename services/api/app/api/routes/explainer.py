@@ -8,9 +8,10 @@
 
 from __future__ import annotations
 
+import logging
 import uuid
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, Request, Response, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -27,12 +28,20 @@ from app.schemas.explainer import (
     ExplainerGenerateResponse,
     ExplainerJobResponse,
 )
-from app.services import explainer_service
+from app.services import explainer_service, explainer_video
 
 router = APIRouter(prefix="/v1/explainer", tags=["explainer"])
+logger = logging.getLogger("xueban.explainer.routes")
 
 
-def _content_out(content: ExplainerContent) -> ExplainerContentOut:
+async def _content_out(request: Request, content: ExplainerContent) -> ExplainerContentOut:
+    """内容 DTO。视频行在这里换预签名 URL（对象存储不对外暴露）。"""
+    video_url: str | None = None
+    if content.video_key:
+        try:
+            video_url = await request.app.state.storage.presign_download(key=content.video_key)
+        except Exception:
+            logger.warning("视频预签名失败：content=%s", content.id, exc_info=True)
     return ExplainerContentOut(
         id=content.id,
         # 前端拿这个 id 就能再次请求（讲解页会长期开在错题详情里）
@@ -40,10 +49,14 @@ def _content_out(content: ExplainerContent) -> ExplainerContentOut:
         stage=content.stage,
         title=content.title,
         status=content.status.value,
+        mode=content.mode.value,
         html=content.html or "",
         degraded=content.degraded,
         byte_size=content.byte_size,
-        script=content.script,
+        video_url=video_url,
+        duration_seconds=content.duration_seconds,
+        # 学生端不下发自愈细节（repairs 里有 stderr/TeX 日志片段）
+        script=explainer_video.student_script(content.script),
         render_timeout_seconds=settings.explainer_render_timeout_seconds,
     )
 
@@ -76,6 +89,7 @@ async def _load_content(session: AsyncSession, content_id: uuid.UUID) -> Explain
 async def generate_explainer(
     payload: ExplainerGenerateRequest,
     response: Response,
+    request: Request,
     user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> ExplainerGenerateResponse:
@@ -94,7 +108,7 @@ async def generate_explainer(
             job_id=job.id,
             status=job.status.value,
             cache_hit=True,
-            content=_content_out(content),
+            content=await _content_out(request, content),
         )
     return ExplainerGenerateResponse(job_id=job.id, status=job.status.value)
 
@@ -106,10 +120,11 @@ async def generate_explainer(
 )
 async def get_explainer_job(
     job_id: uuid.UUID,
+    request: Request,
     user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> ExplainerJobResponse:
-    """按 job_id 查进度；就绪时带上消毒后的 HTML。"""
+    """按 job_id 查进度；就绪时带上消毒后的 HTML 或视频地址。"""
     job = await _load_job(session, job_id, user)
     content: ExplainerContent | None = None
     if job.content_id is not None:
@@ -118,7 +133,7 @@ async def get_explainer_job(
         job_id=job.id,
         status=job.status.value,
         error=job.error or (content.error if content is not None else None),
-        content=_content_out(content) if content is not None else None,
+        content=await _content_out(request, content) if content is not None else None,
     )
 
 
@@ -129,16 +144,17 @@ async def get_explainer_job(
 )
 async def get_explainer_content(
     content_id: uuid.UUID,
+    request: Request,
     user: User = Depends(require_not_locked),
     session: AsyncSession = Depends(get_session),
 ) -> ExplainerContentResponse:
-    """取已生成内容（含消毒后 HTML）。
+    """取已生成内容（消毒后 HTML 或视频预签名地址）。
 
     内容按知识点跨用户共享，所以这里不校验归属——但必须登录：
     未成年人内容不对匿名流量开放。
     """
     content = await _load_content(session, content_id)
-    return ExplainerContentResponse(content=_content_out(content))
+    return ExplainerContentResponse(content=await _content_out(request, content))
 
 
 @router.post(

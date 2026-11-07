@@ -97,7 +97,11 @@ export default function PlanStagePage() {
 
         {/* 场景 3（§5.1）：知识地图节点 → 已预生成的讲解直接秒开。
             放在这一站是因为侧边栏在儿童模式下没有地图——那是妹妹真正用的主题。 */}
-        <KnowledgeMapCard subject={subject} speakable={theme === "kids"} />
+        <KnowledgeMapCard
+          subject={subject}
+          speakable={theme === "kids"}
+          allowVideo={band === "senior"}
+        />
 
         {hasPath ? (
           <Button

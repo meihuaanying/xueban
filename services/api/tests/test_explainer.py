@@ -34,6 +34,9 @@ from app.models import (
     User,
     UserRole,
 )
+from app.models import (
+    KnowledgePoint as KnowledgePointModel,
+)
 from app.services import explainer_service
 from app.services.auth_service import issue_token_pair
 from app.services.explainer_sanitize import (
@@ -871,3 +874,29 @@ async def test_knowledge_point_id_from_question_can_open_explainer(
     )
     assert by_id.status_code == 202, by_id.text
     assert by_id.json()["job_id"]
+
+async def test_resolve_point_falls_back_to_db_only_point(
+    sessionmaker: async_sessionmaker[AsyncSession],
+) -> None:
+    """知识地图节点只存在于 knowledge_points（不在课程树 JSON）时也必须能开讲解。"""
+    async with sessionmaker() as session:
+        kp = KnowledgePointModel(
+            code="db.only.set-concept",
+            name="集合与常用逻辑",
+            subject="math",
+            stage="senior",
+            grade="",
+            sort_order=3,
+        )
+        session.add(kp)
+        await session.commit()
+        record, point = await explainer_service.resolve_point(
+            session, "db.only.set-concept", settings=_settings()
+        )
+        assert record.id == kp.id
+        assert point.id == "db.only.set-concept"
+        assert point.name == "集合与常用逻辑"
+        assert point.grade == "grade10", "缺年级时按学段取第一个年级"
+        assert point.unit_name == "知识地图"
+        assert point.prerequisites == ()
+

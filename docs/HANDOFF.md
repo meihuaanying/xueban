@@ -1,11 +1,11 @@
 # 学伴（XueBan）项目交接文档 · v4
 
-> **更新时间**：2026-10-28（UTC+8）
+> **更新时间**：2026-11-07（UTC+8）
 > **GitHub 远端**：https://github.com/meihuaanying/xueban （main 持续提交；Release `v0.1.0` 三平台安装包已发布）
 > **仓库位置**：`C:\Users\Lenovo\Documents\Default Project\xueban`
 > **规格书**：`D:\DATA\Downloads\学伴AI学习软件-项目执行规格书v1.0.md`
-> **最新进度**：M0–M11 基线已完成；2026-10 起进入 RB_P0–P3 重建与广东 2026 对齐。当前高中语数英物题库达标、19 题模考闭环、Manim 渲染环境就绪；完整快照见 `docs/verification/PROGRESS_2026-10-28.md`。
-> **git 状态**：`main` 持续提交（截至 `4dd0d72`），工作区干净；commitlint + husky 已配置。
+> **最新进度**：**题库全量完成**（907/907 课程点 ≥30 题 PUBLISHED，全库 35935）；§5.3 视频管线已合入并用真实模型跑通（Top 100 预生成 100/100 READY）；19 题模考闭环；2026-11-07 交付体检全绿（含视频管线注入修复），完整快照见 `docs/verification/PROGRESS_2026-11-07.md`。
+> **git 状态**：`main` 持续提交，已推送远端；commitlint + husky 已配置。
 > **M10 证据**：`docs/verification/M10_2026-09-16.md` + `.logs.txt`（+13 份原始报告）
 > **M11 证据**：`docs/verification/FINAL.md`（§12 逐项）+ `M11_2026-09-17_T11.1_本地验证.log` + CI 全绿 run `35287350732` + Release `v0.1.0`
 

@@ -9,8 +9,9 @@ const mastery = vi.fn();
 vi.mock("@/lib/api", () => ({
   api: {
     mastery: (...args: unknown[]) => mastery(...args),
-    // 复刻真实签名：mode 有默认值 "interactive"，调用方只传 knowledgeId
-    generateExplainer: (id: string) => generateExplainer(id, "interactive"),
+    // 复刻真实签名：mode 默认 interactive，视频版调用方会显式传 "video"
+    generateExplainer: (id: string, mode: "interactive" | "video" = "interactive") =>
+      generateExplainer(id, mode),
   },
 }));
 
@@ -103,5 +104,16 @@ describe("KnowledgeMapCard（§5.1 场景 3）", () => {
     // 视觉层（aria-hidden 的那个 span）是短名
     const visual = node.querySelector("span.block");
     expect(visual?.textContent).toBe("以内数的");
+  });
+  it("allowVideo 时知识地图节点讲解可切到视频版（§5.3）", async () => {
+    mastery.mockResolvedValue(overview([point()]));
+    render(<KnowledgeMapCard subject="math" allowVideo />);
+    await waitFor(() => expect(screen.getByTestId("kmap-node-g1m-add-within-10")).toBeTruthy());
+    screen.getByTestId("kmap-node-g1m-add-within-10").click();
+    await waitFor(() => expect(screen.getByTestId("explainer-switch-video")).toBeTruthy());
+    screen.getByTestId("explainer-switch-video").click();
+    await waitFor(() =>
+      expect(generateExplainer).toHaveBeenCalledWith("g1m-add-within-10", "video"),
+    );
   });
 });

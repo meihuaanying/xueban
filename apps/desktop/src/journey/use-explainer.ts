@@ -20,6 +20,9 @@ function toFriendlyError(caught: unknown): string {
   return "讲解加载失败，请稍后重试。";
 }
 
+/** 讲解形态：互动网页（实时生成）或视频（§5.3 离线预生成）。 */
+export type ExplainerMode = "interactive" | "video";
+
 /**
  * 交互讲解会话。
  *
@@ -27,11 +30,15 @@ function toFriendlyError(caught: unknown): string {
  * 1. 生成失败**不抛给页面**，而是给出可重试的降级入口（§5.4 降级不白屏）；
  * 2. 每用户每日 20 次限额由后端裁决，前端只把超限翻译成孩子能懂的话；
  * 3. 组件卸载或换知识点后，旧轮询立即作废（token 比对），不写入已卸载状态。
+ *
+ * 视频版本没有云端生成排队：后端 409 `EXPLAINER_VIDEO_NOT_READY` 表示该知识点
+ * 还没预生成，这里自动回落互动讲解并留一句提示，不让用户干等。
  */
 export function useExplainer() {
   const [content, setContent] = useState<ExplainerContent | null>(null);
   const [status, setStatus] = useState<"idle" | "pending" | "ready" | "failed">("idle");
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   /** 孩子主动关掉「看讲解」后不再反复弹；重新 open 或错题数变化时由调用方决定。 */
   const [dismissed, setDismissed] = useState(false);
   /** 每次 open 自增；轮询回调发现 token 过期就静默退出。 */
@@ -67,15 +74,33 @@ export function useExplainer() {
   );
 
   const open = useCallback(
-    async (knowledgeId: string) => {
+    async (knowledgeId: string, mode: ExplainerMode = "interactive") => {
       if (!knowledgeId) return;
       const token = ++tokenRef.current;
       setContent(null);
       setError(null);
+      setNotice(null);
       setDismissed(false);
       setStatus("pending");
       try {
-        const created = await api.generateExplainer(knowledgeId);
+        let created: Awaited<ReturnType<typeof api.generateExplainer>>;
+        try {
+          created = await api.generateExplainer(knowledgeId, mode);
+        } catch (caught) {
+          // §5.3：视频是离线预生成。没预生成时后端 409，立刻回落互动讲解，
+          // 而不是让前端轮询一支要几分钟的片子（§5.4 60s 降级红线）。
+          if (
+            mode === "video" &&
+            caught instanceof ApiError &&
+            caught.code === "EXPLAINER_VIDEO_NOT_READY"
+          ) {
+            if (token !== tokenRef.current) return;
+            setNotice("视频讲解还在准备，先看互动讲解吧。");
+            created = await api.generateExplainer(knowledgeId, "interactive");
+          } else {
+            throw caught;
+          }
+        }
         if (token !== tokenRef.current) return;
         // 缓存命中：后端直接 200 带内容，不必轮询（§5.2 三级缓存的第一级）。
         if (created.content) {
@@ -116,5 +141,5 @@ export function useExplainer() {
     tokenRef.current += 1;
   }, []);
 
-  return { content, status, error, dismissed, open, close, feedback };
+  return { content, status, error, notice, dismissed, open, close, feedback };
 }

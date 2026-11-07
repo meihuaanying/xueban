@@ -7,12 +7,14 @@
 
 以「学情闭环」（诊断 → 规划 → 讲解 → 练习 → 复盘）为核心、以守护型 AI 讲解为差异化的全端学习软件：**不直接给答案，而是把学生教到「独立做得对」**。
 
-## 当前状态（2026-10-28）
+## 当前状态（2026-11-07）
 
-- **高中阶段可交付自学闭环**：语数英物四科题库均达到「每知识点 ≥30 题 PUBLISHED」；新高考数学 19 题模考支持组卷、限时作答、客观题判分与解答题逐题批改。
-- **题库持续生成中**：全库 PUBLISHED 9453（2026-10-28 22:40）；高中化学进行中（1052 题，27/30 已入库点达标），之后为其余选考科目 → 初中九科 → 小学；`run_content_queue.py --resume` 断点续跑。
-- **Manim 渲染环境已就绪**（`scripts/check_manim.py` 自检通过），六阶段视频生成管线待实现。
-- 完整进度快照见 [`docs/verification/PROGRESS_2026-10-28.md`](docs/verification/PROGRESS_2026-10-28.md)；广东 2026 对齐见 [`docs/verification/GD_2026_ALIGNMENT.md`](docs/verification/GD_2026_ALIGNMENT.md)；剩余阻塞见 [`docs/BLOCKERS.md`](docs/BLOCKERS.md)。
+- **题库全量完成（REBUILD §6.1 验收达成）**：`run_content_queue.py` 26 段全部跑完，**907/907 课程知识点 ≥30 题 PUBLISHED（0 空点）**，全库 PUBLISHED 35935 / REVIEW 1817。分布与口径见 [`docs/verification/PROGRESS_2026-11-07.md`](docs/verification/PROGRESS_2026-11-07.md)。
+- **全学段自学闭环可交付**：小学/初中/高中题库 + 诊断→规划→练习→FSRS 复习→错题本→复盘；高中另有新高考数学 19 题模考（组卷/判分/解答题批改）。
+- **§5.3 视频讲解管线已合入**：受限 DSL → Manim 渲染（自愈 ≤3 次）→ 配音混流 → MinIO；真实模型出片 134s（零修复），Top 100（高中数学 66 + 物理 34）预生成 **100/100 READY**；E2E 真实播放验证。证据见 [`docs/verification/PROGRESS_2026-11-02.md`](docs/verification/PROGRESS_2026-11-02.md)。
+- **交付体检（2026-11-07）全绿**：后端全量 pytest / ruff / mypy（135 文件）、桌面 226 单测 + 34 E2E、web 25 测试、Manim 自检；体检修复合入（视频管线注入修复等，见 PROGRESS_2026-11-07 §体检）。
+- **待办**：云 TTS Key 未开通（本机用 Windows SAPI 开发通道）；CI 视频 E2E 需预生成夹具；备案与 <14 岁监护人同意（人工）。
+- 广东 2026 对齐见 [`docs/verification/GD_2026_ALIGNMENT.md`](docs/verification/GD_2026_ALIGNMENT.md)；剩余阻塞见 [`docs/BLOCKERS.md`](docs/BLOCKERS.md)。
 
 ## 仓库结构
 

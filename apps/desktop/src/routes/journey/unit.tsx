@@ -69,6 +69,24 @@ export default function UnitStagePage() {
           />
         )}
 
+        {/* §5.3：高中生可主动看预生成视频；未预生成时 hook 会自动回落互动讲解。 */}
+        {band === "senior" && knowledgeId ? (
+          <div className="flex flex-wrap items-center gap-sm" data-testid="unit-video-row">
+            <Button
+              type="button"
+              variant="outline"
+              data-testid="unit-video-explainer"
+              disabled={explainer.status === "pending"}
+              onClick={() => void explainer.open(knowledgeId, "video")}
+            >
+              看视频讲解
+            </Button>
+            <span className="text-app-xs text-muted-foreground">
+              视频还没准备好时，会自动切到互动讲解
+            </span>
+          </div>
+        ) : null}
+
         {practice.last ? (
           <FeedbackCard
             isCorrect={practice.last.is_correct}
@@ -89,9 +107,14 @@ export default function UnitStagePage() {
             status={explainer.status}
             content={explainer.content}
             error={explainer.error}
+            notice={explainer.notice}
             speakable={speakable}
             busy={practice.busy}
             onOpen={() => void explainer.open(knowledgeId)}
+            // 视频是 §5.3 离线预生成产物，目前只给高中生入口；未预生成会自动回落互动讲解。
+            onOpenVideo={
+              band === "senior" ? () => void explainer.open(knowledgeId, "video") : undefined
+            }
             onRetry={() => void explainer.open(knowledgeId)}
             onClose={explainer.close}
             onFeedback={(understood) => void explainer.feedback(understood)}

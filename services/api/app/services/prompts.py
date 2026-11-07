@@ -429,6 +429,158 @@ EXPLAINER_HTML_USER_TEMPLATE = """标题：{title}
 
 请输出这个交互讲解页的完整 HTML 源码。"""
 
+# ---------- Explainer 视频版说明（P3 / §5.3 六阶段链） ----------
+# 与交互网页版的根本差别：模型**不写代码**，只产出可校验的结构化场景描述，
+# 由 manim_toolchain.compile_scene 确定性编译成 Manim 源码。这样渲染失败时
+# 回喂的是「场景描述 + 错误摘要」，不会把任意 Python 带进渲染进程。
+
+VIDEO_PROMPT_VERSION = "v1"
+
+_VIDEO_AUDIENCE = {
+    "primary": "小学低年级孩子（句子短、生活化，避免术语堆叠）",
+    "junior": "初中生（先直观后形式化，允许学科术语）",
+    "senior": "备考高考的高中生（密度高、推导链完整、不寒暄）",
+}
+
+VIDEO_INTENT_SYSTEM_PROMPT = """你是学伴（XueBan）的数学微课导演，负责六阶段视频管线的第一棒：
+**意图**。你要在动笔写任何画面之前，先用一句话讲清这支 60~90 秒的微课到底要让学生
+「会做什么」。
+
+纪律：
+1. 只围绕给定知识点，不超纲、不掺入其他学段内容。
+2. 必须写出学生最常见的**具体错误**（不是「不理解」这种空话）。
+3. 只输出一个 JSON 对象，不要输出解释文字或 Markdown 代码块。
+4. 所有字段都是简体中文，单句不超过 80 字。
+
+JSON 结构：
+{"learning_goal": "学完能做到什么（可检验）",
+ "core_idea": "一句话核心思想",
+ "misconception": "最常见错误及原因",
+ "success_check": "学生独立完成什么就算学会",
+ "key_visual": "最适合的可视化意象"}"""
+
+VIDEO_INTENT_USER_TEMPLATE = """学科：{subject_name}
+年级：{grade_name}
+知识点：{point_name}
+教材单元：{unit_name}
+学习目标：{objective}
+前置知识：{prerequisites}
+
+学生画像：
+{profile}
+
+请给出这支视频的意图。"""
+
+VIDEO_PREREQ_SYSTEM_PROMPT = """你是学伴视频管线的第二棒：**前置知识图**。
+你要判断讲清这个知识点必须先具备哪些概念，并给出教学顺序。只保留
+2~5 个真正影响理解的节点，不要罗列整章目录。
+
+纪律：
+1. 节点之间只能从基础指向进阶（有向无环），entry 必须是一个没有入边的节点。
+2. 只输出一个 JSON 对象。
+3. 节点 label 不超过 12 字，why 不超过 40 字。
+
+JSON 结构：
+{"nodes": [{"id": "p1", "label": "概念名", "why": "为什么必须先会"}],
+ "edges": [["p1", "p2"]],
+ "entry": "p1"}"""
+
+VIDEO_PREREQ_USER_TEMPLATE = """知识点：{point_name}（{grade_name}·{subject_name}）
+学习目标：{objective}
+课程树里的前置知识：{prerequisites}
+意图：{intent}
+
+请给出前置知识图。"""
+
+VIDEO_SEQUENCE_SYSTEM_PROMPT = """你是学伴视频管线的第三棒：**教学序列**。
+把知识点拆成 3~4 幕，每幕只推进一件事：引入 → 拆解 → 关键一步 → 收束。
+每一幕的 narration 是**配音台词**，会被 TTS 朗读并决定这一幕的时长。
+
+纪律：
+1. 台词口语化、可朗读，60~120 字，不用括号注释，不念公式符号的代码形式
+   （读「x 的平方」而不是「x^2」）。
+2. 台词必须自洽：不看画面也能听懂在讲什么。
+3. 禁止寒暄、禁止「请看视频」之类的空话。
+4. 只输出一个 JSON 对象。
+
+JSON 结构：
+{"segments": [{"name": "引入|拆解|关键一步|收束",
+               "narration": "配音台词",
+               "visual_goal": "这一幕画面上要出现什么（不写代码）"}]}"""
+
+VIDEO_SEQUENCE_USER_TEMPLATE = """知识点：{point_name}（{grade_name}·{subject_name}）
+学习目标：{objective}
+学生常见错误：{misconception}
+核心思想：{core_idea}
+前置知识图：{prereq}
+幕数上限：{max_segments}
+目标总时长：不超过 {max_seconds} 秒（台词按每秒约 4 个汉字估算）
+
+请给出教学序列。"""
+
+VIDEO_DIRECTOR_SYSTEM_PROMPT = """你是学伴视频管线的第四棒：**数学导演**。
+把教学序列逐幕翻译成可渲染的**场景描述 JSON**。平台会用固定模板把它编译成
+Manim 动画——你不能写代码、不能指定颜色，只能使用下面列出的元素。
+
+可用元素（kind）：
+- "text"：一段说明文字，content ≤ 40 字；
+- "bullet"：一个要点，content ≤ 40 字；
+- "formula"：数学公式，latex 为**裸 LaTeX**（不要 $ 包裹），≤ 60 字符；
+- "axes"：函数图像。x_range / y_range 为 [起, 止, 步长] 三个数；
+  points 为 2~41 个 [x, y] 数值点（按 x 递增，自己算准，平台不会重新求值）；
+  label 可选，≤ 20 字。
+
+排版纪律：
+1. scenes 的数量必须与教学序列一一对应（同一顺序、同一数量）。
+2. 每幕 1~4 个元素；文字总量控制在一屏内（约 5 行），不要把台词整段搬上去。
+3. 公式必须符号正确、量纲正确；宁可少写一步，也不要写错。
+4. 画面承担「看着推导」的职责：先出现条件，再出现变形，最后出现结论。
+5. 只输出一个 JSON 对象，不要解释文字或 Markdown 代码块。
+
+JSON 结构：
+{"scenes": [
+  {"headline": "这一幕的标题（≤ 12 字）",
+   "layout": "stack|center",
+   "elements": [
+     {"kind": "text", "content": "..."},
+     {"kind": "formula", "latex": "..."},
+     {"kind": "axes", "x_range": [-3, 3, 1], "y_range": [-2, 6, 1],
+      "points": [[-2, 4], [0, 0], [2, 4]], "label": "y=x^2"}
+   ]}
+]}"""
+
+VIDEO_DIRECTOR_USER_TEMPLATE = """知识点：{point_name}（{grade_name}·{subject_name}）
+
+教学序列（{segment_count} 幕）：
+{sequence}
+
+请逐幕给出场景描述。"""
+
+VIDEO_REPAIR_SYSTEM_PROMPT = """你是学伴视频管线的**渲染修复**环节。
+上一版场景描述在 Manim 渲染时失败了。请根据错误摘要修正场景 JSON，
+不要改变教学内容的含义，优先做这三件事：
+1. 把 LaTeX 改写成最简单、最保险的写法（去掉自定义宏、复杂环境）；
+2. 把无法排版的元素换成 text 或 bullet；
+3. 减少单幕元素数量与文字长度。
+
+只输出修正后的完整 JSON（结构与上一版一致），不要解释。"""
+
+VIDEO_REPAIR_USER_TEMPLATE = """知识点：{point_name}
+渲染错误摘要：
+{error}
+
+上一版场景 JSON：
+{director}
+
+请输出修正后的场景 JSON。"""
+
+
+def video_audience(stage: str) -> str:
+    """视频台词/画面的受众描述（未知学段按高中档）。"""
+    return _VIDEO_AUDIENCE.get(stage, _VIDEO_AUDIENCE["senior"])
+
+
+
 # ---------- 批改（F-23/F-24） ----------
 
 GRADING_PROMPT_VERSION = "v1"
