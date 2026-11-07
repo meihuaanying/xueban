@@ -9,6 +9,7 @@ import { AsyncFeedback, JourneyStepper } from "@/components/journey-blocks";
 import { StageShell } from "@/components/stage-shell";
 import { useJourney } from "@/journey/journey-context";
 import { useWeeklyReport } from "@/journey/use-journey-data";
+import { AnkiExportButton } from "./anki-export-button";
 
 type Report = Record<string, unknown>;
 
@@ -130,6 +131,8 @@ export default function ReviewStagePage() {
             </CardContent>
           </Card>
         ) : null}
+
+        <AnkiExportButton />
 
         <Button onClick={finish} data-testid="review-finish">
           完成今天的学习
