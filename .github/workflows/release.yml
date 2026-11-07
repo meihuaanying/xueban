@@ -48,13 +48,21 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libgtk-3-dev libfuse2
       - name: 构建前端产物
-        run: pnpm --filter @xueban/desktop build
+        shell: bash
+        env:
+          VITE_API_BASE_URL: ${{ vars.XUEBAN_API_BASE_URL }}
+        run: |
+          set -euo pipefail
+          test -n "$VITE_API_BASE_URL"
+          pnpm --filter @xueban/desktop build
       - name: 构建安装包
         shell: bash
         env:
           APPIMAGE_EXTRACT_AND_RUN: "1"
+          VITE_API_BASE_URL: ${{ vars.XUEBAN_API_BASE_URL }}
         run: |
           set -euo pipefail
+          test -n "$VITE_API_BASE_URL"
           target="${{ matrix.target }}"
           if [ -n "$target" ]; then
             pnpm --filter @xueban/desktop exec tauri build --target "$target" --bundles ${{ matrix.bundles }}
